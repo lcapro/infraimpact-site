@@ -3,273 +3,174 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>InfraImpact – Making sustainability count | LCA & MKI Experts in Infra</title>
-  <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar en toetsbaar met LCA’s, MKI-berekeningen en data-inzichten. We helpen aannemers, opdrachtgevers en adviseurs sturen op impact.">
+  <title>InfraImpact – Making sustainability count</title>
+  <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar en toetsbaar met LCA’s, MKI-berekeningen en data-inzichten.">
   <meta name="keywords" content="LCA, MKI, duurzaamheid, infrastructuur, milieuprestatie, CO2, InfraImpact, LCApro, MKI Expertisecentrum">
-  <link rel="canonical" href="https://infraimpact.nl/">
-  <meta name="robots" content="index,follow">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-
-  <!-- Icons -->
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://infraimpact.nl/">
-  <meta property="og:title" content="InfraImpact – Making sustainability count">
-  <meta property="og:description" content="LCA, MKI en tooling voor de infra. Data-inzichten om keuzes te onderbouwen en te verbeteren.">
-  <meta property="og:image" content="assets/og-image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="InfraImpact – Making sustainability count">
-  <meta name="twitter:description" content="Duurzaamheid kwantificeren met LCA, MKI en tooling.">
-  <meta name="twitter:image" content="assets/og-image.png">
-
-  <!-- Performance hints -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-
-  <!-- Styles (minimal, baked-in) -->
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    :root{
-      --brand-green:#2F6F65;
-      --brand-blue:#2B536D;
-      --bg:#F8FAFC;
-      --text:#0F172A;
-      --muted:#475569;
-      --card:#FFFFFF;
-      --radius:18px;
+    :root {
+      --brand-green: #2F6F65;
+      --brand-blue: #2B536D;
+      --light-bg: #ffffff;
+      --dark-bg: #0b1115;
+      --text-dark: #0f171c;
+      --text-light: #e6edf3;
     }
-    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
-    body{background:var(--bg);color:var(--text);line-height:1.6}
-    nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(180%) blur(10px);background:rgba(255,255,255,.8);border-bottom:1px solid rgba(2,6,23,.06)}
-    .container{width:min(1120px,92vw);margin-inline:auto}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand img{height:36px;width:auto}
-    a{text-decoration:none;color:inherit}
-    .nav-links a{margin-left:20px;opacity:.9}
-    .nav-links a:hover{opacity:1}
-    .btn{display:inline-block;padding:12px 18px;border-radius:16px;border:1px solid rgba(2,6,23,.12);background:linear-gradient(180deg, rgba(2,6,23,.03), rgba(2,6,23,.015));transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(2,6,23,.08)}
-    .btn.primary{color:#fff;background:linear-gradient(180deg,var(--brand-green),var(--brand-blue));border-color:var(--brand-blue)}
-    .hero{position:relative;overflow:hidden;padding:72px 0}
-    .hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
-    @media (max-width: 900px){.hero-grid{grid-template-columns:1fr} .hero-visual{display:none}}
-    .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .lead{color:var(--muted)}
-    .badge{display:inline-flex;gap:10px;align-items:center;color:var(--muted)}
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--brand-green)}
-    .section{padding:64px 0}
-    .card{background:var(--card);border:1px solid rgba(2,6,23,.06);border-radius:var(--radius);padding:22px;box-shadow:0 10px 30px rgba(2,6,23,.06)}
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
-    .col-6{grid-column:span 6}.col-12{grid-column:span 12}
-    @media (max-width:900px){.col-6{grid-column:span 12}}
-    [data-animate]{opacity:0;transform:translateY(22px);transition:all .7s ease}
-    [data-animate].visible{opacity:1;transform:translateY(0)}
-    /* Animated brand gradient in hero */
-    .hero-anim{position:absolute;inset:-40%;background:conic-gradient(from 90deg at 50% 50%, rgba(47,111,101,.18), rgba(43,83,109,.18), transparent 60%);filter:blur(60px);animation:spin 30s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    /* Dark theme */
-    [data-theme="dark"] body{background: radial-gradient(1200px 600px at 0% 0%, rgba(47,111,101,.25), transparent 60%), radial-gradient(1200px 600px at 100% 0%, rgba(43,83,109,.25), transparent 60%), #0b1115; color:#E6EDF3}
-    [data-theme="dark"] nav{background:rgba(15,23,42,.7); border-bottom:1px solid rgba(255,255,255,.06)}
-    [data-theme="dark"] .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border-color:rgba(255,255,255,.08)}
-    [data-theme="dark"] .lead{color:#a9b4bf}
-    [data-theme="dark"] .btn{color:#E6EDF3;border-color:rgba(255,255,255,.15);background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025))}
-    [data-theme="dark"] .btn.primary{background:linear-gradient(180deg, color-mix(in oklab, var(--brand-green) 35%, transparent), transparent); border-color: color-mix(in oklab, var(--brand-green) 40%, transparent)}
+    body {
+      background-color: var(--light-bg);
+      color: var(--text-dark);
+      font-family: ui-sans-serif, system-ui;
+      transition: background 0.3s, color 0.3s;
+    }
+    [data-theme='dark'] body {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-animate]{opacity:0; transform: translateY(30px); transition: all .8s ease-out;}
+    [data-animate].visible{opacity:1; transform: translateY(0);}
+    a.btn {
+      padding: 12px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: transform .1s ease, box-shadow .2s ease;
+    }
+    a.btn:hover {transform: translateY(-2px);}
+    a.btn.primary {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      color: #fff;
+    }
+    a.btn.secondary {
+      border: 1px solid var(--brand-green);
+      color: var(--brand-green);
+    }
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    [data-theme='dark'] nav {
+      background: rgba(15,23,42,.7);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
   </style>
-
-  <!-- GA4 placeholder -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX', {'anonymize_ip': true});
-  </script>
-
-  <!-- Structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "InfraImpact B.V.",
-    "url": "https://infraimpact.nl",
-    "logo": "https://infraimpact.nl/assets/logo_full.png",
-    "slogan": "Making sustainability count.",
-    "address": {"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"},
-    "identifier": {"@type":"PropertyValue","name":"KVK","value":"98323377"},
-    "contactPoint": {"@type":"ContactPoint","contactType":"sales","email":"jim.vanderkooij@infraimpact.nl","telephone":"+31621350805","areaServed":"NL","availableLanguage":["nl","en"]}
-  }
-  </script>
 </head>
 <body>
-  <!-- Nav -->
   <nav>
-    <div class="container nav-inner">
-      <div class="brand">
-        <img src="assets/logo_mark.png" alt="InfraImpact logo">
-        <span class="font-semibold">InfraImpact</span>
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+      <div class="flex items-center gap-3">
+        <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
+        <span class="font-semibold tracking-wide">InfraImpact</span>
       </div>
-      <div class="nav-links">
-        <a href="#wat">Wat we doen</a>
-        <a href="#inzicht">Inzichten</a>
-        <a href="#contact">Contact</a>
-        <button id="themeToggle" class="btn" aria-label="Schakel thema">Thema</button>
+      <div class="space-x-6">
+        <a href="#wat" class="hover:text-green-600">Wat we doen</a>
+        <a href="#inzicht" class="hover:text-green-600">Inzichten</a>
+        <a href="#contact" class="hover:text-green-600">Contact</a>
       </div>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <header class="hero">
-    <div class="hero-anim" aria-hidden="true"></div>
-    <div class="container hero-grid">
-      <div data-animate>
-        <p class="badge"><span class="dot"></span><span>Making sustainability count</span></p>
-        <h1 class="text-gradient" style="font-size:clamp(36px,6vw,56px);line-height:1.1;margin:10px 0 8px">Maak duurzaamheid tastbaar en toetsbaar</h1>
-        <p class="lead" style="font-size:clamp(18px,2.5vw,20px)">Wij helpen <strong>aannemers</strong>, <strong>opdrachtgevers</strong>, <strong>ingenieurs</strong> en <strong>adviseurs</strong> om duurzaamheid te <strong>kwantificeren</strong>. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
-        <div class="cta" style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
-          <a class="btn primary" href="#contact">Plan een kennismaking</a>
-          <a class="btn" href="#inzicht">Meer over onze aanpak</a>
-        </div>
-      </div>
-      <div data-animate class="hero-visual">
-        <img src="assets/logo_full.png" alt="InfraImpact beeldmerk" style="border-radius:16px;box-shadow:0 16px 40px rgba(2,6,23,.08);max-width:100%" loading="lazy">
+  <header class="py-28 text-center">
+    <div data-animate>
+      <p class="text-green-600 font-semibold uppercase tracking-wide">Making sustainability count</p>
+      <h1 class="text-5xl md:text-6xl font-bold leading-tight mt-2 text-gradient">Maak duurzaamheid tastbaar en toetsbaar</h1>
+      <p class="text-lg mt-4 text-gray-600 max-w-2xl mx-auto">Wij helpen aannemers, opdrachtgevers en adviseurs om duurzaamheid te <strong>kwantificeren</strong>. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
+      <div class="mt-8 flex justify-center flex-wrap gap-4">
+        <a href="#contact" class="btn primary">Plan een kennismaking</a>
+        <a href="#inzicht" class="btn secondary">Meer over onze aanpak</a>
       </div>
     </div>
   </header>
 
-  <!-- What we do (fluid, no boxes) -->
-  <section id="wat" class="section">
-    <div class="container">
-      <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px" data-animate>Wat we doen</h2>
-      <p class="lead" data-animate>We maken duurzaamheid zichtbaar met cijfers. Complexe milieudata vertalen we naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
-      <div class="grid" style="margin-top:16px">
-        <div class="col-6" data-animate>
-          <div class="card">
-            <h3 style="margin:0 0 6px">LCA & MKI-berekeningen</h3>
-            <p style="margin:0">Project- en productniveau volgens NMD/SBK. Altijd toetsbaar en herleidbaar.</p>
-          </div>
+  <section id="wat" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6 text-center max-w-4xl">
+      <h2 class="text-3xl font-bold text-gradient mb-4" data-animate>Wat we doen</h2>
+      <p class="text-lg text-gray-600 mb-10" data-animate>InfraImpact maakt duurzaamheid zichtbaar met cijfers. We vertalen complexe milieudata naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div data-animate>
+          <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
+          <p>We berekenen milieuprestaties volgens NMD/SBK-richtlijnen. Betrouwbare data voor onderbouwde beslissingen.</p>
         </div>
-        <div class="col-6" data-animate>
-          <div class="card">
-            <h3 style="margin:0 0 6px">Inzicht & analyse</h3>
-            <p style="margin:0">Visuals, benchmarks en scenario’s die het gesprek op feiten brengen.</p>
-          </div>
+        <div data-animate>
+          <h3 class="text-xl font-semibold mb-2">Inzicht & analyse</h3>
+          <p>We brengen cijfers tot leven met visuals en verbeteropties. Zo voer je het gesprek over duurzaamheid op basis van feiten.</p>
         </div>
-        <div class="col-12" data-animate>
-          <div class="card" style="display:flex;gap:18px;align-items:center">
-            <div style="flex:1">
-              <h3 style="margin:0 0 6px">Tooling & borging</h3>
-              <p style="margin:0">Met <strong>LCApro</strong> en scripts standaardiseren we het LCA-proces — minder handwerk, meer snelheid en consistentie.</p>
-            </div>
-            <a class="btn" href="#contact">Meer weten</a>
-          </div>
+        <div data-animate>
+          <h3 class="text-xl font-semibold mb-2">Tooling & borging</h3>
+          <p>Met slimme tooling zoals <strong>LCApro</strong> maak je duurzaamheid onderdeel van het dagelijks werk – snel, betrouwbaar en consistent.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Insights with chart -->
-  <section id="inzicht" class="section" style="padding-top:40px">
-    <div class="container">
-      <div class="grid" style="align-items:center;gap:24px">
-        <div class="col-6" data-animate>
-          <canvas id="impactChart" class="card" style="width:100%;height:360px;padding:12px"></canvas>
+  <section id="inzicht" class="py-24 bg-white">
+    <div class="container mx-auto px-6 max-w-5xl">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div data-animate>
+          <canvas id="impactChart" class="w-full h-64 bg-white border border-gray-100 p-4 rounded-2xl shadow-sm"></canvas>
         </div>
-        <div class="col-6" data-animate>
-          <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px">Van data naar dialoog</h2>
-          <p class="lead" style="margin:0 0 14px">Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Daarmee kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
-          <ul style="color:var(--muted);margin:0;padding-left:16px">
-            <li>Inzicht in MKI en CO₂-impact per projectfase</li>
-            <li>Scenario’s voor ontwerpkeuzes en optimalisaties</li>
-            <li>Onderbouwingen voor aanbestedingen en audits</li>
-            <li>Strategisch advies voor duurzaamheidsbeleid</li>
+        <div data-animate>
+          <h2 class="text-3xl font-bold text-gradient mb-4">Van data naar dialoog</h2>
+          <p class="text-gray-600 mb-6">Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Met onze aanpak kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
+          <ul class="space-y-3 text-gray-500">
+            <li>• Inzicht in MKI en CO₂-impact per projectfase</li>
+            <li>• Vergelijkbare scenario’s voor ontwerpkeuzes</li>
+            <li>• Onderbouwingen voor aanbestedingen en audits</li>
+            <li>• Strategisch advies voor duurzaamheidsbeleid</li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Contact -->
-  <section id="contact" class="section" style="padding-top:40px">
-    <div class="container" data-animate>
-      <div class="grid" style="gap:24px">
-        <div class="col-6">
-          <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px">Neem contact op</h2>
-          <p class="lead" style="margin:0 0 10px">We reageren dezelfde werkdag. Stuur je vraag of bel even — dan denken we direct mee.</p>
-          <p style="color:var(--muted)"><strong>InfraImpact B.V.</strong><br>Westzeedijk 639<br>3024 PJ Rotterdam<br>E: <a href="mailto:jim.vanderkooij@infraimpact.nl">jim.vanderkooij@infraimpact.nl</a><br>T: <a href="tel:+31621350805">+31 (0)6 2135 0805</a><br>KVK: 98323377</p>
-          <div class="cta" style="display:flex;gap:10px;flex-wrap:wrap">
-            <a class="btn primary" href="mailto:jim.vanderkooij@infraimpact.nl">Plan een kennismaking</a>
-            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=Westzeedijk+639%2C+Rotterdam" target="_blank" rel="noopener">Werkgebied: NL</a>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card">
-            <h3 style="margin:0 0 6px">Waarom InfraImpact?</h3>
-            <ul style="margin:0;color:var(--muted);padding-left:16px">
-              <li>Begrip van zowel aannemer als opdrachtgever</li>
-              <li>Altijd direct contact met een expert</li>
-              <li>Praktisch, transparant en toetsbaar</li>
-              <li>Snelle doorlooptijd zonder concessies aan kwaliteit</li>
-            </ul>
-          </div>
-        </div>
+  <section id="contact" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
+      <h2 class="text-3xl font-bold text-gradient mb-6">Neem contact op</h2>
+      <p class="text-gray-600 mb-8">Wil je weten wat wij voor jouw organisatie kunnen betekenen? We reageren dezelfde werkdag.</p>
+      <p class="text-gray-600">InfraImpact B.V.<br>Westzeedijk 639, 3024 PJ Rotterdam<br>E: <a href="mailto:jim.vanderkooij@infraimpact.nl" class="text-green-600 hover:underline">jim.vanderkooij@infraimpact.nl</a><br>T: <a href="tel:+31621350805" class="text-green-600 hover:underline">+31 (0)6 2135 0805</a><br>KVK: 98323377</p>
+      <div class="mt-8">
+        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="btn primary">Plan een kennismaking</a>
       </div>
     </div>
   </section>
 
-  <footer class="section" style="padding:28px 0 60px;color:var(--muted)">
-    <div class="container" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
-      <div>© <span id="y"></span> InfraImpact — Making sustainability count.</div>
-      <div>Low-carbon web: snel laden, minimale scripts, geen trackers.</div>
-    </div>
+  <footer class="py-8 text-center text-gray-500 text-sm">
+    © <span id="year"></span> InfraImpact — Making sustainability count.
   </footer>
 
   <script>
-    // Year
-    document.getElementById('y').textContent = new Date().getFullYear();
-
-    // Theme: light default, respect prefers-color-scheme, allow toggle
-    const root = document.documentElement;
-    const stored = localStorage.getItem('infraimpact-theme');
-    if (stored) {
-      root.setAttribute('data-theme', stored);
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-    }
-    document.getElementById('themeToggle').addEventListener('click', ()=>{
-      const cur = root.getAttribute('data-theme') || 'light';
-      const next = cur === 'light' ? 'dark' : 'light';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('infraimpact-theme', next);
-    });
-
-    // Scroll animations
-    const ob = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); ob.unobserve(e.target); }});
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
     }, {threshold:0.1});
-    document.querySelectorAll('[data-animate]').forEach(el=>ob.observe(el));
+    document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
 
-    // Chart
-    (function(){
-      const el = document.getElementById('impactChart');
-      if(!el) return;
-      const cssColor = getComputedStyle(document.body).color;
-      new Chart(el, {
-        type: 'bar',
-        data: {
-          labels: ['Materiaal','Transport','Uitvoering','Gebruik','Einde levensduur'],
-          datasets: [{label:'MKI per fase (€/m²)', data:[35,10,25,15,5], backgroundColor:['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3']}]
-        },
-        options: {
-          responsive:true,
-          plugins:{legend:{labels:{color:cssColor}}},
-          scales:{x:{ticks:{color:'rgba(2,6,23,.7)'}},y:{ticks:{color:'rgba(2,6,23,.7)'}}}
-        }
-      });
-    })();
+    const ctx = document.getElementById('impactChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Materiaal','Transport','Uitvoering','Gebruik','Einde levensduur'],
+        datasets: [{
+          label: 'MKI per fase (€/m²)',
+          data: [35,10,25,15,5],
+          backgroundColor: ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#475569' } } },
+        scales: { x: { ticks: { color: '#475569' } }, y: { ticks: { color: '#475569' } } }
+      }
+    });
   </script>
 </body>
 </html>
