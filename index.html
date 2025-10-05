@@ -4,227 +4,130 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InfraImpact – Making sustainability count.</title>
-  <meta name="description" content="InfraImpact maakt duurzaamheid concreet met LCA’s, MKI-berekeningen, aanbestedingen en tooling. Korte lijnen, praktisch en snel – voor aannemers, opdrachtgevers en adviseurs.">
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="icon" type="image/png" href="assets/favicon.png" sizes="256x256">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="script.js"></script>
-  <meta property="og:title" content="InfraImpact – Making sustainability count.">
-  <meta property="og:description" content="LCA, MKI, aanbestedingen en tooling voor de infra. Helder, snel en toetsbaar.">
-  <meta property="og:image" content="assets/logo_full.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#2B536D">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "InfraImpact B.V.",
-    "url": "https://infraimpact.nl",
-    "logo": "https://infraimpact.nl/assets/logo_full.png",
-    "slogan": "Making sustainability count.",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Westzeedijk 639",
-      "postalCode": "3024 PJ",
-      "addressLocality": "Rotterdam",
-      "addressCountry": "NL"
-    },
-    "identifier": { "@type": "PropertyValue", "name": "KVK", "value": "98323377" },
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "sales",
-      "email": "jim.vanderkooij@infraimpact.nl",
-      "telephone": "+31621350805",
-      "areaServed": "NL",
-      "availableLanguage": ["nl","en"]
+  <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar en toetsbaar met LCA’s, MKI-berekeningen en data-inzichten. We kwantificeren duurzaamheid en creëren inzicht om beter te bouwen.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --brand-green: #2F6F65;
+      --brand-blue: #2B536D;
     }
-  }
-  </script>
+    body {
+      background-color: #0b1115;
+      color: #e6edf3;
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-animate] {opacity:0; transform: translateY(30px); transition: all 0.8s ease-out;}
+    [data-animate].visible {opacity:1; transform: translateY(0);}
+  </style>
 </head>
-<body>
-  <nav>
-    <div class="container nav-inner">
-      <div class="brand">
-        <img alt="InfraImpact logo" src="assets/logo_mark.png">
-        <div class="name">InfraImpact</div>
+<body class="bg-gray-950 text-gray-100" data-theme="dark">
+  <nav class="sticky top-0 z-50 backdrop-blur-md bg-gray-900/80 border-b border-white/10">
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+      <div class="flex items-center gap-3">
+        <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
+        <span class="font-semibold tracking-wide">InfraImpact</span>
       </div>
-      <div>
-        <a href="#wat">Wat we doen</a>
-        <a href="#hoe">Werkwijze</a>
-        <a href="#contact">Contact</a>
-        <button class="btn ghost small" data-theme-toggle aria-label="Schakel thema">Thema</button>
+      <div class="space-x-6">
+        <a href="#wat" class="hover:text-green-300">Wat we doen</a>
+        <a href="#inzicht" class="hover:text-green-300">Inzichten</a>
+        <a href="#contact" class="hover:text-green-300">Contact</a>
       </div>
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="container hero-grid">
-      <div>
-        <div class="kicker">Making sustainability count.</div>
-        <h1>Maak duurzaamheid <span style="background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; background-clip:text; color:transparent">tastbaar en toetsbaar</span></h1>
-        <p class="lead">InfraImpact helpt <strong>aannemers</strong>, <strong>opdrachtgevers</strong>, <strong>ingenieurs</strong> en <strong>adviseurs</strong> met <strong>LCA’s</strong>, <strong>MKI-berekeningen</strong>, praktische <strong>tooling</strong> en sterke onderbouwingen voor <strong>aanbestedingen</strong>. Korte lijnen, snel schakelen en begrip voor beide kanten van de tafel.</p>
-        <div class="cta">
-          <a class="btn primary" data-email>Plan een kennismaking</a>
-          <a class="btn ghost" data-phone>Bel direct</a>
-          <a class="btn" href="#oplossingen">Bekijk onze oplossingen</a>
+  <header class="relative overflow-hidden py-32 bg-gray-900">
+    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <div data-animate>
+        <p class="text-green-400 font-semibold uppercase tracking-wide">Making sustainability count</p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-tight mt-2 text-gradient">Maak duurzaamheid tastbaar en toetsbaar</h1>
+        <p class="text-lg mt-4 text-gray-300">Wij helpen aannemers, opdrachtgevers en adviseurs om duurzaamheid te <strong>kwantificeren</strong>. Niet op gevoel, maar met data. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="#contact" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">Plan een kennismaking</a>
+          <a href="#inzicht" class="px-6 py-3 rounded-xl border border-gray-400 hover:border-green-400 transition text-gray-200 font-medium">Meer over onze aanpak</a>
         </div>
       </div>
-      <div>
-        <div class="card">
-          <h3 style="margin-top:0">Wat klanten het vaakst vragen</h3>
-          <ul class="list">
-            <li><span class="dot"></span> LCA’s & MKI voor RAW/UAV-GC en projectfasen</li>
-            <li><span class="dot"></span> Scenario’s en optimalisatie om MKI te verlagen</li>
-            <li><span class="dot"></span> EMVI/CO₂-paragraaf en toetsbare onderbouwing</li>
-            <li><span class="dot"></span> Training & tooling (LCApro) voor teams</li>
-          </ul>
-          <div class="callout small">
-            <span class="icon" aria-hidden="true"></span>
-            <div><strong>Snel iets nodig?</strong> Stuur je vraag en stukken door - we reageren dezelfde werkdag.</div>
-          </div>
-        </div>
+      <div class="hidden md:block" data-animate>
+        <img src="assets/logo_full.png" alt="InfraImpact visual" class="rounded-2xl shadow-2xl animate-pulse" />
       </div>
     </div>
   </header>
 
-  <section class="section" id="wat">
-    <div class="container">
-      <h2>Wat we doen</h2>
-      <p class="muted">We vertalen complexe milieudata naar heldere keuzes en directe verbeteracties.</p>
-
-      <div class="grid" id="oplossingen">
-        <div class="col-6">
-          <div class="card">
-            <h3>LCA & MKI-berekeningen</h3>
-            <p>Snel en betrouwbaar inzicht in milieuprestaties conform NMD/SBK. Product-, project- en aanbestedingsniveau, inclusief toetsbare onderbouwing.</p>
-          </div>
+  <section id="wat" class="py-24 bg-gray-900">
+    <div class="container mx-auto px-6 text-center max-w-4xl">
+      <h2 class="text-3xl font-bold text-gradient mb-4" data-animate>Wat we doen</h2>
+      <p class="text-lg text-gray-300 mb-10" data-animate>InfraImpact maakt duurzaamheid zichtbaar met cijfers. We vertalen complexe milieudata naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
+      <div class="grid md:grid-cols-3 gap-8 text-left">
+        <div class="p-6 bg-gray-800/60 rounded-2xl shadow hover:shadow-xl transition-transform hover:-translate-y-1" data-animate>
+          <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
+          <p>We berekenen en onderbouwen milieuprestaties – volgens NMD/SBK-richtlijnen. Betrouwbare data voor onderbouwde beslissingen.</p>
         </div>
-        <div class="col-6">
-          <div class="card">
-            <h3>Aanbestedingen & EMVI</h3>
-            <p>Versterk je inschrijving met een sterke, onderbouwde duurzaamheids- of CO₂-paragraaf. We spreken de taal van zowel aannemers als opdrachtgevers.</p>
-          </div>
+        <div class="p-6 bg-gray-800/60 rounded-2xl shadow hover:shadow-xl transition-transform hover:-translate-y-1" data-animate>
+          <h3 class="text-xl font-semibold mb-2">Inzicht & analyse</h3>
+          <p>We brengen cijfers tot leven met duidelijke visuals, benchmarks en verbeteropties. Zo voer je het gesprek over duurzaamheid op basis van feiten.</p>
         </div>
-        <div class="col-6">
-          <div class="card">
-            <h3>Training & borging</h3>
-            <p>Praktijkgerichte sessies zodat teams zelfstandig en consistent met MKI aan de slag kunnen. Gericht op een gelijk speelveld.</p>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card">
-            <h3>Tooling & automatisering</h3>
-            <p>Minder handwerk, meer snelheid. Met <strong>LCApro</strong> en maatwerk scripts standaardiseren we het LCA-proces.</p>
-          </div>
+        <div class="p-6 bg-gray-800/60 rounded-2xl shadow hover:shadow-xl transition-transform hover:-translate-y-1" data-animate>
+          <h3 class="text-xl font-semibold mb-2">Tooling & borging</h3>
+          <p>Met slimme tooling zoals <strong>LCApro</strong> maak je duurzaamheid onderdeel van het dagelijks werk – snel, betrouwbaar en consistent.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="hoe">
-    <div class="container">
-      <h2>Werkwijze</h2>
-      <p class="muted">Korte lijnen, duidelijk proces. Snel waar het kan, diep waar het moet.</p>
-
-      <div class="grid process">
-        <div class="col-6">
-          <div class="card step">
-            <h3>Intake & scope</h3>
-            <p>In één korte call helderheid over doel, planning en deliverables. Je ontvangt direct een checklist.</p>
-          </div>
+  <section id="inzicht" class="py-32 bg-gray-950">
+    <div class="container mx-auto px-6 max-w-5xl">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div data-animate>
+          <canvas id="impactChart" class="w-full h-64 bg-white/10 p-4 rounded-2xl"></canvas>
         </div>
-        <div class="col-6">
-          <div class="card step">
-            <h3>Data & aannames</h3>
-            <p>Transparante bronnen en uitgangspunten. Zo versnellen we reviews en audits.</p>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card step">
-            <h3>Analyse & optimalisatie</h3>
-            <p>Rekenen, vergelijken en scenario’s doorrekenen om MKI te verlagen.</p>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card step">
-            <h3>Oplevering & borging</h3>
-            <p>Duidelijke onderbouwing en overdracht. Desgewenst korte teamsessie om te borgen.</p>
-          </div>
+        <div data-animate>
+          <h2 class="text-3xl font-bold text-gradient mb-4">Van data naar dialoog</h2>
+          <p class="text-gray-300 mb-6">Duurzaamheid vraagt om inzicht. Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Met onze aanpak kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
+          <ul class="space-y-3 text-gray-400">
+            <li>• Inzicht in MKI en CO₂-impact per projectfase</li>
+            <li>• Vergelijkbare scenario’s voor ontwerpkeuzes</li>
+            <li>• Onderbouwingen voor aanbestedingen en audits</li>
+            <li>• Strategisch advies voor duurzaamheidsbeleid</li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="doorverwijzingen">
-    <div class="container">
-      <h2>LCApro & MKI Expertisecentrum</h2>
-      <p class="muted">Tooling en kennis die het werk van LCA-adviseurs en bedrijven vereenvoudigt.</p>
-      <div class="grid">
-        <div class="col-6">
-          <div class="card">
-            <h3>LCApro</h3>
-            <p>Slanke toolset om sneller en consistenter LCA’s te maken. Pilot vanaf Q4 met geselecteerde partners.</p>
-            <div class="cta">
-              <a class="btn" href="#contact">Meer over LCApro</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card">
-            <h3>MKI Expertisecentrum</h3>
-            <p>Centrale plek voor uitleg, richtlijnen en best practices rond MKI in de infra.</p>
-            <div class="cta">
-              <a class="btn" href="https://mkiexpertisecentrum.nl" target="_blank" rel="noopener">Bezoek mkiexpertisecentrum.nl</a>
-            </div>
-          </div>
-        </div>
+  <section id="contact" class="py-24 bg-gray-900">
+    <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
+      <h2 class="text-3xl font-bold text-gradient mb-6">Neem contact op</h2>
+      <p class="text-gray-300 mb-8">Wil je weten wat wij voor jouw organisatie kunnen betekenen? We reageren dezelfde werkdag.</p>
+      <div class="space-y-2 text-gray-400">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:jim.vanderkooij@infraimpact.nl" class="text-green-400 hover:underline">jim.vanderkooij@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-400 hover:underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div class="mt-8">
+        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">Plan een kennismaking</a>
       </div>
     </div>
   </section>
 
-  <section class="section" id="contact">
-    <div class="container">
-      <div class="grid">
-        <div class="col-6">
-          <h2>Contact</h2>
-          <p class="muted">We reageren dezelfde werkdag. Stuur je vraag of bel even — dan denken we direct mee.</p>
-          <p><strong>E-mail:</strong> <a data-email> </a><br>
-             <strong>Telefoon:</strong> <a data-phone> </a></p>
-          <p class="small">
-            <strong>InfraImpact B.V.</strong><br>
-            Westzeedijk 639<br>
-            3024 PJ Rotterdam<br>
-            KVK: 98323377
-          </p>
-          <div class="cta">
-            <a class="btn primary" data-email>Plan een kennismaking</a>
-            <a class="btn ghost" href="https://www.google.com/maps/search/?api=1&query=Westzeedijk+639%2C+Rotterdam" target="_blank" rel="noopener">Werkgebied: NL</a>
-          </div>
-          <p class="small" style="margin-top:10px">We werken landelijk, vaak online en altijd met korte lijnen.</p>
-        </div>
-        <div class="col-6">
-          <div class="card">
-            <h3>Waarom InfraImpact?</h3>
-            <ul class="list">
-              <li><span class="dot"></span> Begrip van zowel aannemer als opdrachtgever</li>
-              <li><span class="dot"></span> Altijd direct contact met een expert</li>
-              <li><span class="dot"></span> Praktisch, transparant en toetsbaar</li>
-              <li><span class="dot"></span> Snelle doorlooptijd zonder concessies aan kwaliteit</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="container small">
-      <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap">
-        <div>© <span id="y"></span> InfraImpact — Making sustainability count.</div>
-        <div>Low-carbon web: snel laden, minimale scripts, geen trackers.</div>
-      </div>
-    </div>
-    <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+  <footer class="bg-gray-950 py-10 text-center text-gray-500 text-sm">
+    © <span id="year"></span> InfraImpact — Making sustainability count.
   </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+    const ctx = document.getElementById('impactChart');
+    new Chart(ctx, { type: 'bar', data: { labels: ['Materiaal', 'Transport', 'Uitvoering', 'Gebruik', 'Einde levensduur'], datasets: [{ label: 'MKI per fase (€/m²)', data: [35,10,25,15,5], backgroundColor: ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3'] }]}, options: {responsive: true, plugins: {legend: {labels: {color: '#e6edf3'}}}, scales: {x: {ticks: {color: '#a9b4bf'}}, y: {ticks: {color: '#a9b4bf'}}}} });
+  </script>
 </body>
 </html>
