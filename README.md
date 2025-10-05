@@ -1,37 +1,17 @@
+# InfraImpact website (v2)
 
-# InfraImpact website
-
-Een lichte, snelle, statische website. Ontworpen voor GitHub Pages.
-
-## Projectstructuur
-```
-/
-├─ index.html
-├─ styles.css
-├─ script.js
-└─ assets/
-   ├─ logo_full.png
-   ├─ logo_mark.png
-   ├─ favicon.png
-   └─ favicon.ico
-```
-
-## Lokale preview
-Open `index.html` direct in je browser, of start een simpele webserver:
-```
-python3 -m http.server 8080
-```
+Geüpdatet met:
+- Slogan “Making sustainability count.”
+- Verbeterde teksten en CTA’s per doelgroep
+- Contactgegevens + KVK
+- Sterker contrast in licht thema
+- SEO/metadata en structured data
 
 ## Deploy naar GitHub Pages
-1. Maak een nieuwe GitHub-repository (bijv. `infraimpact-site`) en voeg de bestanden toe.
-2. Zet Pages aan: **Settings → Pages**. Kies *Deploy from a branch*, branch `main`, folder `/root`.
-3. (Optioneel) Voeg een `CNAME`-bestand toe met daarin `infraimpact.nl` voor een custom domain.
-4. Configureer DNS bij je provider:
-   - Gebruik **A-records** voor het apex-domein (infraimpact.nl) die naar GitHub Pages IP's wijzen.
-   - Gebruik **CNAME** voor `www` → `<username>.github.io`.
-5. Wacht op DNS-propagatie. Klaar!
-
-## Content aanpassen
-- Tekst: `index.html`
-- Styling: `styles.css`
-- Klein JS: `script.js`
+1. Push de inhoud van deze map naar je repo (bijv. `infraimpact-site`).
+2. Zet Pages aan via **Settings → Pages**: Branch `main`, folder `/root`.
+3. (Optioneel) Voeg `CNAME` toe met `infraimpact.nl` als je het domein al klaar hebt.
+4. DNS bij Namecheap:
+   - A @ → 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153
+   - CNAME www → `<gebruikersnaam>.github.io`
+5. Wacht even; zet **Enforce HTTPS** aan zodra beschikbaar.

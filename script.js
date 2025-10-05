@@ -1,5 +1,4 @@
-
-// Email anti-scrape + theme toggle
+// Inject email/phone, theme toggle
 (function(){
   const at = "@", dot = ".";
   const u = "jim.vanderkooij";
@@ -9,18 +8,17 @@
   const ems = document.querySelectorAll("[data-email]");
   ems.forEach(el => {
     el.textContent = email;
-    if (el.tagName === "A") { el.href = "mailto:" + email + "?subject=Contact%20via%20website"; }
+    if (el.tagName === "A") { el.href = "mailto:" + email + "?subject=Kennismaking%20InfraImpact"; }
   });
 
-  // phone
-  const phone = "+31621350805";
+  const phoneDisp = "+31 (0)6 2135 0805";
+  const phoneRaw = "+31621350805";
   const phoneEls = document.querySelectorAll("[data-phone]");
   phoneEls.forEach(el => {
-    el.textContent = "+31 (0)6 2135 0805";
-    if (el.tagName === "A") el.href = "tel:" + phone;
+    el.textContent = phoneDisp;
+    if (el.tagName === "A") el.href = "tel:" + phoneRaw;
   });
 
-  // theme toggle (prefers-color-scheme aware)
   const toggle = document.querySelector("[data-theme-toggle]");
   if (toggle){
     toggle.addEventListener("click", ()=>{
