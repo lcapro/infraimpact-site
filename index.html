@@ -19,21 +19,65 @@
   <meta property="og:url" content="https://infraimpact.nl/">
   <meta property="og:title" content="InfraImpact – Making sustainability count">
   <meta property="og:description" content="LCA, MKI en tooling voor de infra. Data-inzichten om keuzes te onderbouwen en te verbeteren.">
-  <meta property="og:image" content="https://infraimpact.nl/assets/logo_full.png">
+  <meta property="og:image" content="assets/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="InfraImpact – Making sustainability count">
   <meta name="twitter:description" content="Duurzaamheid kwantificeren met LCA, MKI en tooling.">
-  <meta name="twitter:image" content="https://infraimpact.nl/assets/logo_full.png">
+  <meta name="twitter:image" content="assets/og-image.png">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-
-  <!-- Chart.js for the MKI demo -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <!-- Styles (minimal, baked-in) -->
+  <style>
+    :root{
+      --brand-green:#2F6F65;
+      --brand-blue:#2B536D;
+      --bg:#F8FAFC;
+      --text:#0F172A;
+      --muted:#475569;
+      --card:#FFFFFF;
+      --radius:18px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+    body{background:var(--bg);color:var(--text);line-height:1.6}
+    nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(180%) blur(10px);background:rgba(255,255,255,.8);border-bottom:1px solid rgba(2,6,23,.06)}
+    .container{width:min(1120px,92vw);margin-inline:auto}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand img{height:36px;width:auto}
+    a{text-decoration:none;color:inherit}
+    .nav-links a{margin-left:20px;opacity:.9}
+    .nav-links a:hover{opacity:1}
+    .btn{display:inline-block;padding:12px 18px;border-radius:16px;border:1px solid rgba(2,6,23,.12);background:linear-gradient(180deg, rgba(2,6,23,.03), rgba(2,6,23,.015));transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(2,6,23,.08)}
+    .btn.primary{color:#fff;background:linear-gradient(180deg,var(--brand-green),var(--brand-blue));border-color:var(--brand-blue)}
+    .hero{position:relative;overflow:hidden;padding:72px 0}
+    .hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+    @media (max-width: 900px){.hero-grid{grid-template-columns:1fr} .hero-visual{display:none}}
+    .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lead{color:var(--muted)}
+    .badge{display:inline-flex;gap:10px;align-items:center;color:var(--muted)}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--brand-green)}
+    .section{padding:64px 0}
+    .card{background:var(--card);border:1px solid rgba(2,6,23,.06);border-radius:var(--radius);padding:22px;box-shadow:0 10px 30px rgba(2,6,23,.06)}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+    .col-6{grid-column:span 6}.col-12{grid-column:span 12}
+    @media (max-width:900px){.col-6{grid-column:span 12}}
+    [data-animate]{opacity:0;transform:translateY(22px);transition:all .7s ease}
+    [data-animate].visible{opacity:1;transform:translateY(0)}
+    /* Animated brand gradient in hero */
+    .hero-anim{position:absolute;inset:-40%;background:conic-gradient(from 90deg at 50% 50%, rgba(47,111,101,.18), rgba(43,83,109,.18), transparent 60%);filter:blur(60px);animation:spin 30s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Dark theme */
+    [data-theme="dark"] body{background: radial-gradient(1200px 600px at 0% 0%, rgba(47,111,101,.25), transparent 60%), radial-gradient(1200px 600px at 100% 0%, rgba(43,83,109,.25), transparent 60%), #0b1115; color:#E6EDF3}
+    [data-theme="dark"] nav{background:rgba(15,23,42,.7); border-bottom:1px solid rgba(255,255,255,.06)}
+    [data-theme="dark"] .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border-color:rgba(255,255,255,.08)}
+    [data-theme="dark"] .lead{color:#a9b4bf}
+    [data-theme="dark"] .btn{color:#E6EDF3;border-color:rgba(255,255,255,.15);background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025))}
+    [data-theme="dark"] .btn.primary{background:linear-gradient(180deg, color-mix(in oklab, var(--brand-green) 35%, transparent), transparent); border-color: color-mix(in oklab, var(--brand-green) 40%, transparent)}
+  </style>
 
   <!-- GA4 placeholder -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -53,132 +97,94 @@
     "url": "https://infraimpact.nl",
     "logo": "https://infraimpact.nl/assets/logo_full.png",
     "slogan": "Making sustainability count.",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Westzeedijk 639",
-      "postalCode": "3024 PJ",
-      "addressLocality": "Rotterdam",
-      "addressCountry": "NL"
-    },
-    "identifier": { "@type": "PropertyValue", "name": "KVK", "value": "98323377" },
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "sales",
-      "email": "jim.vanderkooij@infraimpact.nl",
-      "telephone": "+31621350805",
-      "areaServed": "NL",
-      "availableLanguage": ["nl","en"]
-    },
-    "sameAs": []
+    "address": {"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"},
+    "identifier": {"@type":"PropertyValue","name":"KVK","value":"98323377"},
+    "contactPoint": {"@type":"ContactPoint","contactType":"sales","email":"jim.vanderkooij@infraimpact.nl","telephone":"+31621350805","areaServed":"NL","availableLanguage":["nl","en"]}
   }
   </script>
-
-  <style>
-    :root{
-      --brand-green:#2F6F65;
-      --brand-blue:#2B536D;
-      --text-dark:#0F172A;
-      --bg-light:#F8FAFC;
-      --card:#FFFFFF;
-      --muted:#475569;
-    }
-    /* Light (default) */
-    [data-theme="light"] body{ background: var(--bg-light); color: var(--text-dark); }
-    [data-theme="light"] .card{ background: var(--card); box-shadow: 0 10px 30px rgba(2,6,23,.06); border:1px solid rgba(2,6,23,.06); }
-    [data-theme="light"] .lead{ color:#334155 }
-    [data-theme="light"] .btn{ color:#0f172a; border-color: rgba(2,6,23,.12); background: linear-gradient(180deg, rgba(2,6,23,.03), rgba(2,6,23,.015)); }
-    [data-theme="light"] .btn.primary{ color:#fff; background: linear-gradient(180deg, var(--brand-green), var(--brand-blue)); border-color: var(--brand-blue); }
-    [data-theme="light"] nav{ background: rgba(255,255,255,.8); backdrop-filter: saturate(180%) blur(10px); border-bottom: 1px solid rgba(2,6,23,.06) }
-    /* Dark (green/blue) */
-    [data-theme="dark"] body{ background: radial-gradient(1200px 600px at 0% 0%, rgba(47,111,101,.25), transparent 60%), radial-gradient(1200px 600px at 100% 0%, rgba(43,83,109,.25), transparent 60%), #0b1115; color:#E6EDF3 }
-    [data-theme="dark"] .card{ background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08) }
-    [data-theme="dark"] .lead{ color:#a9b4bf }
-    [data-theme="dark"] .btn{ color:#E6EDF3; border-color: rgba(255,255,255,.15); background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025)); }
-    [data-theme="dark"] .btn.primary{ background: linear-gradient(180deg, color-mix(in oklab, var(--brand-green) 30%, transparent), transparent); border-color: color-mix(in oklab, var(--brand-green) 40%, transparent); }
-    [data-theme="dark"] nav{ background: color-mix(in oklab, #0f171c 80%, transparent); border-bottom:1px solid rgba(255,255,255,.06) }
-
-    .text-gradient{ background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent }
-    [data-animate]{ opacity:0; transform: translateY(24px); transition: all .7s ease }
-    [data-animate].visible{ opacity:1; transform: translateY(0) }
-    .btn{ padding:12px 18px; border-radius:16px; border:1px solid transparent; text-decoration:none; transition: transform .05s ease, border-color .2s ease, background .2s ease; }
-    .btn:hover{ transform: translateY(-1px) }
-    .badge{ display:inline-flex; gap:10px; align-items:center; color: var(--muted) }
-    .dot{ width:8px; height:8px; border-radius:999px; background: var(--brand-green) }
-  </style>
 </head>
 <body>
   <!-- Nav -->
-  <nav class="sticky top-0 z-50 border-b">
-    <div class="container mx-auto flex justify-between items-center py-4 px-6">
-      <div class="flex items-center gap-3">
-        <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo">
-        <span class="font-semibold tracking-wide">InfraImpact</span>
+  <nav>
+    <div class="container nav-inner">
+      <div class="brand">
+        <img src="assets/logo_mark.png" alt="InfraImpact logo">
+        <span class="font-semibold">InfraImpact</span>
       </div>
-      <div class="flex items-center gap-4">
-        <a href="#wat" class="hover:opacity-80">Wat we doen</a>
-        <a href="#inzicht" class="hover:opacity-80">Inzichten</a>
-        <a href="#contact" class="hover:opacity-80">Contact</a>
-        <button id="themeToggle" class="btn">Thema</button>
+      <div class="nav-links">
+        <a href="#wat">Wat we doen</a>
+        <a href="#inzicht">Inzichten</a>
+        <a href="#contact">Contact</a>
+        <button id="themeToggle" class="btn" aria-label="Schakel thema">Thema</button>
       </div>
     </div>
   </nav>
 
   <!-- Hero -->
-  <header class="py-20">
-    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+  <header class="hero">
+    <div class="hero-anim" aria-hidden="true"></div>
+    <div class="container hero-grid">
       <div data-animate>
-        <p class="font-semibold uppercase tracking-wide" style="color:var(--brand-green)">Making sustainability count</p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-tight mt-2 text-gradient">Maak duurzaamheid tastbaar en toetsbaar</h1>
-        <p class="lead text-lg mt-4">Wij helpen aannemers, opdrachtgevers, ingenieurs en adviseurs om duurzaamheid te <strong>kwantificeren</strong>. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="#contact" class="btn primary">Plan een kennismaking</a>
-          <a href="#inzicht" class="btn">Meer over onze aanpak</a>
+        <p class="badge"><span class="dot"></span><span>Making sustainability count</span></p>
+        <h1 class="text-gradient" style="font-size:clamp(36px,6vw,56px);line-height:1.1;margin:10px 0 8px">Maak duurzaamheid tastbaar en toetsbaar</h1>
+        <p class="lead" style="font-size:clamp(18px,2.5vw,20px)">Wij helpen <strong>aannemers</strong>, <strong>opdrachtgevers</strong>, <strong>ingenieurs</strong> en <strong>adviseurs</strong> om duurzaamheid te <strong>kwantificeren</strong>. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
+        <div class="cta" style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
+          <a class="btn primary" href="#contact">Plan een kennismaking</a>
+          <a class="btn" href="#inzicht">Meer over onze aanpak</a>
         </div>
-        <p class="badge mt-4"><span class="dot"></span> Door LCA-expert Jim van der Kooij</p>
       </div>
-      <div class="hidden md:block" data-animate>
-        <img src="assets/logo_full.png" alt="InfraImpact logo" class="rounded-xl shadow-xl" loading="lazy">
+      <div data-animate class="hero-visual">
+        <img src="assets/logo_full.png" alt="InfraImpact beeldmerk" style="border-radius:16px;box-shadow:0 16px 40px rgba(2,6,23,.08);max-width:100%" loading="lazy">
       </div>
     </div>
   </header>
 
-  <!-- What we do -->
-  <section id="wat" class="py-16">
-    <div class="container mx-auto px-6 text-center max-w-5xl">
-      <h2 class="text-3xl font-bold text-gradient mb-3" data-animate>Wat we doen</h2>
-      <p class="lead mb-10" data-animate>We maken duurzaamheid zichtbaar met cijfers. Complexe milieudata vertalen we naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
-      <div class="grid md:grid-cols-3 gap-6 text-left">
-        <div class="card p-6 rounded-2xl" data-animate>
-          <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
-          <p>Project- en productniveau volgens NMD/SBK. Altijd toetsbaar en herleidbaar.</p>
+  <!-- What we do (fluid, no boxes) -->
+  <section id="wat" class="section">
+    <div class="container">
+      <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px" data-animate>Wat we doen</h2>
+      <p class="lead" data-animate>We maken duurzaamheid zichtbaar met cijfers. Complexe milieudata vertalen we naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
+      <div class="grid" style="margin-top:16px">
+        <div class="col-6" data-animate>
+          <div class="card">
+            <h3 style="margin:0 0 6px">LCA & MKI-berekeningen</h3>
+            <p style="margin:0">Project- en productniveau volgens NMD/SBK. Altijd toetsbaar en herleidbaar.</p>
+          </div>
         </div>
-        <div class="card p-6 rounded-2xl" data-animate>
-          <h3 class="text-xl font-semibold mb-2">Inzicht & analyse</h3>
-          <p>Visuals, benchmarks en scenario’s die het gesprek op feiten brengen.</p>
+        <div class="col-6" data-animate>
+          <div class="card">
+            <h3 style="margin:0 0 6px">Inzicht & analyse</h3>
+            <p style="margin:0">Visuals, benchmarks en scenario’s die het gesprek op feiten brengen.</p>
+          </div>
         </div>
-        <div class="card p-6 rounded-2xl" data-animate>
-          <h3 class="text-xl font-semibold mb-2">Tooling & borging</h3>
-          <p>Met <strong>LCApro</strong> en scripts standaardiseren we het LCA-proces.</p>
+        <div class="col-12" data-animate>
+          <div class="card" style="display:flex;gap:18px;align-items:center">
+            <div style="flex:1">
+              <h3 style="margin:0 0 6px">Tooling & borging</h3>
+              <p style="margin:0">Met <strong>LCApro</strong> en scripts standaardiseren we het LCA-proces — minder handwerk, meer snelheid en consistentie.</p>
+            </div>
+            <a class="btn" href="#contact">Meer weten</a>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Insights with chart -->
-  <section id="inzicht" class="py-16">
-    <div class="container mx-auto px-6 max-w-6xl">
-      <div class="grid md:grid-cols-2 gap-10 items-center">
-        <div data-animate>
-          <canvas id="impactChart" class="w-full h-64 p-4 rounded-2xl card"></canvas>
+  <section id="inzicht" class="section" style="padding-top:40px">
+    <div class="container">
+      <div class="grid" style="align-items:center;gap:24px">
+        <div class="col-6" data-animate>
+          <canvas id="impactChart" class="card" style="width:100%;height:360px;padding:12px"></canvas>
         </div>
-        <div data-animate>
-          <h2 class="text-3xl font-bold text-gradient mb-3">Van data naar dialoog</h2>
-          <p class="lead mb-6">Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Daarmee kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
-          <ul class="space-y-2" style="color:var(--muted)">
-            <li>• Inzicht in MKI en CO₂-impact per projectfase</li>
-            <li>• Scenario’s voor ontwerpkeuzes en optimalisaties</li>
-            <li>• Onderbouwingen voor aanbestedingen en audits</li>
-            <li>• Strategisch advies voor duurzaamheidsbeleid</li>
+        <div class="col-6" data-animate>
+          <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px">Van data naar dialoog</h2>
+          <p class="lead" style="margin:0 0 14px">Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Daarmee kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
+          <ul style="color:var(--muted);margin:0;padding-left:16px">
+            <li>Inzicht in MKI en CO₂-impact per projectfase</li>
+            <li>Scenario’s voor ontwerpkeuzes en optimalisaties</li>
+            <li>Onderbouwingen voor aanbestedingen en audits</li>
+            <li>Strategisch advies voor duurzaamheidsbeleid</li>
           </ul>
         </div>
       </div>
@@ -186,73 +192,84 @@
   </section>
 
   <!-- Contact -->
-  <section id="contact" class="py-16">
-    <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
-      <h2 class="text-3xl font-bold text-gradient mb-4">Neem contact op</h2>
-      <p class="lead mb-8">We reageren dezelfde werkdag. Stuur je vraag of bel even — dan denken we direct mee.</p>
-      <div class="space-y-2" style="color:var(--muted)">
-        <p><strong>InfraImpact B.V.</strong></p>
-        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
-        <p>E: <a href="mailto:jim.vanderkooij@infraimpact.nl">jim.vanderkooij@infraimpact.nl</a></p>
-        <p>T: <a href="tel:+31621350805">+31 (0)6 2135 0805</a></p>
-        <p>KVK: 98323377</p>
-      </div>
-      <div class="mt-6">
-        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="btn primary">Plan een kennismaking</a>
+  <section id="contact" class="section" style="padding-top:40px">
+    <div class="container" data-animate>
+      <div class="grid" style="gap:24px">
+        <div class="col-6">
+          <h2 class="text-gradient" style="font-size:clamp(26px,3.2vw,34px);margin:0 0 6px">Neem contact op</h2>
+          <p class="lead" style="margin:0 0 10px">We reageren dezelfde werkdag. Stuur je vraag of bel even — dan denken we direct mee.</p>
+          <p style="color:var(--muted)"><strong>InfraImpact B.V.</strong><br>Westzeedijk 639<br>3024 PJ Rotterdam<br>E: <a href="mailto:jim.vanderkooij@infraimpact.nl">jim.vanderkooij@infraimpact.nl</a><br>T: <a href="tel:+31621350805">+31 (0)6 2135 0805</a><br>KVK: 98323377</p>
+          <div class="cta" style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn primary" href="mailto:jim.vanderkooij@infraimpact.nl">Plan een kennismaking</a>
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=Westzeedijk+639%2C+Rotterdam" target="_blank" rel="noopener">Werkgebied: NL</a>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card">
+            <h3 style="margin:0 0 6px">Waarom InfraImpact?</h3>
+            <ul style="margin:0;color:var(--muted);padding-left:16px">
+              <li>Begrip van zowel aannemer als opdrachtgever</li>
+              <li>Altijd direct contact met een expert</li>
+              <li>Praktisch, transparant en toetsbaar</li>
+              <li>Snelle doorlooptijd zonder concessies aan kwaliteit</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer class="py-10 text-center" style="color:var(--muted)">
-    © <span id="y"></span> InfraImpact — Making sustainability count.
+  <footer class="section" style="padding:28px 0 60px;color:var(--muted)">
+    <div class="container" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>© <span id="y"></span> InfraImpact — Making sustainability count.</div>
+      <div>Low-carbon web: snel laden, minimale scripts, geen trackers.</div>
+    </div>
   </footer>
 
   <script>
     // Year
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Theme handling: default to light, respect stored pref or system pref
+    // Theme: light default, respect prefers-color-scheme, allow toggle
     const root = document.documentElement;
     const stored = localStorage.getItem('infraimpact-theme');
-    if(stored){
+    if (stored) {
       root.setAttribute('data-theme', stored);
     } else {
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light'); // but we set light default via markup
+      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
     }
     document.getElementById('themeToggle').addEventListener('click', ()=>{
-      const current = root.getAttribute('data-theme') || 'light';
-      const next = current === 'light' ? 'dark' : 'light';
+      const cur = root.getAttribute('data-theme') || 'light';
+      const next = cur === 'light' ? 'dark' : 'light';
       root.setAttribute('data-theme', next);
       localStorage.setItem('infraimpact-theme', next);
     });
 
     // Scroll animations
-    const observer = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }});
+    const ob = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); ob.unobserve(e.target); }});
     }, {threshold:0.1});
-    document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
+    document.querySelectorAll('[data-animate]').forEach(el=>ob.observe(el));
 
-    // Chart (MKI per fase) - keep neutral colors in light theme
-    document.addEventListener('DOMContentLoaded', function(){
-      const ctx = document.getElementById('impactChart');
-      if(!ctx) return;
-      new Chart(ctx, {
+    // Chart
+    (function(){
+      const el = document.getElementById('impactChart');
+      if(!el) return;
+      const cssColor = getComputedStyle(document.body).color;
+      new Chart(el, {
         type: 'bar',
         data: {
           labels: ['Materiaal','Transport','Uitvoering','Gebruik','Einde levensduur'],
-          datasets: [{ label: 'MKI per fase (€/m²)', data: [35,10,25,15,5], backgroundColor: ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3'] }]
+          datasets: [{label:'MKI per fase (€/m²)', data:[35,10,25,15,5], backgroundColor:['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3']}]
         },
         options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: getComputedStyle(document.body).color } } },
-          scales: {
-            x: { ticks: { color: 'rgba(2,6,23,.7)' } },
-            y: { ticks: { color: 'rgba(2,6,23,.7)' } }
-          }
+          responsive:true,
+          plugins:{legend:{labels:{color:cssColor}}},
+          scales:{x:{ticks:{color:'rgba(2,6,23,.7)'}},y:{ticks:{color:'rgba(2,6,23,.7)'}}}
         }
       });
-    });
+    })();
   </script>
 </body>
 </html>
