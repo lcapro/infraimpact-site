@@ -13,15 +13,22 @@
       --brand-blue: #2B536D;
     }
     body {
-  background: radial-gradient(1000px 600px at 0% 0%, rgba(47,111,101,0.08), transparent 60%),
-              radial-gradient(1000px 600px at 100% 100%, rgba(43,83,109,0.08), transparent 60%),
-              linear-gradient(180deg, #f8fbfd 0%, #ffffff 100%);
-  color: #0f171c;
-  animation: moveGrad 60s ease-in-out infinite alternate;
+  background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
+  background-size: 400% 400%;
+  animation: bgMove 60s ease infinite;
+  color: #374151;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
-@keyframes moveGrad {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 100%; }
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+header {
+  background: transparent;
+}
+section {
+  background: transparent;
 }
     .text-gradient {
       background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
@@ -32,8 +39,8 @@
     [data-animate].visible {opacity:1; transform: translateY(0);}
   </style>
 </head>
-<body class="bg-gray-950 text-gray-100" data-theme="dark">
-  <nav class="sticky top-0 z-50 backdrop-blur-md bg-gray-900/80 border-b border-white/10">
+<body class="bg-transparent text-gray-700" data-theme="dark">
+  <nav class="sticky top-0 z-50 backdrop-blur-md bg-transparent/80 border-b border-white/10">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
       <div class="flex items-center gap-3">
         <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
@@ -47,15 +54,15 @@
     </div>
   </nav>
 
-  <header class="relative overflow-hidden py-32 bg-gray-900">
+  <header class="relative overflow-hidden py-32 bg-transparent">
     <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div data-animate>
         <p class="text-green-400 font-semibold uppercase tracking-wide">Making sustainability count</p>
         <h1 class="text-5xl md:text-6xl font-bold leading-tight mt-2 text-gradient">Maak duurzaamheid tastbaar en toetsbaar</h1>
-        <p class="text-lg mt-4 text-gray-300">Wij helpen aannemers, opdrachtgevers en adviseurs om duurzaamheid te <strong>kwantificeren</strong>. Niet op gevoel, maar met data. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
+        <p class="text-lg mt-4 text-gray-700">Wij helpen aannemers, opdrachtgevers en adviseurs om duurzaamheid te <strong>kwantificeren</strong>. Niet op gevoel, maar met data. We brengen impact in cijfers, creëren inzicht en starten de juiste gesprekken over beter bouwen.</p>
         <div class="mt-8 flex flex-wrap gap-4">
           <a href="#contact" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">Plan een kennismaking</a>
-          <a href="#inzicht" class="px-6 py-3 rounded-xl border border-gray-400 hover:border-green-400 transition text-gray-200 font-medium">Meer over onze aanpak</a>
+          <a href="#inzicht" class="px-6 py-3 rounded-xl border border-gray-400 hover:border-green-400 transition text-gray-700 font-medium">Meer over onze aanpak</a>
         </div>
       </div>
       <div class="hidden md:block" data-animate>
@@ -64,10 +71,10 @@
     </div>
   </header>
 
-  <section id="wat" class="py-24 bg-gray-900">
+  <section id="wat" class="py-24 bg-transparent">
     <div class="container mx-auto px-6 text-center max-w-4xl">
       <h2 class="text-3xl font-bold text-gradient mb-4" data-animate>Wat we doen</h2>
-      <p class="text-lg text-gray-300 mb-10" data-animate>InfraImpact maakt duurzaamheid zichtbaar met cijfers. We vertalen complexe milieudata naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
+      <p class="text-lg text-gray-700 mb-10" data-animate>InfraImpact maakt duurzaamheid zichtbaar met cijfers. We vertalen complexe milieudata naar heldere inzichten waarmee je kunt sturen, verbeteren en overtuigen.</p>
       <div class="grid md:grid-cols-3 gap-8 text-left">
         <div class="p-6 bg-gray-800/60 rounded-2xl shadow hover:shadow-xl transition-transform hover:-translate-y-1" data-animate>
           <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
@@ -85,7 +92,7 @@
     </div>
   </section>
 
-  <section id="inzicht" class="py-32 bg-gray-950">
+  <section id="inzicht" class="py-32 bg-transparent">
     <div class="container mx-auto px-6 max-w-5xl">
       <div class="grid md:grid-cols-2 gap-10 items-center">
         <div data-animate>
@@ -93,8 +100,8 @@
         </div>
         <div data-animate>
           <h2 class="text-3xl font-bold text-gradient mb-4">Van data naar dialoog</h2>
-          <p class="text-gray-300 mb-6">Duurzaamheid vraagt om inzicht. Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Met onze aanpak kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
-          <ul class="space-y-3 text-gray-400">
+          <p class="text-gray-700 mb-6">Duurzaamheid vraagt om inzicht. Wij maken de cijfers begrijpelijk en vertalen ze naar concrete keuzes. Met onze aanpak kun je gericht sturen, rapporteren en verbeteringen aantonen.</p>
+          <ul class="space-y-3 text-gray-600">
             <li>• Inzicht in MKI en CO₂-impact per projectfase</li>
             <li>• Vergelijkbare scenario’s voor ontwerpkeuzes</li>
             <li>• Onderbouwingen voor aanbestedingen en audits</li>
@@ -105,11 +112,11 @@
     </div>
   </section>
 
-  <section id="contact" class="py-24 bg-gray-900">
+  <section id="contact" class="py-24 bg-transparent">
     <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
       <h2 class="text-3xl font-bold text-gradient mb-6">Neem contact op</h2>
-      <p class="text-gray-300 mb-8">Wil je weten wat wij voor jouw organisatie kunnen betekenen? We reageren dezelfde werkdag.</p>
-      <div class="space-y-2 text-gray-400">
+      <p class="text-gray-700 mb-8">Wil je weten wat wij voor jouw organisatie kunnen betekenen? We reageren dezelfde werkdag.</p>
+      <div class="space-y-2 text-gray-600">
         <p><strong>InfraImpact B.V.</strong></p>
         <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
         <p>E: <a href="mailto:jim.vanderkooij@infraimpact.nl" class="text-green-400 hover:underline">jim.vanderkooij@infraimpact.nl</a></p>
@@ -121,7 +128,7 @@
     </div>
   </section>
 
-  <footer class="bg-gray-950 py-10 text-center text-gray-500 text-sm">
+  <footer class="bg-transparent py-10 text-center text-gray-500 text-sm">
     © <span id="year"></span> InfraImpact — Making sustainability count.
   </footer>
 
