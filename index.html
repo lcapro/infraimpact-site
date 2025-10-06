@@ -6,7 +6,6 @@
   <title>InfraImpact - Duurzaamheid die stand houdt.</title>
   <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar, toetsbaar en toepasbaar met MKI- en LCA-berekeningen, strategisch inzicht en praktijkervaring in de GWW-sector.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-  <!-- Laad Chart.js async; we initialiseren pas op window.load -->
   <script async src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
@@ -56,53 +55,44 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       z-index: 50;
     }
+
     .scroll-down { transform: translateY(-100%); }
     .scroll-up { transform: translateY(0); }
 
     section {
       position: relative;
       z-index: 0;
-      background: rgba(255, 255, 255, 0.75);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      border-radius: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      background: transparent;
       margin: 6rem auto;
       padding: 5rem 2rem;
       width: min(90%, 1200px);
       transition: background 0.6s ease, transform 0.4s ease;
     }
 
-    /* Subtiele gradientrand om elke kaartsectie */
-    section::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(47,111,101,0.18), rgba(43,83,109,0.18));
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
+    /* Grijze achtergrondstrook voor 'Wat we doen' */
+    .section-grey {
+      background: #f4f7f8;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+      padding: 6rem 0;
+      width: 100%;
     }
 
-    /* Zachte overgangen tussen secties (McKinsey-achtig) */
-    section::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -6rem;
-      width: 100vw;
-      height: 6rem;
-      z-index: -1;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(232,243,240,0.85), transparent);
+    /* Transparante secties zoals 'Van data naar dialoog' */
+    .section-transparent {
+      background: transparent;
+      box-shadow: none;
+      margin: 6rem auto;
     }
-    section:nth-of-type(even)::after {
-      background: linear-gradient(to bottom, rgba(234,243,247,0.9), rgba(255,255,255,0.85), transparent);
+
+    /* Footer met wit vlak */
+    footer {
+      background: #ffffff;
+      border-radius: 2rem 2rem 0 0;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+      padding: 5rem 2rem 2rem;
+      margin-top: 6rem;
     }
 
     html { scroll-behavior: smooth; }
@@ -169,27 +159,35 @@
       </div>
     </header>
 
-    <section id="wat" class="py-24">
-      <div class="grid md:grid-cols-2 gap-6" data-animate>
-        <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+    <section id="wat" class="section-grey">
+      <div class="container mx-auto px-6 max-w-5xl text-center mb-10" data-animate>
+        <h2 class="text-3xl font-bold text-gradient mb-4">Wat we doen</h2>
+        <p class="text-gray-700 max-w-3xl mx-auto">
+          Wij helpen aannemers, opdrachtgevers en leveranciers om duurzaamheid praktisch te maken.
+          Van het opstellen van MKI-berekeningen tot strategisch advies in aanbestedingen en beleid.
+        </p>
+      </div>
+
+      <div class="container mx-auto px-6 grid md:grid-cols-2 gap-6" data-animate>
+        <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
           <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
           <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen.
              Van volledige LCA’s tot MKI-berekeningen voor aanbestedingen en ontwerpoptimalisaties.</p>
         </div>
 
-        <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+        <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
           <h3 class="text-xl font-semibold mb-2">Aanbesteding & projectadvies</h3>
           <p>Voor aannemers leggen we <strong>kosten en MKI naast elkaar</strong> om het optimale resultaat te behalen in aanbestedingen.
              Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
         </div>
 
-        <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+        <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
           <h3 class="text-xl font-semibold mb-2">Beleid, sturing & inzicht</h3>
           <p>Voor opdrachtgevers vertalen we beleidsdoelstellingen naar <strong>meetbare indicatoren</strong>.
              We bieden inzicht met actuele cijfers, zodat er gestuurd kan worden op duurzaamheidsambities door de hele projectcyclus heen.</p>
         </div>
 
-        <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+        <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
           <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
           <p>We delen kennis via <strong>praktijkgerichte cursussen en incompany trainingen</strong>.
              Van basisvaardigheden in MKI tot verdieping in regelgeving en LCA-methodiek, zo versterken we teams en borgen we kennis in jouw organisatie.</p>
@@ -197,11 +195,11 @@
       </div>
     </section>
 
-    <section id="inzicht" class="py-32">
+    <section id="inzicht" class="section-transparent py-32">
       <div class="container mx-auto px-6 max-w-5xl">
         <div class="grid md:grid-cols-2 gap-10 items-center">
           <div data-animate>
-            <canvas id="impactChart" class="w-full h-64 bg-white bg-opacity-10 p-4 rounded-2xl"></canvas>
+            <canvas id="impactChart" class="w-full h-64 bg-transparent p-4 rounded-2xl"></canvas>
           </div>
           <div data-animate>
             <h2 class="text-3xl font-bold text-gradient mb-4">Van data naar dialoog</h2>
@@ -231,41 +229,37 @@
         </blockquote>
       </div>
     </section>
-
-    <section id="contact" class="py-24">
-      <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
-        <h2 class="text-3xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
-        <p class="text-gray-700 mb-8">
-          Wil je weten hoe jouw organisatie concreet voordeel haalt uit duurzaamheid, in aanbestedingen, projecten of beleid?
-          We denken graag mee en reageren dezelfde werkdag.
-        </p>
-        <div class="space-y-2 text-gray-600">
-          <p><strong>InfraImpact B.V.</strong></p>
-          <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
-          <p>E: <a href="mailto:jim.vanderkooij@infraimpact.nl" class="text-green-400 hover:underline">jim.vanderkooij@infraimpact.nl</a></p>
-          <p>T: <a href="tel:+31621350805" class="text-green-400 hover:underline">+31 (0)6 2135 0805</a></p>
-        </div>
-        <div class="mt-8">
-          <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
-            Plan een kennismaking
-          </a>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <footer class="py-12 text-center text-gray-500 text-sm bg-white bg-opacity-70 rounded-t-3xl shadow-inner">
-    © <span id="year"></span> InfraImpact - Making sustainability count.
+  <footer id="contact">
+    <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
+      <h2 class="text-3xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
+      <p class="text-gray-700 mb-8">
+        Wil je weten hoe jouw organisatie concreet voordeel haalt uit duurzaamheid, in aanbestedingen, projecten of beleid?
+        We denken graag mee en reageren dezelfde werkdag.
+      </p>
+      <div class="space-y-2 text-gray-600">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:jim.vanderkooij@infraimpact.nl" class="text-green-400 hover:underline">jim.vanderkooij@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-400 hover:underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div class="mt-8">
+        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-500 text-sm mt-12">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
   </footer>
 
-  <!-- Achtergrond animatie -->
   <canvas id="streaks" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
 
   <script>
-    // Jaar
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // In-viewport animatie
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if(entry.isIntersecting){
@@ -276,21 +270,6 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
 
-    // Nav show/hide bij scroll
-    let lastScroll = 0;
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      const current = window.pageYOffset || document.documentElement.scrollTop;
-      if (current <= 0) { nav.classList.remove('scroll-up'); return; }
-      if (current > lastScroll && !nav.classList.contains('scroll-down')) {
-        nav.classList.remove('scroll-up'); nav.classList.add('scroll-down');
-      } else if (current < lastScroll && nav.classList.contains('scroll-down')) {
-        nav.classList.remove('scroll-down'); nav.classList.add('scroll-up');
-      }
-      lastScroll = current;
-    });
-
-    // Chart.js pas na volledige load (ivm async script)
     window.addEventListener('load', function(){
       const ctx = document.getElementById('impactChart');
       if (ctx && window.Chart) {
@@ -318,11 +297,9 @@
       }
     });
 
-    // Streaks animatie
     const c = document.getElementById('streaks');
     const ctx2 = c.getContext('2d');
     let w, h;
-
     function resize() {
       w = window.innerWidth;
       h = window.innerHeight;
@@ -332,11 +309,7 @@
     window.addEventListener('resize', resize);
     resize();
 
-    const colors = [
-      'rgba(47,111,101,0.25)',
-      'rgba(43,83,109,0.25)',
-      'rgba(255,255,255,0.15)'
-    ];
+    const colors = ['rgba(47,111,101,0.25)','rgba(43,83,109,0.25)','rgba(255,255,255,0.15)'];
 
     const streaks = Array.from({ length: 50 }, () => ({
       x: Math.random() * w,
@@ -354,25 +327,16 @@
       streaks.forEach(s => {
         s.o += 0.01 * s.d;
         if (s.o <= 0 || s.o >= 1) s.d *= -1;
-
         ctx2.beginPath();
-        // gebruik de actuele opacity uit s.o
-        const base = s.c;
-        const currentAlpha = s.o.toFixed(2);
-        // vervang laatste alpha in rgba(...) string (werkt met onze vaste inputs)
-        const stroke = base.replace(/0\.\d+\)?$/, currentAlpha + ')');
-        ctx2.strokeStyle = stroke;
+        ctx2.strokeStyle = s.c.replace('0.25', s.o.toFixed(2));
         ctx2.lineWidth = 1;
-
         const dx = Math.cos(s.a) * s.l;
         const dy = Math.sin(s.a) * s.l;
         ctx2.moveTo(s.x, s.y);
         ctx2.lineTo(s.x + dx, s.y + dy);
         ctx2.stroke();
-
         s.x += Math.cos(s.a) * s.s;
         s.y += Math.sin(s.a) * s.s;
-
         if (s.x < -50 || s.x > w + 50 || s.y < -50 || s.y > h + 50) {
           s.x = Math.random() * w;
           s.y = -10;
