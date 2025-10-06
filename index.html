@@ -79,6 +79,16 @@
       width: 100%;
     }
 
+    /* Lichtgroen-blauwe achtergrond voor 'Van data naar dialoog' */
+    .section-greenish {
+      background: linear-gradient(180deg, #eaf3f7 0%, #e5efed 100%);
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+      padding: 6rem 0;
+      width: 100%;
+    }
+
     /* Transparante secties zoals 'Van data naar dialoog' */
     .section-transparent {
       background: transparent;
@@ -107,14 +117,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
-    }
-
-    /* Subtiele overgangs-strook tussen inhoudsblokken */
-    .divider-soft {
-      width: 100%;
-      height: 6rem;
-      background: linear-gradient(to bottom, transparent, #f5f8f7 40%, transparent);
-      margin: 0;
     }
   </style>
 </head>
@@ -203,8 +205,8 @@
       </div>
     </section>
 
-    <section id="inzicht" class="section-transparent py-32">
-      <div class="container mx-auto px-6 max-w-5xl">
+    <section id="inzicht" class="section-greenish">
+      <div class="container mx-auto px-6 max-w-5xl bg-white bg-opacity-70 backdrop-blur-sm rounded-3xl p-10 shadow-sm">
         <div class="grid md:grid-cols-2 gap-10 items-center">
           <div data-animate>
             <canvas id="impactChart" class="w-full h-64 bg-transparent p-4 rounded-2xl"></canvas>
@@ -226,9 +228,7 @@
         </div>
       </div>
     </section>
-    
-    <div class="divider-soft"></div>
-    
+       
     <section class="py-16">
       <div class="container mx-auto px-6 max-w-4xl text-center" data-animate>
         <blockquote class="text-xl italic text-gray-700 leading-relaxed">
