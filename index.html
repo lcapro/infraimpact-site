@@ -24,7 +24,7 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    header, section { background: transparent; }
+    header { background: transparent; }
     .text-gradient {
       background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
       -webkit-background-clip: text;
@@ -50,14 +50,61 @@
     }
 
     section {
-  background: rgba(255, 255, 255, 0.75); /* semi-transparant wit */
-  backdrop-filter: blur(6px); /* subtiele glas-effect */
-  border-radius: 24px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  margin: 4rem auto; /* ruimte tussen blokken */
-  padding: 4rem 2rem;
-  width: min(90%, 1200px);
-}
+      position: relative;
+      z-index: 0;
+      background: rgba(255, 255, 255, 0.75); /* semi-transparant wit */
+      backdrop-filter: blur(8px);             /* glas-effect */
+      border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      margin: 6rem auto;                      /* ritme tussen blokken */
+      padding: 5rem 2rem;
+      width: min(90%, 1200px);
+      transition: background 0.6s ease, transform 0.4s ease;
+    }
+    section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(47,111,101,0.18), rgba(43,83,109,0.18));
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    section::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -6rem;
+      width: 100vw;       /* laat de overgang buiten de kaart lopen */
+      height: 6rem;
+      z-index: -1;        /* onder de kaart, boven de body */
+      background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(232,243,240,0.85), transparent);
+    }
+    section:nth-of-type(even)::after {
+      background: linear-gradient(to bottom, rgba(234,243,247,0.9), rgba(255,255,255,0.85), transparent);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    [data-animate].visible { transition-delay: 0.2s; }
+
+    header h1 { line-height: 1.1; }
+    header p  { max-width: 90%; line-height: 1.6; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+    }
+    
+        a.button, a.px-6, a.px-8 {
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    a.button:hover, a.px-6:hover, a.px-8:hover { transform: translateY(-1px); }
   </style>
 </head>
 <body class="bg-transparent text-gray-700" data-theme="dark">
@@ -75,8 +122,8 @@
   </div>
 </nav>
 
-  <header class="relative overflow-hidden py-36 bg-transparent">
-    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+  <header class="relative overflow-hidden py-40 bg-transparent">
+    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
       <div data-animate>
         <p class="text-green-400 font-semibold uppercase tracking-wide">Making sustainability count</p>
         <h1 class="text-5xl md:text-6xl font-bold leading-tight mt-2 text-gradient">Duurzaamheid die stand houdt, in cijfers en in de praktijk</h1>
@@ -100,46 +147,39 @@
     </div>
   </header>
 
-  <section id="wat" class="py-24" bg-transparent>
-    <div class="container mx-auto px-6 text-center max-w-4xl">
-      <h2 class="text-3xl font-bold text-gradient mb-4" data-animate>Wat we doen van analyse tot aanpak</h2>
-      <p class="text-lg text-gray-700 mb-10" data-animate>
-        Wij geloven dat duurzaamheid pas echt waarde krijgt als je ermee kunt sturen. 
-        Daarom combineren we diepgaande LCA kennis met praktijkervaring in de GWW-sector.
-        InfraImpact ondersteunt bij berekenen, begrijpen en verbeteren, afgestemd op jouw rol in de keten.
-      </p>
-      <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1" data-animate>
-        <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
-        <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen. 
-           Van volledige LCA’s tot MKI-berekeningen voor aanbestedingen en ontwerpoptimalisaties.</p>
-      </div>
-      
-      <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1" data-animate>
-        <h3 class="text-xl font-semibold mb-2">Aanbesteding & projectadvies</h3>
-        <p>Voor aannemers leggen we <strong>kosten en MKI naast elkaar</strong> om het optimale resultaat te behalen in aanbestedingen. 
-           Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
-      </div>
-      
-      <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1" data-animate>
-        <h3 class="text-xl font-semibold mb-2">Beleid, sturing & inzicht</h3>
-        <p>Voor opdrachtgevers vertalen we beleidsdoelstellingen naar <strong>meetbare indicatoren</strong>. 
-           We bieden inzicht met actuele cijfers, zodat er gestuurd kan worden op duurzaamheidsambities door de hele projectcyclus heen.</p>
-      </div>
+  <section id="wat" class="py-24">
+<div class="grid md:grid-cols-2 gap-6" data-animate>
+  <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+    <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
+    <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen. 
+       Van volledige LCA’s tot MKI-berekeningen voor aanbestedingen en ontwerpoptimalisaties.</p>
+  </div>
 
-      <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1" data-animate>
-        <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
-        <p>We delen kennis via <strong>praktijkgerichte cursussen en incompany trainingen</strong>. 
-           Van basisvaardigheden in MKI tot verdieping in regelgeving en LCA-methodiek, zo versterken we teams en borgen we kennis in jouw organisatie.</p>
-      </div>
-      </div>
-    </div>
+  <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+    <h3 class="text-xl font-semibold mb-2">Aanbesteding & projectadvies</h3>
+    <p>Voor aannemers leggen we <strong>kosten en MKI naast elkaar</strong> om het optimale resultaat te behalen in aanbestedingen. 
+       Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
+  </div>
+
+  <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+    <h3 class="text-xl font-semibold mb-2">Beleid, sturing & inzicht</h3>
+    <p>Voor opdrachtgevers vertalen we beleidsdoelstellingen naar <strong>meetbare indicatoren</strong>. 
+       We bieden inzicht met actuele cijfers, zodat er gestuurd kan worden op duurzaamheidsambities door de hele projectcyclus heen.</p>
+  </div>
+
+  <div class="p-6 bg-[#eef7f6] bg-gradient-to-br from-[#e6f3f1] to-[#eaf3f7] rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+    <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
+    <p>We delen kennis via <strong>praktijkgerichte cursussen en incompany trainingen</strong>. 
+       Van basisvaardigheden in MKI tot verdieping in regelgeving en LCA-methodiek, zo versterken we teams en borgen we kennis in jouw organisatie.</p>
+  </div>
+</div>
   </section>
 
-  <section id="inzicht" class="py-32" bg-transparent>
+  <section id="inzicht" class="py-32">
     <div class="container mx-auto px-6 max-w-5xl">
       <div class="grid md:grid-cols-2 gap-10 items-center">
         <div data-animate>
-          <canvas id="impactChart" class="w-full h-64 bg-white/10 p-4 rounded-2xl"></canvas>
+          <canvas id="impactChart" class="w-full h-64 bg-white bg-opacity-10 p-4 rounded-2xl"></canvas>
         </div>
         <div data-animate>
           <h2 class="text-3xl font-bold text-gradient mb-4">Van data naar dialoog</h2>
@@ -157,7 +197,7 @@
     </div>
   </section>
 
-  <section class="py-16" bg-transparent>
+  <section class="py-16">
     <div class="container mx-auto px-6 max-w-4xl text-center" data-animate>
       <blockquote class="text-xl italic text-gray-700 leading-relaxed">
         <strong>“Wij kennen beide kanten van de tafel.”</strong><br>
@@ -167,7 +207,7 @@
     </div>
   </section>
 
-  <section id="contact" class="py-24" bg-transparent>
+  <section id="contact" class="py-24">
     <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
       <h2 class="text-3xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
       <p class="text-gray-700 mb-8">Wil je weten hoe jouw organisatie concreet voordeel haalt uit duurzaamheid, in aanbestedingen, projecten of beleid? We denken graag mee en reageren dezelfde werkdag.</p>
@@ -183,7 +223,7 @@
     </div>
   </section>
 
-  <footer class="bg-transparent py-10 text-center text-gray-500 text-sm">
+  <footer class="py-12 text-center text-gray-500 text-sm bg-white bg-opacity-70 rounded-t-3xl shadow-inner">
     © <span id="year"></span> InfraImpact - Making sustainability count.
   </footer>
 
@@ -219,9 +259,7 @@ new Chart(ctx, {
     }
   }
 });
-</script>
-
-      <canvas id="streaks" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
+    <canvas id="streaks" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
     <script>
     const c = document.getElementById('streaks');
     const ctx2 = c.getContext('2d');
@@ -237,12 +275,17 @@ new Chart(ctx, {
     resize();
     
     // 🌿 Kleuren afgestemd op het logo
-    const colors = [
-      'rgba(47,111,101,0.4)', // InfraImpact groen
-      'rgba(43,83,109,0.4)',  // InfraImpact blauw
-      'rgba(255,255,255,0.2)' // subtiele witglans
-    ];
-    
+    const streaks = Array.from({ length: 50 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      l: Math.random() * 80 + 40,
+      s: Math.random() * 0.2 + 0.05,  // trager
+      o: Math.random() * 0.3 + 0.1,    // lagere opacity start
+      d: Math.random() > 0.5 ? 1 : -1,
+      a: Math.random() * Math.PI * 2,
+      c: colors[Math.floor(Math.random() * colors.length)]
+    }));
+  
     // ✨ Maak vallende lijnen met fade
     const streaks = Array.from({ length: 70 }, () => ({
       x: Math.random() * w,
