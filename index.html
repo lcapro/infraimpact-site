@@ -142,20 +142,42 @@
   </section>
 
   <footer class="bg-transparent py-10 text-center text-gray-500 text-sm">
-    © <span id="year"></span> InfraImpact — Making sustainability count.
+    © <span id="year"></span> InfraImpact - Making sustainability count.
   </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
-    const ctx = document.getElementById('impactChart');
-    new Chart(ctx, { type: 'bar', data: { labels: ['Materiaal', 'Transport', 'Uitvoering', 'Gebruik', 'Einde levensduur'], datasets: [{ label: 'MKI per fase (€/m²)', data: [35,10,25,15,5], backgroundColor: ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3'] }]}, options: {responsive: true, plugins: {legend: {labels: {color: '#e6edf3'}}}, scales: {x: {ticks: {color: '#a9b4bf'}}, y: {ticks: {color: '#a9b4bf'}}}} });
-  </script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+const ctx = document.getElementById('impactChart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Materiaal', 'Transport', 'Uitvoering', 'Gebruik', 'Einde levensduur'],
+    datasets: [{
+      label: 'MKI per fase (€/m²)',
+      data: [35, 10, 25, 15, 5],
+      backgroundColor: ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#7ADAD3']
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#374151', font: { size: 14 } } }
+    },
+    scales: {
+      x: { ticks: { color: '#374151', font: { size: 12 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+      y: { ticks: { color: '#374151', font: { size: 12 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+    }
+  }
+});
+</script>
 
   <canvas id="streaks" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
   <script>
