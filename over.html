@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="nl" data-theme="dark">
+<html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Over InfraImpact – Making sustainability count.</title>
-  <meta name="description" content="Over InfraImpact en oprichter Jim van der Kooij. Met jarenlange ervaring bij aannemers, ingenieursbureaus en opdrachtgevers helpt InfraImpact de GWW-sector om duurzaamheid meetbaar en praktisch te maken.">
+  <meta name="description" content="Over InfraImpact en oprichter Jim van der Kooij. Met ervaring bij aannemers, ingenieursbureaus en opdrachtgevers helpt InfraImpact de GWW-sector duurzaamheid meetbaar te maken.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+
   <style>
     :root {
       --brand-green: #2F6F65;
       --brand-blue: #2B536D;
     }
+
     body {
       background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
       background-size: 400% 400%;
@@ -18,120 +20,172 @@
       color: #374151;
       font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
+
     @keyframes bgMove {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
     .text-gradient {
       background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     [data-animate] {opacity:0; transform: translateY(30px); transition: all 0.8s ease-out;}
-    [data-animate].visible {opacity:1; transform: translateY(0);}
+    [data-animate].visible {opacity:1; transform: translateY(0); transition-delay: 0.1s;}
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background-color: rgba(255,255,255,0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    section {
+      position: relative;
+      padding: 6rem 2rem;
+      width: 100%;
+    }
+
+    .section-grey {
+      background: #f5f8f7;
+    }
+
+    .section-white {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    footer {
+      background: #ffffff;
+      border-radius: 2rem 2rem 0 0;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+      padding: 5rem 2rem 2rem;
+      margin-top: 6rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    a { transition: color 0.2s ease; }
+    a:hover { color: var(--brand-green); }
+
+    img { border-radius: 1.5rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; transition: none !important; }
+    }
   </style>
 </head>
 
-<body class="bg-transparent text-gray-700" data-theme="dark">
-  <nav class="sticky top-0 z-50 backdrop-blur-md bg-transparent/80 border-b border-white/10">
+<body class="bg-transparent text-gray-700">
+  <nav>
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
-      <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-3">
         <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
         <span class="font-semibold tracking-wide">InfraImpact</span>
-      </div>
+      </a>
       <div class="space-x-6">
-        <a href="index.html" class="hover:text-green-400">Home</a>
-        <a href="#visie" class="hover:text-green-400">Visie</a>
-        <a href="#contact" class="hover:text-green-400">Contact</a>
+        <a href="index.html" class="hover:text-green-600">Home</a>
+        <a href="#visie" class="hover:text-green-600">Visie</a>
+        <a href="#contact" class="hover:text-green-600">Contact</a>
       </div>
     </div>
   </nav>
 
-  <header class="relative overflow-hidden py-24 bg-transparent">
-    <div class="container mx-auto px-6 max-w-4xl text-center">
-      <h1 class="text-5xl font-bold text-gradient mb-6" data-animate>Over InfraImpact</h1>
-      <p class="text-lg text-gray-700 leading-relaxed" data-animate>
-        InfraImpact is opgericht door <strong>Jim van der Kooij</strong> – een LCA- en MKI-specialist met ervaring bij aannemers, ingenieursbureaus en publieke opdrachtgevers. 
-        Wat ons drijft? De overtuiging dat duurzaamheid pas echt telt als we haar kunnen meten, begrijpen en gebruiken om betere keuzes te maken.
-      </p>
-    </div>
-  </header>
-
-  <section class="py-24 bg-transparent">
-    <div class="container mx-auto px-6 max-w-5xl grid md:grid-cols-2 gap-12 items-center">
-      <div data-animate>
-        <img src="assets/jim_profile.jpg" alt="Jim van der Kooij" class="rounded-2xl shadow-xl">
-      </div>
-      <div data-animate>
-        <h2 class="text-3xl font-bold text-gradient mb-4">Van idee tot impact</h2>
-        <p class="text-gray-700 mb-4">
-          Tijdens mijn studie <strong>Industrial Ecology</strong> leerde ik hoe je duurzaamheid kunt kwantificeren. 
-          Later, in de praktijk, zag ik steeds hetzelfde terug: kosten werden altijd berekend en vergeleken, 
-          maar milieu-impact zelden. Ik zat vaak in overleggen waar duurzaamheid wel genoemd werd, maar de aantoonbaarheid ontbrak.
-        </p>
-        <p class="text-gray-700 mb-4">
-          Dat was het startpunt van InfraImpact. Als we elke beslissing in euro’s kunnen uitdrukken, 
-          waarom doen we dat dan niet ook met de impact op ons milieu?
-        </p>
-        <p class="text-gray-700">
-          Die vraag heeft mij de afgelopen jaren gedreven — van grote infrastructuurprojecten tot lokale gemeentelijke opgaven. 
-          Bij aannemers, ingenieursbureaus en opdrachtgevers heb ik geleerd hoe complex duurzaam bouwen kan zijn, 
-          maar ook hoeveel waarde ontstaat als je het <strong>eenvoudig, inzichtelijk en praktisch</strong> maakt.
+  <main>
+    <header class="relative overflow-hidden py-32">
+      <div class="container mx-auto px-6 max-w-4xl text-center">
+        <h1 class="text-5xl font-bold text-gradient mb-6" data-animate>Over InfraImpact</h1>
+        <p class="text-lg text-gray-700 leading-relaxed" data-animate>
+          InfraImpact is opgericht door <strong>Jim van der Kooij</strong>, een LCA- en MKI-specialist met jaren ervaring bij aannemers, ingenieursbureaus en publieke opdrachtgevers.
+          Wat ons drijft? De overtuiging dat duurzaamheid pas echt telt als we haar kunnen meten, begrijpen en gebruiken om betere keuzes te maken.
         </p>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <section id="visie" class="py-24 bg-transparent">
-    <div class="container mx-auto px-6 max-w-4xl text-center" data-animate>
-      <h2 class="text-3xl font-bold text-gradient mb-6">Onze visie</h2>
-      <p class="text-gray-700 mb-6">
-        Duurzaamheid vraagt niet om meer regels, maar om meer inzicht. 
-        InfraImpact wil een <strong>gelijk speelveld</strong> creëren waarin milieuprestaties eerlijk en transparant vergeleken kunnen worden. 
-        Waar data en cijfers de discussie over duurzaamheid voeden – in plaats van vertragen.
-      </p>
-      <p class="text-gray-700 mb-6">
-        We geloven dat eenvoud en inzicht de sleutel zijn tot versnelling. 
-        Door kennis te delen, tooling te ontwikkelen en mensen op te leiden, 
-        maken we het mogelijk om duurzaamheid structureel te verankeren in beleid, ontwerp en uitvoering.
-      </p>
-      <p class="text-gray-700 italic">
-        “Door jezelf uit te dagen leer je je grenzen kennen – bij de aarde is dat niet anders. 
-        Daar probeer ik aan bij te dragen: door die grenzen zichtbaar te maken.”
-      </p>
-    </div>
-  </section>
-
-  <section class="py-24 bg-transparent">
-    <div class="container mx-auto px-6 max-w-5xl" data-animate>
-      <h2 class="text-3xl font-bold text-gradient mb-6 text-center">Wat ons onderscheidt</h2>
-      <div class="grid md:grid-cols-2 gap-10 text-gray-700">
-        <div>
-          <ul class="space-y-3">
-            <li>• Ervaring aan zowel aannemers- als opdrachtgeverszijde</li>
-            <li>• Grondige kennis van MKI-beleid, RAW-systematiek en sturende MKI</li>
-            <li>• Praktisch, efficiënt en toekomstgericht in aanpak</li>
-            <li>• Verbindt beleid met uitvoering en data met besluitvorming</li>
-          </ul>
+    <section class="section-white">
+      <div class="container mx-auto px-6 max-w-5xl grid md:grid-cols-2 gap-12 items-center">
+        <div data-animate>
+          <img src="assets/jim_profile.jpg" alt="Jim van der Kooij" class="shadow-xl">
         </div>
-        <div>
-          <ul class="space-y-3">
-            <li>• Ervaring met zowel grote infrastructurele projecten als lokale opgaven</li>
-            <li>• Opbouw van LCA-dienstverlening en interne kennisstructuren</li>
-            <li>• Gericht op vereenvoudiging, transparantie en samenwerking</li>
-            <li>• Altijd met één doel: duurzaamheid meetbaar maken — en toepasbaar houden</li>
-          </ul>
+        <div data-animate>
+          <h2 class="text-3xl font-bold text-gradient mb-4">Van idee tot impact</h2>
+          <p class="text-gray-700 mb-4">
+            Tijdens mijn studie Industrial Ecology leerde ik hoe je duurzaamheid kunt kwantificeren. 
+            Later, in de praktijk, zag ik steeds hetzelfde terug: kosten werden altijd berekend en vergeleken, 
+            maar milieu-impact zelden. Ik zat vaak in overleggen waar duurzaamheid wel genoemd werd, maar de aantoonbaarheid ontbrak.
+          </p>
+          <p class="text-gray-700 mb-4">
+            Dat was het startpunt van InfraImpact. Als we elke beslissing in euro’s kunnen uitdrukken, 
+            waarom doen we dat dan niet ook met de impact op ons milieu?
+          </p>
+          <p class="text-gray-700">
+            Die vraag heeft mij de afgelopen jaren gedreven, van grote infrastructuurprojecten tot lokale gemeentelijke opgaven. 
+            Bij aannemers, ingenieursbureaus en opdrachtgevers heb ik geleerd hoe complex duurzaam bouwen kan zijn, 
+            maar ook hoeveel waarde ontstaat als je het <strong>eenvoudig, inzichtelijk en praktisch</strong> maakt.
+          </p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="contact" class="py-24 bg-transparent">
+    <section id="visie" class="section-grey">
+      <div class="container mx-auto px-6 max-w-4xl text-center" data-animate>
+        <h2 class="text-3xl font-bold text-gradient mb-6">Onze visie</h2>
+        <p class="text-gray-700 mb-6">
+          Duurzaamheid vraagt niet om meer regels, maar om meer inzicht.
+          InfraImpact wil een <strong>gelijk speelveld</strong> creëren waarin milieuprestaties eerlijk en transparant vergeleken kunnen worden.
+          Waar data en cijfers de discussie over duurzaamheid voeden, in plaats van vertragen.
+        </p>
+        <p class="text-gray-700 mb-6">
+          We geloven dat eenvoud en inzicht de sleutel zijn tot versnelling.
+          Door kennis te delen, tooling te ontwikkelen en mensen op te leiden,
+          maken we het mogelijk om duurzaamheid structureel te verankeren in beleid, ontwerp en uitvoering.
+        </p>
+        <p class="text-gray-700 italic">
+          “Door jezelf uit te dagen leer je je grenzen kennen, bij de aarde is dat niet anders.
+          Daar probeer ik aan bij te dragen: door die grenzen zichtbaar te maken.”
+        </p>
+      </div>
+    </section>
+
+    <section class="section-white">
+      <div class="container mx-auto px-6 max-w-5xl" data-animate>
+        <h2 class="text-3xl font-bold text-gradient mb-6 text-center">Wat ons onderscheidt</h2>
+        <div class="grid md:grid-cols-2 gap-10 text-gray-700">
+          <div>
+            <ul class="space-y-3">
+              <li>• Ervaring aan zowel aannemers- als opdrachtgeverszijde</li>
+              <li>• Grondige kennis van MKI-beleid, RAW-systematiek en sturende MKI</li>
+              <li>• Praktisch, efficiënt en toekomstgericht in aanpak</li>
+              <li>• Verbindt beleid met uitvoering en data met besluitvorming</li>
+            </ul>
+          </div>
+          <div>
+            <ul class="space-y-3">
+              <li>• Ervaring met zowel grote infrastructurele projecten als lokale opgaven</li>
+              <li>• Opbouw van LCA-dienstverlening en interne kennisstructuren</li>
+              <li>• Gericht op vereenvoudiging, transparantie en samenwerking</li>
+              <li>• Altijd met één doel: duurzaamheid meetbaar maken en toepasbaar houden</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
     <div class="container mx-auto px-6 text-center max-w-3xl" data-animate>
       <h2 class="text-3xl font-bold text-gradient mb-6">Kennismaken?</h2>
       <p class="text-gray-700 mb-8">
-        Ben jij aannemer, opdrachtgever of leverancier en wil je weten hoe we samen impact kunnen maken? 
+        Ben jij aannemer, opdrachtgever of leverancier en wil je weten hoe we samen impact kunnen maken?
         Laten we sparren over jouw duurzaamheidsvraagstuk.
       </p>
       <div class="space-y-2 text-gray-600">
@@ -141,20 +195,24 @@
         <p>T: <a href="tel:+31621350805" class="text-green-400 hover:underline">+31 (0)6 2135 0805</a></p>
       </div>
       <div class="mt-8">
-        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">Plan een kennismaking</a>
+        <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
+          Plan een kennismaking
+        </a>
       </div>
+      <p class="text-gray-500 text-sm mt-12">
+        © <span id="year"></span> InfraImpact — Making sustainability count.
+      </p>
     </div>
-  </section>
-
-  <footer class="bg-transparent py-10 text-center text-gray-500 text-sm">
-    © <span id="year"></span> InfraImpact — Making sustainability count.
   </footer>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
       });
     }, { threshold: 0.1 });
     document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
