@@ -32,10 +32,38 @@
     }
     [data-animate] {opacity:0; transform: translateY(30px); transition: all 0.8s ease-out;}
     [data-animate].visible {opacity:1; transform: translateY(0);}
+
+        nav {
+      position: sticky;
+      top: 0;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .scroll-down {
+      transform: translateY(-100%);
+    }
+    
+    .scroll-up {
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body class="bg-transparent text-gray-700" data-theme="dark">
-  <nav class="sticky top-0 z-50 backdrop-blur-md bg-transparent/80 border-b border-white/10">
+      <nav class="sticky top-0 z-50 bg-white shadow-sm transition-transform duration-300">
+      <div class="container mx-auto flex justify-between items-center py-4 px-6">
+        <div class="flex items-center gap-3">
+          <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
+          <span class="font-semibold tracking-wide text-gray-800">InfraImpact</span>
+        </div>
+        <div class="space-x-6 text-gray-700 font-medium">
+          <a href="#wat" class="hover:text-green-600">Wat we doen</a>
+          <a href="#inzicht" class="hover:text-green-600">Inzichten</a>
+          <a href="#contact" class="hover:text-green-600">Contact</a>
+        </div>
+      </div>
+    </nav>
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
       <div class="flex items-center gap-3">
         <img src="assets/logo_mark.png" class="h-8" alt="InfraImpact logo" />
@@ -93,6 +121,12 @@
         <h3 class="text-xl font-semibold mb-2">Beleid, sturing & inzicht</h3>
         <p>Voor opdrachtgevers vertalen we beleidsdoelstellingen naar <strong>meetbare indicatoren</strong>. 
            We bieden inzicht met actuele cijfers, zodat er gestuurd kan worden op duurzaamheidsambities door de hele projectcyclus heen.</p>
+      </div>
+
+      <div class="p-6 bg-gray-800/60 rounded-2xl shadow hover:shadow-xl transition-transform hover:-translate-y-1" data-animate>
+        <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
+        <p>We delen kennis via <strong>praktijkgerichte cursussen en incompany trainingen</strong>. 
+           Van basisvaardigheden in MKI tot verdieping in regelgeving en LCA-methodiek — zo versterken we teams en borgen we kennis in jouw organisatie.</p>
       </div>
       </div>
     </div>
@@ -218,5 +252,29 @@ new Chart(ctx, {
     }
     animate();
   </script>
+    ... (je streaks-script hier)
+  </script>
+  <script>
+    let lastScroll = 0;
+    const nav = document.querySelector('nav');
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll <= 0) {
+        nav.classList.remove('scroll-up');
+        return;
+      }
+
+      if (currentScroll > lastScroll && !nav.classList.contains('scroll-down')) {
+        nav.classList.remove('scroll-up');
+        nav.classList.add('scroll-down');
+      } else if (currentScroll < lastScroll && nav.classList.contains('scroll-down')) {
+        nav.classList.remove('scroll-down');
+        nav.classList.add('scroll-up');
+      }
+      lastScroll = currentScroll;
+    });
+  </script>
+
 </body>
 </html>
