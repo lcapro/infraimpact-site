@@ -111,9 +111,9 @@
   <div id="top"></div>
 
   <!-- Hero -->
-  <header class="relative overflow-hidden bg-white">
+  <header class="relative bg-white">
     <section class="max-w-screen-xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6 sm:px-8 py-20 md:py-28" style="isolation:isolate">
-      <div data-animate>
+      <div data-animate class="relative z-10">
         <p class="text-green-500 font-semibold uppercase tracking-wide">Making sustainability count</p>
         <h1 class="mt-2 text-4xl md:text-6xl font-extrabold leading-tight text-gradient relative z-10">Duurzaamheid die stand houdt – in cijfers én in de praktijk</h1>
         <p class="mt-5 text-lg text-gray-700">InfraImpact helpt aannemers, opdrachtgevers en leveranciers in de GWW om duurzaamheid <strong>tastbaar, toetsbaar en toepasbaar</strong> te maken. Met <strong>MKI- en LCA-data</strong>, aanbestedingskennis en ervaring aan beide kanten van de tafel vertalen we ambities naar aantoonbare resultaten.</p>
@@ -127,14 +127,14 @@
           <li>• Praktijkgericht & auditproof</li>
         </ul>
       </div>
-      <div class="hidden md:flex justify-center items-center" data-animate aria-hidden="true">
+      <div class="hidden md:flex justify-center items-center relative z-0" data-animate aria-hidden="true">
         <img src="/assets/hero-visual.webp" alt="" width="640" height="480" class="max-h-80 w-auto object-contain rounded-2xl shadow-sm" loading="eager" decoding="async" />
       </div>
     </section>
   </header>
 
   <!-- Wat we doen -->
-  <section id="wat" class="w-full py-20 md:py-24 bg-gray-50">
+  <section id="wat" class="w-full py-20 md:py-24 bg-white">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
       <div class="max-w-3xl mx-auto text-center mb-12" data-animate>
         <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4 relative z-10">Wat we doen</h2>
@@ -162,7 +162,7 @@
   </section>
 
   <!-- Inzichten / chart -->
-  <section id="inzicht" class="py-20 md:py-24 bg-gray-50">
+  <section id="inzicht" class="py-20 md:py-24 bg-white">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center">
       <div data-animate>
         <canvas id="impactChart" class="w-full h-64 bg-white rounded-2xl p-4 shadow-sm" aria-label="Voorbeeld MKI per levenscyclusfase" role="img"></canvas>
@@ -209,7 +209,7 @@
   </footer>
 
   <!-- Background streaks canvas (decorative) -->
-  <canvas id="streaks" class="fixed inset-0 w-full h-full -z-10"></canvas>
+  <canvas id="streaks" class="fixed inset-0 w-full h-full -z-10 pointer-events-none" aria-hidden="true"></canvas>
 
   <!-- Scripts: defer everything non-critical -->
   <script>
