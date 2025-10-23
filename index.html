@@ -289,13 +289,12 @@
     }, {passive:true});
 
 // =========================
-//  MKI-chart: juiste volgorde + inhoud
+//  MKI-chart als donutdiagram (logischer bij % verdeling)
 // =========================
 window.addEventListener('load', function(){
   const canvas = document.getElementById('impactChart');
   if (!canvas || !window.Chart) return;
 
-  // ✅ Juiste levenscyclusvolgorde
   const labels = [
     'Grondstoffen & productie',
     'Transport',
@@ -305,78 +304,51 @@ window.addEventListener('load', function(){
   ];
 
   const values = [55, 10, 15, 15, 5];
-  const emojis = ['🧱', '🚚', '🚧', '🛣️', '♻️'];
-  const colors = ['#3B8E80','#4CA9A1','#61C1BB','#7ADAD3','#A3ECE7'];
-
-  // Emoji’s boven de staven
-  const emojiPlugin = {
-    id: 'emojiPlugin',
-    afterDatasetsDraw(chart) {
-      const {ctx} = chart;
-      ctx.save();
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.font = '20px system-ui, Apple Color Emoji, Segoe UI Emoji';
-      chart._metasets.forEach((meta) => {
-        meta.data.forEach((bar, idx) => {
-          const {x, y} = bar.tooltipPosition();
-          ctx.fillText(emojis[idx], x, y - 8);
-        });
-      });
-      ctx.restore();
-    }
-  };
-
-  const tooltip = {
-    callbacks: {
-      title: (items) => labels[items[0].dataIndex],
-      label: (item) => `MKI-aandeel: ${values[item.dataIndex]}%`,
-      afterBody: (items) => {
-        const idx = items[0].dataIndex;
-        if (idx === 0) return ['Hier valt de meeste winst te behalen.'];
-        return [];
-      }
-    }
-  };
+  const colors = ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#A3ECE7'];
 
   new Chart(canvas, {
-    type: 'bar',
+    type: 'doughnut',
     data: {
       labels,
       datasets: [{
-        label: 'Aandeel in totale MKI (%)',
         data: values,
         backgroundColor: colors,
-        borderRadius: 8,
-        borderSkipped: false
+        borderWidth: 0,
+        hoverOffset: 10
       }]
     },
     options: {
       responsive: true,
-      animation: { duration: 600 },
+      cutout: '65%',
       plugins: {
-        legend: { display: false },
-        tooltip
-      },
-      scales: {
-        x: {
-          ticks: { color: '#374151', font: { size: 12 } },
-          grid: { display: false }
+        legend: {
+          position: 'right',
+          labels: {
+            color: '#374151',
+            font: { size: 13 },
+            boxWidth: 14,
+            boxHeight: 14
+          }
         },
-        y: {
-          beginAtZero: true,
-          suggestedMax: 60,
-          ticks: { color: '#374151', callback: v => v + '%', stepSize: 10 },
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          title: { display: true, text: 'Aandeel van totale MKI', color: '#374151' }
+        tooltip: {
+          callbacks: {
+            label: (item) => `${item.label}: ${item.parsed}%`,
+            afterBody: (items) => {
+              const idx = items[0].dataIndex;
+              if (idx === 0) return ['Hier valt de meeste winst te behalen.'];
+              return [];
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: 'Aandeel van totale MKI per levenscyclusfase',
+          color: '#374151',
+          font: { size: 14, weight: 'bold' }
         }
       },
-      layout: { padding: { top: 16 } },
-      onHover: (evt, elements) => {
-        evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
-      }
-    },
-    plugins: [emojiPlugin]
+      layout: { padding: 10 }
+    }
   });
 });
 
