@@ -337,53 +337,77 @@ window.addEventListener('load', function(){
   const values = [55, 10, 15, 15, 5];
   const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
-  // Plugin: teken alle labels buiten de donut met lijntje + % zichtbaar
-  const outsideLabelsPlugin = {
-    id: 'outsideLabels',
-    afterDatasetsDraw(chart){
-      const {ctx, chartArea:{top,bottom,left,right}} = chart;
-      const meta = chart.getDatasetMeta(0);
-      ctx.save();
-      ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
-      ctx.fillStyle = '#374151';
-      ctx.strokeStyle = '#9CA3AF';
-      ctx.lineWidth = 1;
+// Plugin: alle labels buiten de donut, met nette rand-clamping
+const outsideLabelsPlugin = {
+  id: 'outsideLabels',
+  afterDatasetsDraw(chart){
+    const {ctx, chartArea:{top,bottom,left,right}} = chart;
+    const meta = chart.getDatasetMeta(0);
 
-      meta.data.forEach((arc, i) => {
-        const angle = (arc.startAngle + arc.endAngle) / 2;
-        const rOuter = arc.outerRadius;
-        const labelOffset = 18; // afstand buiten de donut
+    // typografie
+    const font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
+    ctx.save();
+    ctx.font = font;
+    ctx.fillStyle = '#374151';
+    ctx.strokeStyle = '#9CA3AF';
+    ctx.lineWidth = 1;
 
-        const x1 = arc.x + Math.cos(angle) * rOuter;
-        const y1 = arc.y + Math.sin(angle) * rOuter;
-        const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
-        const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
+    meta.data.forEach((arc, i) => {
+      const angle = (arc.startAngle + arc.endAngle) / 2;
+      const rOuter = arc.outerRadius;
 
-        // leidend lijntje met subtiel horizontaal staartje
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        const tail = 6 * Math.sign(Math.cos(angle) || 1);
-        ctx.lineTo(x2 + tail, y2);
-        ctx.stroke();
+      // iets grotere offset voor lucht
+      const labelOffset = 20;
+      const x1 = arc.x + Math.cos(angle) * rOuter;
+      const y1 = arc.y + Math.sin(angle) * rOuter;
+      const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
+      const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
 
-        // Tekstpositie en uitlijning
-        const align = Math.cos(angle) >= 0 ? 'left' : 'right';
-        ctx.textAlign = align;
-        ctx.textBaseline = 'middle';
-        const txt = `${labelsShort[i]} ${values[i]}%`;
+      // leidend lijntje + subtiel staartje
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      const tail = 6 * Math.sign(Math.cos(angle) || 1);
+      ctx.lineTo(x2 + tail, y2);
+      ctx.stroke();
 
-        // clamp tekst binnen canvas
-        const margin = 8;
-        const xRaw = x2 + (align === 'left' ? tail + 4 : -tail - 4);
-        const xClamped = Math.min(Math.max(xRaw, left + margin), right - margin);
-        const yClamped = Math.min(Math.max(y2, top + margin), bottom - margin);
+      // tekst
+      const labelsShort = ['Prod.','Transp.','Bouw','Gebruik','Einde'];
+      const values = [55, 10, 15, 15, 5];
+      const txt = `${labelsShort[i]} ${values[i]}%`;
 
-        ctx.fillText(txt, xClamped, yClamped);
-      });
-      ctx.restore();
-    }
-  };
+      // meet tekstbreedte en clamp binnen canvas
+      const textWidth = ctx.measureText(txt).width;
+      const marginX = 14;            // extra marge rechts/links
+      const marginTop = 20;          // extra marge bovenaan (meer lucht)
+      const marginY = 12;
+
+      const alignLeft = Math.cos(angle) >= 0;
+      ctx.textAlign = alignLeft ? 'left' : 'right';
+      ctx.textBaseline = 'middle';
+
+      // ruwe positie t.o.v. staart
+      let xRaw = x2 + (alignLeft ? tail + 4 : -tail - 4);
+      let yRaw = y2;
+
+      // clamp X zodat niets buiten canvas valt (incl. tekstbreedte)
+      let xClamped;
+      if (alignLeft) {
+        xClamped = Math.min(xRaw, right - marginX - textWidth);
+      } else {
+        // voor right-align schuiven we desnoods iets naar binnen
+        xClamped = Math.max(xRaw, left + marginX + textWidth);
+      }
+
+      // clamp Y met extra topmarge (meer ruimte boven)
+      const yClamped = Math.min(Math.max(yRaw, top + marginTop), bottom - marginY);
+
+      ctx.fillText(txt, xClamped, yClamped);
+    });
+
+    ctx.restore();
+  }
+};
 
   new Chart(canvas, {
     type: 'doughnut',
@@ -400,7 +424,7 @@ window.addEventListener('load', function(){
       responsive: true,
       aspectRatio: 1.6,
       cutout: '62%',
-      layout: { padding: { top: 18, right: 22, bottom: 18, left: 22 } },
+      layout: { padding: { top: 30, right: 28, bottom: 20, left: 24 } },
       plugins: {
         legend: { display: false },
         tooltip: {
