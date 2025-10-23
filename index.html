@@ -354,9 +354,9 @@ const outsideLabelsPlugin = {
     ctx.lineWidth = 1;
 
     // Afstanden
-    const labelOffset  = 22;   // afstand buiten de donut
+    const labelOffset  = 26;   // afstand buiten de donut
     const tailLen      = 8;    // horizontaal staartje
-    const textGap      = 6;    // ruimte tussen staartje en tekst
+    const textGap      = 8;    // ruimte tussen staartje en tekst
     const lineH        = 18;   // minimale verticale ruimte per label
     const marginX      = 16;   // marge tot canvasrand
     const marginTop    = 22;
@@ -458,27 +458,35 @@ const outsideLabelsPlugin = {
     resolveSide(leftSide);
     resolveSide(rightSide);
 
-    // 4) Teken connector + tekst
-    items.forEach(it => {
-      // radial: (x1,y1) -> (x2, yText) zodat horizontale staart aansluit op label
-      ctx.beginPath();
-      ctx.moveTo(it.x1, it.y1);
-      const x2Adjusted = it.x2;
-      const y2Adjusted = it.yText;
-      ctx.lineTo(x2Adjusted, y2Adjusted);
+// 4) Teken connector + tekst (radiaal -> verticaal -> horizontaal)
+items.forEach(it => {
+  // Lijnstijl
+  ctx.lineWidth = 1;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 
-      // horizontaal staartje tot net vóór de tekst
-      const xTailEnd = it.alignLeft
-        ? (it.xText - 0 - textGap)          // left-align: staart stopt vóór tekst
-        : (it.xText - it.w + textGap);      // right-align: staart stopt vóór tekst (links)
-      ctx.lineTo(xTailEnd, y2Adjusted);
-      ctx.stroke();
+  // 1) Radiaal: van arc naar punt buiten donut op dezelfde hoek
+  ctx.beginPath();
+  ctx.moveTo(it.x1, it.y1);
+  ctx.lineTo(it.x2, it.y2);
 
-      // Tekst
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = it.alignLeft ? 'left' : 'right';
-      ctx.fillText(it.txt, it.xText, it.yText);
-    });
+  // 2) Verticaal: van y2 naar uiteindelijke yText (blijft buiten de donut)
+  ctx.lineTo(it.x2, it.yText);
+
+  // 3) Horizontaal staartje: stopt vóór de tekst (extra buffer)
+  const textPad = 3;          // extra veiligheidsmarge
+  const gap = textGap + textPad; // iets meer lucht tot tekst
+  const xTailEnd = it.alignLeft
+    ? (it.xText - gap)          // left-align: staart stopt net vóór tekst
+    : (it.xText - it.w + gap);  // right-align: staart stopt net vóór tekst (links)
+  ctx.lineTo(xTailEnd, it.yText);
+  ctx.stroke();
+
+  // Tekst bovenop de lijnen (lijnen zijn al gestrookt)
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = it.alignLeft ? 'left' : 'right';
+  ctx.fillText(it.txt, it.xText, it.yText);
+});
 
     ctx.restore();
   }
