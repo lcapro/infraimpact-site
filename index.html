@@ -339,116 +339,110 @@ window.addEventListener('load', function(){
   const values = [55, 10, 15, 15, 5];
   const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
-// Plugin: buitenlabels met anti-overlap + tether (max. verplaatsing t.o.v. eigen segment)
+// =========================
+//  Plugin: Buitenlabels (zeker buiten de donut, korte leader lines, anti-overlap + tether)
+// =========================
 const outsideLabelsPlugin = {
   id: 'outsideLabels',
-  afterDatasetsDraw(chart){
-    const {ctx, chartArea:{top,bottom,left,right}} = chart;
+  afterDatasetsDraw(chart) {
+    const { ctx, chartArea: { top, bottom, left, right } } = chart;
     const meta = chart.getDatasetMeta(0);
+    if (!meta || !meta.data) return;
 
-    // typografie & metrics
+    // ---- TUNABLES ----
+    const labelOffset  = 28;   // afstand vanaf buitenrand donut tot begin leader-lijn
+    const kneeOut      = 18;   // extra stap naar buiten vóór de verticale sectie (houdt lijn weg van donut)
+    const tailLen      = 8;    // horizontaal “staartje” naar de tekst
+    const textGap      = 8;    // lucht tussen staartje en tekst
+    const lineH        = 18;   // minimale verticale afstand tussen labels op dezelfde zijde
+    const tetherMax    = 26;   // max. verticale uitwijking t.o.v. eigen slice (houdt label “bij” z’n segment)
+    const marginX      = 16;   // minimale marge tot canvas-rand
+    const marginTop    = 22;
+    const marginBottom = 14;
+
+    // typografie
     ctx.save();
     ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
     ctx.fillStyle = '#374151';
     ctx.strokeStyle = '#9CA3AF';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.1;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-    // Afstanden
-    const labelOffset  = 26;   // afstand buiten de donut
-    const tailLen      = 8;    // horizontaal staartje
-    const textGap      = 9;    // ruimte tussen staartje en tekst
-    const kneeOut      = 14;
-    const lineH        = 18;   // minimale verticale ruimte per label
-    const marginX      = 16;   // marge tot canvasrand
-    const marginTop    = 22;
-    const marginBottom = 14;
-    const maxDelta     = 28;   // <— TETHER: max. |y - y0| zodat label bij “eigen” segment blijft
-
-    // 1) Ruwe posities per arc (y0 = “eigen” segment-lijn)
+    // 1) Ruwe posities + metingen
     const items = meta.data.map((arc, i) => {
-      const angle  = (arc.startAngle + arc.endAngle) / 2;
+      const angle = (arc.startAngle + arc.endAngle) / 2;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
       const rOuter = arc.outerRadius;
 
-      const x1 = arc.x + Math.cos(angle) * rOuter;
-      const y1 = arc.y + Math.sin(angle) * rOuter;
-      const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
-      const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
+      // punt net buiten donut (projectie langs hoek)
+      const xR = arc.x + cos * (rOuter + labelOffset);
+      const yR = arc.y + sin * (rOuter + labelOffset);
 
-      const alignLeft = Math.cos(angle) >= 0;
+      // natuurlijke label-y (y0) langs projectie
+      const y0 = yR;
 
-      // Tekst: naam + percentage
-      const labelTxt = `${labelsShort[i]} ${values[i]}%`;
-      const w = ctx.measureText(labelTxt).width;
+      const alignLeft = cos >= 0; // rechts van midden → links uitgelijnde tekst
+      const txt = `${labelsShort[i]} ${values[i]}%`;
+      const w = ctx.measureText(txt).width;
+      const h = 14; // geschatte teksthoogte (canvas geeft geen echte text metrics)
 
-      // Ruwe tekst-anker naast staartje
-      const xTextRaw = x2 + (alignLeft ? tailLen + textGap : -(tailLen + textGap));
-      const yTextRaw = y2; // = y0 (de natuurlijke projectie van het segment)
+      // x van tekst-anker (linker- of rechterrand van tekst, afhankelijk van align)
+      const xTextRaw = alignLeft
+        ? xR + kneeOut + tailLen + textGap      // tekst links uitgelijnd rechts van de knik
+        : xR - kneeOut - tailLen - textGap;     // tekst rechts uitgelijnd links van de knik
 
       return {
-        i,
-        txt: labelTxt,
-        w,
-        alignLeft,
-        x1, y1, x2, y2,
+        i, arc, txt, w, h, alignLeft,
+        angle, cos, sin,
+        x1: arc.x + cos * rOuter,     // start leader: op buitenrand donut
+        y1: arc.y + sin * rOuter,
+        xR, yR,                       // projectiepunt net buiten donut
         xTextRaw,
-        y0: yTextRaw,  // <— Bewaar “eigen” y
-        yText: 0,
-        xText: 0
+        y0,                           // natuurlijke y
+        xText: 0, yText: 0            // worden later gezet
       };
     });
 
     // 2) Clamp X zodat tekst nooit buiten canvas valt
     items.forEach(it => {
-      if (it.alignLeft){
+      if (it.alignLeft) {
         const maxLeft = right - marginX - it.w;
-        it.xText = Math.min(it.xTextRaw, maxLeft);
+        it.xText = Math.min(it.xTextRaw, maxLeft); // linkslijnend: x is linker-rand tekst
       } else {
         const minRight = left + marginX + it.w;
-        it.xText = Math.max(it.xTextRaw, minRight);
+        it.xText = Math.max(it.xTextRaw, minRight); // rechtslijnend: x is rechter-rand tekst
       }
-      it.yText = it.y0; // start op eigen segmentlijn
+      it.yText = it.y0;
     });
 
-    // 3) Anti-overlap per zijde met tether
-    function resolveSide(sideItems){
-      if (sideItems.length === 0) return;
-
-      // sorteer op natuurlijke positie (y0) zodat volgorde segmenten gerespecteerd blijft
+    // 3) Anti-overlap per zijde (alleen verticaal schuiven) + tether + clamp
+    function resolveSide(sideItems) {
+      if (!sideItems.length) return;
       sideItems.sort((a,b)=>a.y0 - b.y0);
 
       const minY = top + marginTop;
       const maxY = bottom - marginBottom;
 
-      // Voorwaartse sweep: dwing minimale afstand t.o.v. vorige
+      // voorwaarts
       sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
       for (let k=1; k<sideItems.length; k++){
         const prev = sideItems[k-1];
         const cur  = sideItems[k];
         cur.yText = Math.max(cur.y0, prev.yText + lineH);
       }
-
-      // Achterwaartse sweep: trek waar nodig terug vanaf onderkant
+      // achterwaarts
       for (let k=sideItems.length-2; k>=0; k--){
         const next = sideItems[k+1];
         const cur  = sideItems[k];
         cur.yText = Math.min(cur.yText, next.yText - lineH);
       }
-
-      // Tether: beperk verplaatsing t.o.v. eigen segment (y0)
+      // tether naar eigen slice
       sideItems.forEach(it=>{
-        if (it.yText > it.y0 + maxDelta) it.yText = it.y0 + maxDelta;
-        if (it.yText < it.y0 - maxDelta) it.yText = it.y0 - maxDelta;
+        if (it.yText > it.y0 + tetherMax) it.yText = it.y0 + tetherMax;
+        if (it.yText < it.y0 - tetherMax) it.yText = it.y0 - tetherMax;
       });
-
-      // Een laatste lichte relax + clamp binnen grenzen
-      // (zorgt dat spacing behouden blijft na tether)
-      for (let k=1; k<sideItems.length; k++){
-        const prev = sideItems[k-1];
-        const cur  = sideItems[k];
-        if (cur.yText - prev.yText < lineH){
-          cur.yText = prev.yText + lineH;
-        }
-      }
+      // laatste clamp binnen canvas
       sideItems.forEach(it=>{
         it.yText = Math.min(Math.max(it.yText, minY), maxY);
       });
@@ -459,41 +453,35 @@ const outsideLabelsPlugin = {
     resolveSide(leftSide);
     resolveSide(rightSide);
 
-// 4) Teken connector + tekst (radiaal -> extra naar buiten -> verticaal -> horizontaal)
-items.forEach(it => {
-  // Lijnstijl
-  ctx.lineWidth = 1.1;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+    // 4) Teken leader lines (radiaal -> extra naar buiten -> verticaal -> kort horizontaal) + tekst
+    items.forEach(it => {
+      // veilige knik X, altijd buiten donut
+      const sign  = it.alignLeft ? 1 : -1;
+      const kneeX = it.xR + sign * kneeOut;
 
-  // Bepaal een veilige x-positie ruim buiten de donut voor de verticale sectie
-  const sign = it.alignLeft ? 1 : -1;
-  const R    = meta.data[it.i].outerRadius + labelOffset;
-  const kneeX = meta.data[it.i].x + sign * (R + kneeOut); // altijd buiten de donut
+      // 1) radiaal tot net buiten donut
+      ctx.beginPath();
+      ctx.moveTo(it.x1, it.y1);
+      ctx.lineTo(it.xR, it.yR);
 
-  // 1) Radiaal naar buiten (tot op R)
-  ctx.beginPath();
-  ctx.moveTo(it.x1, it.y1);
-  ctx.lineTo(it.x2, it.y2);
+      // 2) extra naar buiten (knee)
+      ctx.lineTo(kneeX, it.yR);
 
-  // 2) Extra stap naar buiten zodat de volgende verticale lijn nooit het donutgebied raakt
-  ctx.lineTo(kneeX, it.y2);
+      // 3) verticaal naar target y (buiten donut, op kneeX)
+      ctx.lineTo(kneeX, it.yText);
 
-  // 3) Verticaal op kneeX naar het uitgerekende label-y
-  ctx.lineTo(kneeX, it.yText);
+      // 4) kort horizontaal staartje richting tekst, stopt vóór de tekst
+      const xTailEnd = it.alignLeft
+        ? (it.xText - textGap)           // linkslijnend: staart stopt net vóór de linker-rand tekst
+        : (it.xText - it.w + textGap);   // rechtslijnend: staart stopt net vóór de linker-rand (tekst loopt naar rechts)
+      ctx.lineTo(xTailEnd, it.yText);
+      ctx.stroke();
 
-  // 4) Horizontaal staartje, eindigt ruim vóór de tekst
-  const xTailEnd = it.alignLeft
-    ? (it.xText - textGap)          // links uitlijnen
-    : (it.xText - it.w + textGap);  // rechts uitlijnen
-  ctx.lineTo(xTailEnd, it.yText);
-  ctx.stroke();
-
-  // Tekst bovenop
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = it.alignLeft ? 'left' : 'right';
-  ctx.fillText(it.txt, it.xText, it.yText);
-});
+      // Tekst
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = it.alignLeft ? 'left' : 'right';
+      ctx.fillText(it.txt, it.xText, it.yText);
+    });
 
     ctx.restore();
   }
