@@ -289,66 +289,95 @@
     }, {passive:true});
 
 // =========================
-//  MKI-chart als donutdiagram (logischer bij % verdeling)
+//  MKI-donut: compact + labels bij segmenten (zonder legenda/titel)
 // =========================
 window.addEventListener('load', function(){
   const canvas = document.getElementById('impactChart');
   if (!canvas || !window.Chart) return;
 
-  const labels = [
+  const labelsFull = [
     'Grondstoffen & productie',
     'Transport',
     'Bouwfase',
     'Gebruik & onderhoud',
     'Einde levensduur'
   ];
-
+  const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde'];
   const values = [55, 10, 15, 15, 5];
-  const colors = ['#2F6F65','#3B8E80','#4CA9A1','#61C1BB','#A3ECE7'];
+
+  // Contrasterende, merkkonforme palette
+  const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
+
+  // Plugin: teken label + percentage buiten elk segment met een lijntje
+  const outsideLabelsPlugin = {
+    id: 'outsideLabels',
+    afterDatasetsDraw(chart, args, pluginOptions){
+      const {ctx, chartArea:{top,bottom,left,right}, scales} = chart;
+      const meta = chart.getDatasetMeta(0);
+      const cx = (left + right) / 2;
+      const cy = (top + bottom) / 2;
+      ctx.save();
+      ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
+      ctx.fillStyle = '#374151';
+      ctx.strokeStyle = '#9CA3AF';
+      ctx.lineWidth = 1;
+
+      meta.data.forEach((arc, i) => {
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const r = arc.outerRadius;
+        const x1 = arc.x + Math.cos(angle) * r;
+        const y1 = arc.y + Math.sin(angle) * r;
+        const labelOffset = 18;      // afstand buiten de donut
+        const x2 = arc.x + Math.cos(angle) * (r + labelOffset);
+        const y2 = arc.y + Math.sin(angle) * (r + labelOffset);
+
+        // leidend lijntje
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        // klein horizontaal staartje voor nettere tekstuitlijning
+        const tail = 8 * Math.sign(Math.cos(angle) || 1);
+        ctx.lineTo(x2 + tail, y2);
+        ctx.stroke();
+
+        // tekst links of rechts uitlijnen
+        const align = Math.cos(angle) >= 0 ? 'left' : 'right';
+        ctx.textAlign = align;
+        ctx.textBaseline = 'middle';
+        const txt = `${labelsShort[i]} ${values[i]}%`;
+        ctx.fillText(txt, x2 + (align === 'left' ? tail + 4 : -tail - 4), y2);
+      });
+      ctx.restore();
+    }
+  };
 
   new Chart(canvas, {
     type: 'doughnut',
     data: {
-      labels,
+      labels: labelsFull,
       datasets: [{
         data: values,
         backgroundColor: colors,
         borderWidth: 0,
-        hoverOffset: 10
+        hoverOffset: 8
       }]
     },
     options: {
       responsive: true,
-      cutout: '65%',
+      aspectRatio: 1.6,   // compact
+      cutout: '62%',      // niet te dik, niet te dun
       plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            color: '#374151',
-            font: { size: 13 },
-            boxWidth: 14,
-            boxHeight: 14
-          }
-        },
+        legend: { display: false },
         tooltip: {
           callbacks: {
             label: (item) => `${item.label}: ${item.parsed}%`,
-            afterBody: (items) => {
-              const idx = items[0].dataIndex;
-              if (idx === 0) return ['Hier valt de meeste winst te behalen.'];
-              return [];
-            }
+            afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
           }
-        },
-        title: {
-          display: true,
-          text: 'Aandeel van totale MKI per levenscyclusfase',
-          color: '#374151',
-          font: { size: 14, weight: 'bold' }
         }
       },
-      layout: { padding: 10 }
-    }
+      layout: { padding: { top: 6, right: 10, bottom: 6, left: 10 } }
+    },
+    plugins: [outsideLabelsPlugin]
   });
 });
 
