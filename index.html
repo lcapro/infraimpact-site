@@ -1,54 +1,64 @@
 <!doctype html>
-<html lang="nl" data-theme="light">
+<html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>InfraImpact – MKI & LCA voor de GWW | Duurzaamheid die stand houdt</title>
-  <meta name="description" content="InfraImpact helpt aannemers, opdrachtgevers en leveranciers in de GWW met MKI- & LCA-berekeningen, aanbestedingsadvies en beleid. Tastbaar, toetsbaar, toepasbaar." />
-  <link rel="canonical" href="https://infraimpact.nl/" />
-  <meta name="theme-color" content="#2F6F65" />
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://infraimpact.nl/" />
-  <meta property="og:title" content="InfraImpact – MKI & LCA voor de GWW" />
-  <meta property="og:description" content="Duurzaamheid die stand houdt. MKI & LCA, aanbestedingen en beleid – gemaakt om te scoren in praktijk en audits." />
-  <meta property="og:image" content="/assets/og-infraimpact.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-
-  <!-- Preconnects / performance -->
-  <link rel="preload" href="/assets/logo_full.png" as="image" imagesrcset="/assets/logo_full.png 1x, /assets/logo_full@2x.png 2x" />
-
-  <!-- Tailwind via CDN for now; consider a build step later for purge/size. -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InfraImpact - Duurzaamheid die stand houdt.</title>
+  <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar, toetsbaar en toepasbaar met MKI- en LCA-berekeningen, strategisch inzicht en praktijkervaring in de GWW-sector.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script async src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
     :root {
-      --brand-green:#2F6F65; /* diep groen */
-      --brand-blue:#2B536D;  /* diep blauw */
-      --ink:#374151;         /* neutrale tekstkleur */
+      --brand-green: #2F6F65;
+      --brand-blue: #2B536D;
     }
-    /* Smooth, subtle animated background */
+
     body {
-      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
       background-size: 400% 400%;
       animation: bgMove 60s ease infinite;
-      color: var(--ink);
+      color: #374151;
       font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
-    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    /* Reveal-on-scroll */
-    [data-animate]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
-    [data-animate].visible{opacity:1;transform:translateY(0)}
-    /* Sticky nav hide/show */
-    .scroll-down{transform:translateY(-100%)}
-    .scroll-up{transform:translateY(0)}
-    /* Accessibility: focus styles */
-    :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
-    /* Reduce motion */
-    @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
-      /* --- Blocks per referentiecode --- */
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header { background: transparent; }
+
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    [data-animate] {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+    [data-animate].visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.2s;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 50;
+    }
+
+    .scroll-down { transform: translateY(-100%); }
+    .scroll-up { transform: translateY(0); }
+
     section {
       position: relative;
       z-index: 0;
@@ -58,6 +68,8 @@
       width: min(90%, 1200px);
       transition: background 0.6s ease, transform 0.4s ease;
     }
+
+    /* Grijze achtergrondstrook voor 'Wat we doen' */
     .section-grey {
       background: #f4f7f8;
       border-radius: 0;
@@ -66,6 +78,8 @@
       padding: 6rem 0;
       width: 100%;
     }
+
+    /* Lichtgroen-blauwe achtergrond voor 'Van data naar dialoog' */
     .section-greenish {
       background: linear-gradient(180deg, #eaf3f7 0%, #e5efed 100%);
       border-radius: 0;
@@ -74,6 +88,15 @@
       padding: 6rem 0;
       width: 100%;
     }
+
+    /* Transparante secties zoals 'Van data naar dialoog' */
+    .section-transparent {
+      background: transparent;
+      box-shadow: none;
+      margin: 6rem auto;
+    }
+
+    /* Footer met wit vlak */
     footer {
       background: #ffffff;
       border-radius: 2rem 2rem 0 0;
@@ -81,32 +104,21 @@
       padding: 5rem 2rem 2rem;
       margin-top: 6rem;
     }
-  </style>
 
-  <!-- Structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "InfraImpact B.V.",
-    "url": "https://infraimpact.nl/",
-    "logo": "https://infraimpact.nl/assets/logo_full.png",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Westzeedijk 639",
-      "postalCode": "3024 PJ",
-      "addressLocality": "Rotterdam",
-      "addressCountry": "NL"
-    },
-    "contactPoint": [{
-      "@type": "ContactPoint",
-      "contactType": "sales",
-      "email": "jim.vanderkooij@infraimpact.nl",
-      "telephone": "+31621350805",
-      "areaServed": "NL"
-    }]]
-  }
-  </script>
+    html { scroll-behavior: smooth; }
+
+    header h1 { line-height: 1.1; }
+    header p  { max-width: 90%; line-height: 1.6; }
+
+    a.button, a.px-6, a.px-8 {
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    a.button:hover, a.px-6:hover, a.px-8:hover { transform: translateY(-1px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+    }
+  </style>
 </head>
 
 <body class="bg-transparent text-gray-700">
