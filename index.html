@@ -339,132 +339,150 @@ window.addEventListener('load', function(){
   const values = [55, 10, 15, 15, 5];
   const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
-  // Plugin: alle labels buiten de donut met clamping + overlap-resolutie
-  const outsideLabelsPlugin = {
-    id: 'outsideLabels',
-    afterDatasetsDraw(chart){
-      const {ctx, chartArea:{top,bottom,left,right}} = chart;
-      const meta = chart.getDatasetMeta(0);
+// Plugin: buitenlabels met anti-overlap + tether (max. verplaatsing t.o.v. eigen segment)
+const outsideLabelsPlugin = {
+  id: 'outsideLabels',
+  afterDatasetsDraw(chart){
+    const {ctx, chartArea:{top,bottom,left,right}} = chart;
+    const meta = chart.getDatasetMeta(0);
 
-      // typografie & metrics
-      ctx.save();
-      ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
-      ctx.fillStyle = '#374151';
-      ctx.strokeStyle = '#9CA3AF';
-      ctx.lineWidth = 1;
+    // typografie & metrics
+    ctx.save();
+    ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
+    ctx.fillStyle = '#374151';
+    ctx.strokeStyle = '#9CA3AF';
+    ctx.lineWidth = 1;
 
-      // 1) Bepaal ideale posities
-      const labelOffset = 22;         // afstand buiten de donut
-      const tailLen     = 8;          // horizontaal staartje
-      const textGap     = 6;          // extra ruimte tussen staartje en tekst (voorkomt overlap)
-      const lineH       = 18;         // verticale ruimte per label
-      const marginX     = 16;         // marge tot canvasrand
-      const marginTop   = 22;         // extra lucht boven donut
-      const marginBottom= 14;
+    // Afstanden
+    const labelOffset  = 22;   // afstand buiten de donut
+    const tailLen      = 8;    // horizontaal staartje
+    const textGap      = 6;    // ruimte tussen staartje en tekst
+    const lineH        = 18;   // minimale verticale ruimte per label
+    const marginX      = 16;   // marge tot canvasrand
+    const marginTop    = 22;
+    const marginBottom = 14;
+    const maxDelta     = 28;   // <— TETHER: max. |y - y0| zodat label bij “eigen” segment blijft
 
-      // voorbereiden van alle (nog ruwe) labels
-      const items = meta.data.map((arc, i) => {
-        const angle  = (arc.startAngle + arc.endAngle) / 2;
-        const rOuter = arc.outerRadius;
+    // 1) Ruwe posities per arc (y0 = “eigen” segment-lijn)
+    const items = meta.data.map((arc, i) => {
+      const angle  = (arc.startAngle + arc.endAngle) / 2;
+      const rOuter = arc.outerRadius;
 
-        const x1 = arc.x + Math.cos(angle) * rOuter;
-        const y1 = arc.y + Math.sin(angle) * rOuter;
-        const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
-        const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
+      const x1 = arc.x + Math.cos(angle) * rOuter;
+      const y1 = arc.y + Math.sin(angle) * rOuter;
+      const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
+      const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
 
-        const alignLeft = Math.cos(angle) >= 0;
-        const txt = `${labelsShort[i]} ${values[i]}%`;
-        const w = ctx.measureText(txt).width;
+      const alignLeft = Math.cos(angle) >= 0;
 
-        // tekst-anker naast het staartje met extra gap
-        const xTextRaw = x2 + (alignLeft ? tailLen + textGap : -(tailLen + textGap));
-        const yTextRaw = y2;
+      // Tekst: naam + percentage
+      const labelTxt = `${labelsShort[i]} ${values[i]}%`;
+      const w = ctx.measureText(labelTxt).width;
 
-        return {
-          i, txt, w,
-          alignLeft,
-          x1, y1, x2, y2, // lijnpunten
-          xTextRaw, yTextRaw,
-          // wordt later ingevuld:
-          xText: 0, yText: 0
-        };
-      });
+      // Ruwe tekst-anker naast staartje
+      const xTextRaw = x2 + (alignLeft ? tailLen + textGap : -(tailLen + textGap));
+      const yTextRaw = y2; // = y0 (de natuurlijke projectie van het segment)
 
-      // 2) Clamp X-positie (tekst mag nooit buiten canvas vallen)
-      items.forEach(it => {
-        if (it.alignLeft){
-          // linkslijnend: rechtsclamp met rekening houden met breedte
-          const maxLeft = right - marginX - it.w;
-          it.xText = Math.min(it.xTextRaw, maxLeft);
-        } else {
-          // rechtslijnend: linksclamp (we tekenen right-aligned op xText)
-          const minRight = left + marginX + it.w;
-          it.xText = Math.max(it.xTextRaw, minRight);
-        }
-        // start Y voorlopig op ruwe positie, later anti-overlap
-        it.yText = it.yTextRaw;
-      });
+      return {
+        i,
+        txt: labelTxt,
+        w,
+        alignLeft,
+        x1, y1, x2, y2,
+        xTextRaw,
+        y0: yTextRaw,  // <— Bewaar “eigen” y
+        yText: 0,
+        xText: 0
+      };
+    });
 
-      // 3) Anti-overlap: sorteer labels per zijde en duw ze uit elkaar
-      function resolveSide(sideItems){
-        // sorteer op Y
-        sideItems.sort((a,b)=>a.yText - b.yText);
-        // push-down fase
-        for (let k=1;k<sideItems.length;k++){
-          const prev = sideItems[k-1];
-          const cur  = sideItems[k];
-          if (cur.yText - prev.yText < lineH){
-            cur.yText = prev.yText + lineH;
-          }
-        }
-        // push-up fase (vanaf onderkant terug omhoog)
-        for (let k=sideItems.length-2;k>=0;k--){
-          const next = sideItems[k+1];
-          const cur  = sideItems[k];
-          if (next.yText - cur.yText < lineH){
-            cur.yText = next.yText - lineH;
-          }
-        }
-        // clamp aan canvas-verticale grenzen
-        sideItems.forEach(it=>{
-          it.yText = Math.min(Math.max(it.yText, top + marginTop), bottom - marginBottom);
-        });
+    // 2) Clamp X zodat tekst nooit buiten canvas valt
+    items.forEach(it => {
+      if (it.alignLeft){
+        const maxLeft = right - marginX - it.w;
+        it.xText = Math.min(it.xTextRaw, maxLeft);
+      } else {
+        const minRight = left + marginX + it.w;
+        it.xText = Math.max(it.xTextRaw, minRight);
+      }
+      it.yText = it.y0; // start op eigen segmentlijn
+    });
+
+    // 3) Anti-overlap per zijde met tether
+    function resolveSide(sideItems){
+      if (sideItems.length === 0) return;
+
+      // sorteer op natuurlijke positie (y0) zodat volgorde segmenten gerespecteerd blijft
+      sideItems.sort((a,b)=>a.y0 - b.y0);
+
+      const minY = top + marginTop;
+      const maxY = bottom - marginBottom;
+
+      // Voorwaartse sweep: dwing minimale afstand t.o.v. vorige
+      sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
+      for (let k=1; k<sideItems.length; k++){
+        const prev = sideItems[k-1];
+        const cur  = sideItems[k];
+        cur.yText = Math.max(cur.y0, prev.yText + lineH);
       }
 
-      const leftSide  = items.filter(it=>!it.alignLeft);
-      const rightSide = items.filter(it=> it.alignLeft);
-      resolveSide(leftSide);
-      resolveSide(rightSide);
+      // Achterwaartse sweep: trek waar nodig terug vanaf onderkant
+      for (let k=sideItems.length-2; k>=0; k--){
+        const next = sideItems[k+1];
+        const cur  = sideItems[k];
+        cur.yText = Math.min(cur.yText, next.yText - lineH);
+      }
 
-      // 4) Teken lijnen + tekst (staartje eindigt vlak vóór de tekst)
-      items.forEach(it => {
-        // radial line (x1,y1) -> (x2,y2)
-        ctx.beginPath();
-        ctx.moveTo(it.x1, it.y1);
-
-        // Het tweede knooppunt (na radial) krijgt dezelfde Y als de tekst
-        // zodat de staart horizontaal op de tekst uitkomt
-        const x2Adjusted = it.x2;
-        const y2Adjusted = it.yText;
-
-        ctx.lineTo(x2Adjusted, y2Adjusted);
-
-        // horizontaal staartje richting tekst, stopt net vóór de tekst
-        const tailSign = it.alignLeft ? 1 : -1;
-        const xTailEnd = it.xText - (it.alignLeft ? 0 : it.w) - (textGap); // eindpunt staartje
-        ctx.lineTo(xTailEnd, y2Adjusted);
-        ctx.stroke();
-
-        // Tekst uitlijnen en tekenen
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = it.alignLeft ? 'left' : 'right';
-        const xLabel = it.alignLeft ? it.xText : it.xText;
-        ctx.fillText(it.txt, xLabel, it.yText);
+      // Tether: beperk verplaatsing t.o.v. eigen segment (y0)
+      sideItems.forEach(it=>{
+        if (it.yText > it.y0 + maxDelta) it.yText = it.y0 + maxDelta;
+        if (it.yText < it.y0 - maxDelta) it.yText = it.y0 - maxDelta;
       });
 
-      ctx.restore();
+      // Een laatste lichte relax + clamp binnen grenzen
+      // (zorgt dat spacing behouden blijft na tether)
+      for (let k=1; k<sideItems.length; k++){
+        const prev = sideItems[k-1];
+        const cur  = sideItems[k];
+        if (cur.yText - prev.yText < lineH){
+          cur.yText = prev.yText + lineH;
+        }
+      }
+      sideItems.forEach(it=>{
+        it.yText = Math.min(Math.max(it.yText, minY), maxY);
+      });
     }
-  };
+
+    const leftSide  = items.filter(it=>!it.alignLeft);
+    const rightSide = items.filter(it=> it.alignLeft);
+    resolveSide(leftSide);
+    resolveSide(rightSide);
+
+    // 4) Teken connector + tekst
+    items.forEach(it => {
+      // radial: (x1,y1) -> (x2, yText) zodat horizontale staart aansluit op label
+      ctx.beginPath();
+      ctx.moveTo(it.x1, it.y1);
+      const x2Adjusted = it.x2;
+      const y2Adjusted = it.yText;
+      ctx.lineTo(x2Adjusted, y2Adjusted);
+
+      // horizontaal staartje tot net vóór de tekst
+      const xTailEnd = it.alignLeft
+        ? (it.xText - 0 - textGap)          // left-align: staart stopt vóór tekst
+        : (it.xText - it.w + textGap);      // right-align: staart stopt vóór tekst (links)
+      ctx.lineTo(xTailEnd, y2Adjusted);
+      ctx.stroke();
+
+      // Tekst
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = it.alignLeft ? 'left' : 'right';
+      ctx.fillText(it.txt, it.xText, it.yText);
+    });
+
+    ctx.restore();
+  }
+};
 
   new Chart(canvas, {
     type: 'doughnut',
