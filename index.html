@@ -320,7 +320,7 @@
     }, { passive: true });
 
 // =========================
-//  MKI-donut: compact + altijd leesbare labels
+//  MKI-donut: alle labels buiten de donut (geen tekst in segmenten)
 // =========================
 window.addEventListener('load', function(){
   const canvas = document.getElementById('impactChart');
@@ -333,13 +333,11 @@ window.addEventListener('load', function(){
     'Gebruik & onderhoud',
     'Einde levensduur'
   ];
-  // kortere labels voor buiten de donut
   const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde Levensduur'];
   const values = [55, 10, 15, 15, 5];
-
-  // Contrasterende palette
   const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
+  // Plugin: teken alle labels buiten de donut met lijntje + % zichtbaar
   const outsideLabelsPlugin = {
     id: 'outsideLabels',
     afterDatasetsDraw(chart){
@@ -354,33 +352,14 @@ window.addEventListener('load', function(){
       meta.data.forEach((arc, i) => {
         const angle = (arc.startAngle + arc.endAngle) / 2;
         const rOuter = arc.outerRadius;
-        const rInner = arc.innerRadius;
-        const midR   = (rOuter + rInner) / 2;
+        const labelOffset = 18; // afstand buiten de donut
 
-        // 1) Heel kleine segmenten: label BINNEN zetten (alleen %)
-        if (values[i] <= 6) {
-          const xi = arc.x + Math.cos(angle) * midR;
-          const yi = arc.y + Math.sin(angle) * midR;
-          ctx.save();
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          // subtiele rand voor contrast
-          ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-          ctx.lineWidth = 3;
-          ctx.strokeText(`${values[i]}%`, xi, yi);
-          ctx.fillStyle = '#111827';
-          ctx.fillText(`${values[i]}%`, xi, yi);
-          ctx.restore();
-          return;
-        }
-
-        // 2) Normale segmenten: label BUITEN met lijntje
-        const labelOffset = 14; // iets dichterbij
         const x1 = arc.x + Math.cos(angle) * rOuter;
         const y1 = arc.y + Math.sin(angle) * rOuter;
         const x2 = arc.x + Math.cos(angle) * (rOuter + labelOffset);
         const y2 = arc.y + Math.sin(angle) * (rOuter + labelOffset);
 
+        // leidend lijntje met subtiel horizontaal staartje
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -388,16 +367,17 @@ window.addEventListener('load', function(){
         ctx.lineTo(x2 + tail, y2);
         ctx.stroke();
 
+        // Tekstpositie en uitlijning
         const align = Math.cos(angle) >= 0 ? 'left' : 'right';
         ctx.textAlign = align;
         ctx.textBaseline = 'middle';
         const txt = `${labelsShort[i]} ${values[i]}%`;
 
-        // Clamp zodat tekst nooit buiten canvas valt
+        // clamp tekst binnen canvas
         const margin = 8;
         const xRaw = x2 + (align === 'left' ? tail + 4 : -tail - 4);
         const xClamped = Math.min(Math.max(xRaw, left + margin), right - margin);
-        const yClamped = Math.min(Math.max(y2,  top  + margin), bottom - margin);
+        const yClamped = Math.min(Math.max(y2, top + margin), bottom - margin);
 
         ctx.fillText(txt, xClamped, yClamped);
       });
@@ -418,15 +398,17 @@ window.addEventListener('load', function(){
     },
     options: {
       responsive: true,
-      aspectRatio: 1.6,      // compact
+      aspectRatio: 1.6,
       cutout: '62%',
-      layout: { padding: { top: 18, right: 22, bottom: 18, left: 22 } }, // extra ruimte voor labels
+      layout: { padding: { top: 18, right: 22, bottom: 18, left: 22 } },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
             label: (item) => `${item.label}: ${item.parsed}%`,
-            afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
+            afterBody: (items) => items[0].dataIndex === 0
+              ? ['Hier valt de meeste winst te behalen.']
+              : []
           }
         }
       }
@@ -434,7 +416,6 @@ window.addEventListener('load', function(){
     plugins: [outsideLabelsPlugin]
   });
 });
-
 
     // Decoratieve streaks-animatie
     const c = document.getElementById('streaks');
