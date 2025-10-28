@@ -307,8 +307,7 @@
     }, { passive: true });
 
 // =========================
-//  MKI-donut: gegarandeerd-buiten labels met anti-overlap + label-background
-//  + per-label overrides (nudges / tail on/off)
+//  MKI-donut: buitenlabels ZONDER lijnen + per-label nudges
 // =========================
 window.addEventListener('load', function(){
   const canvas = document.getElementById('impactChart');
@@ -338,18 +337,17 @@ window.addEventListener('load', function(){
     ctx.closePath();
   }
 
-  // ===== Per-label overrides (op index) =====
-  // 0: Productie — iets naar rechts
-  // 1: Transport  — geen staartje/horizontale lijn
-  // 4: Einde levensduur — iets omhoog
+  // ===== Per-label overrides =====
+  // 0: Productie — meer naar rechts
+  // 4: Einde levensduur — verder omhoog
   const overrides = {
-    0: { dx: 8 },        // pixels naar rechts
-    1: { noTail: true }, // geen horizontaal staartje
-    4: { dy: -14 }       // pixels omhoog (negatief = omhoog)
+    0: { dx: 18 },   // pixels naar buiten/naar rechts (logisch t.o.v. zijde)
+    4: { dy: -24 }   // pixels omhoog (negatief = omhoog)
   };
 
-  const outsideLabelsV2 = {
-    id: 'outsideLabelsV2',
+  // Label-plugin (geen lijnen)
+  const labelsNoLines = {
+    id: 'labelsNoLines',
     afterDatasetsDraw(chart) {
       const { ctx, chartArea: { top, bottom, left, right } } = chart;
       const meta = chart.getDatasetMeta(0);
@@ -359,21 +357,16 @@ window.addEventListener('load', function(){
       ctx.save();
       ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
       ctx.lineWidth = 1 * DPR;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
 
       // Tunables
-      const offset = 30;
-      const kneeOut = 18;
-      const tail = 8;
-      const gap = 8;
-      const lineH = 19;
-      const tether = 28;
-      const padX = 8, padY = 5;
+      const offset = 34;        // iets ruimer omdat er geen lijnen zijn
+      const lineH = 19;         // minimale verticale tussenruimte
+      const tether = 28;        // max verticale uitwijking vs natuurlijke positie
+      const padX = 8, padY = 5; // padding in labelbox
       const maxTextWidth = Math.min(180, (right-left) * 0.33);
       const marginX = 16, marginTop = 20, marginBottom = 16;
 
-      // 1) Ruwe metingen
+      // 1) meet posities
       const items = meta.data.map((arc, i) => {
         const mid = (arc.startAngle + arc.endAngle) / 2;
         const cos = Math.cos(mid), sin = Math.sin(mid);
@@ -383,18 +376,18 @@ window.addEventListener('load', function(){
           x: arc.x + cos * (rOuter + offset),
           y: arc.y + sin * (rOuter + offset)
         };
-        const start = { x: arc.x + cos * rOuter, y: arc.y + sin * rOuter };
-
         const rightSide = cos >= 0;
+
         const label = `${labelsShort[i]} ${values[i]}%`;
 
-        // Wrap op 2 regels indien nodig
+        // Wrap naar max breedte (2 regels indien nodig)
+        const wFull = ctx.measureText(label).width;
         let line1 = label, line2 = '';
-        let w = ctx.measureText(label).width;
+        let w = wFull;
         if (w > maxTextWidth) {
           const parts = label.split(' ');
           line1 = ''; line2 = '';
-          for (let k=0;k<parts.length;k++){
+          for (let k=0; k<parts.length; k++){
             const test = (line1 ? line1+' ' : '') + parts[k];
             if (ctx.measureText(test).width <= maxTextWidth) line1 = test;
             else { line2 = parts.slice(k).join(' '); break; }
@@ -404,45 +397,54 @@ window.addEventListener('load', function(){
         const lines = line2 ? [line1, line2] : [line1];
         const textHeight = lines.length * 14 + (lines.length-1)*2;
 
+        // basis x-positie van tekst (zonder lijn, direct naast anchor)
         const xTextRaw = rightSide
-          ? anchor.x + kneeOut + tail + gap
-          : anchor.x - kneeOut - tail - gap;
+          ? anchor.x + 8  // mini marge
+          : anchor.x - 8;
 
         return {
-          i, arc, start, anchor, rightSide, w, textHeight, lines,
+          i, rightSide, anchor, w, textHeight, lines,
           xTextRaw, y0: anchor.y, xText: 0, yText: 0
         };
       });
 
-      // 2) Clamp X
+      // 2) Clamp X binnen canvas + init Y
       items.forEach(it => {
+        const boxW = it.w + 2*padX;
         if (it.rightSide) {
-          const maxL = right - marginX - (it.w + 2*padX);
-          it.xText = Math.min(it.xTextRaw, maxL);
+          const x = it.xTextRaw;
+          // x is linker-rand tekst; schuif niet voorbij rechter canvasrand
+          it.xText = Math.min(x, right - marginX - boxW + padX);
         } else {
-          const minR = left + marginX + (it.w + 2*padX);
-          it.xText = Math.max(it.xTextRaw, minR);
+          const x = it.xTextRaw;
+          // x is rechter-rand tekst; schuif niet voorbij linker canvasrand
+          it.xText = Math.max(x, left + marginX + boxW - padX);
         }
         it.yText = it.y0;
       });
 
-      // 3) Anti-overlap
+      // 3) Anti-overlap per zijde
       function layoutSide(sideItems){
         if (!sideItems.length) return;
         sideItems.sort((a,b)=> a.y0 - b.y0);
+
         const minY = top + marginTop;
         const maxY = bottom - marginBottom;
+
+        // forward
         sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
         for (let k=1;k<sideItems.length;k++){
           const prev = sideItems[k-1], cur = sideItems[k];
           const need = prev.yText + prev.textHeight + lineH;
           cur.yText = Math.max(cur.y0, need);
         }
+        // backward
         for (let k=sideItems.length-2;k>=0;k--){
           const next = sideItems[k+1], cur = sideItems[k];
           const maxAllowed = next.yText - (cur.textHeight + lineH);
           cur.yText = Math.min(cur.yText, maxAllowed);
         }
+        // tether + clamp
         sideItems.forEach(it=>{
           const halfH = it.textHeight/2;
           if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
@@ -450,61 +452,35 @@ window.addEventListener('load', function(){
           it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
         });
       }
-
       const leftSide  = items.filter(i=>!i.rightSide);
       const rightSide = items.filter(i=> i.rightSide);
       layoutSide(leftSide);
       layoutSide(rightSide);
 
-      // 3b) Pas per-label overrides toe (dx/dy, noTail)
+      // 3b) Per-label nudges toepassen
       items.forEach(it => {
         const o = overrides[it.i];
         if (!o) return;
-        if (o.dx) it.xText += o.dx * (it.rightSide ? 1 : -1); // dx logisch t.o.v. zijde
+        if (o.dx) it.xText += o.dx * (it.rightSide ? 1 : -1);
         if (o.dy) it.yText += o.dy;
-        // Clamp X opnieuw na dx
+
+        // Her-clamp X na dx
         const boxW = it.w + 2*padX;
         if (it.rightSide) {
-          const maxL = right - marginX - boxW;
-          it.xText = Math.min(it.xText, maxL);
+          it.xText = Math.min(it.xText, right - marginX - boxW + padX);
         } else {
-          const minR = left + marginX + boxW;
-          it.xText = Math.max(it.xText, minR);
+          it.xText = Math.max(it.xText, left + marginX + boxW - padX);
         }
       });
 
-      // 4) Teken
-      ctx.strokeStyle = '#94a3b8'; // slate-400
-      ctx.fillStyle = '#111827';   // gray-900
+      // 4) Teken ALLEEN labels (géén lijnen)
       items.forEach(it => {
-        const sign = it.rightSide ? 1 : -1;
-        const kneeX = it.anchor.x + sign * kneeOut;
-
-        // Lijn: rand donut -> anker -> knee -> verticaal
-        ctx.beginPath();
-        ctx.moveTo(it.start.x, it.start.y);
-        ctx.lineTo(it.anchor.x, it.anchor.y);
-        ctx.lineTo(kneeX, it.anchor.y);
-        ctx.lineTo(kneeX, it.yText);
-
-        // Staart (horizontaal) tenzij override.noTail
-        const o = overrides[it.i];
-        const drawTail = !(o && o.noTail);
-        if (drawTail) {
-          const boxW = it.w + 2*padX;
-          const tailEndX = it.rightSide
-            ? (it.xText - padX - gap)
-            : (it.xText + padX + gap - boxW);
-          ctx.lineTo(tailEndX, it.yText);
-        }
-        ctx.stroke();
-
-        // Label box
         const boxW = it.w + 2*padX;
         const boxH = it.textHeight + 2*padY;
         const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
         const boxY = it.yText - (boxH/2);
 
+        // achtergrond
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,0.06)';
         ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
@@ -513,7 +489,8 @@ window.addEventListener('load', function(){
         ctx.fill();
         ctx.restore();
 
-        // Tekst
+        // tekst
+        ctx.fillStyle = '#111827';
         ctx.textBaseline = 'middle';
         ctx.textAlign = it.rightSide ? 'left' : 'right';
         const lineY0 = it.yText - ((it.lines.length-1) * 8);
@@ -527,7 +504,7 @@ window.addEventListener('load', function(){
     }
   };
 
-  // Chart init (ongewijzigd)
+  // Chart init
   new Chart(canvas, {
     type: 'doughnut',
     data: {
@@ -556,7 +533,7 @@ window.addEventListener('load', function(){
       },
       animation: { duration: 600 }
     },
-    plugins: [outsideLabelsV2]
+    plugins: [labelsNoLines]
   });
 });
 
