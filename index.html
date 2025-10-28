@@ -306,245 +306,259 @@
       lastY = y;
     }, { passive: true });
 
-    // =========================
-    //  MKI-donut: gegarandeerd-buiten labels met anti-overlap + label-background
-    // =========================
-    window.addEventListener('load', function(){
-      const canvas = document.getElementById('impactChart');
-      if (!canvas || !window.Chart) return;
+// =========================
+//  MKI-donut: gegarandeerd-buiten labels met anti-overlap + label-background
+//  + per-label overrides (nudges / tail on/off)
+// =========================
+window.addEventListener('load', function(){
+  const canvas = document.getElementById('impactChart');
+  if (!canvas || !window.Chart) return;
 
-      // Data
-      const labelsFull = [
-        'Grondstoffen & productie',
-        'Transport',
-        'Bouwfase',
-        'Gebruik & onderhoud',
-        'Einde levensduur'
-      ];
-      const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde levensduur'];
-      const values = [55, 10, 15, 15, 5];
-      const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
+  // Data
+  const labelsFull = [
+    'Grondstoffen & productie',
+    'Transport',
+    'Bouwfase',
+    'Gebruik & onderhoud',
+    'Einde levensduur'
+  ];
+  const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde levensduur'];
+  const values = [55, 10, 15, 15, 5];
+  const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
-      // Helper: afgeronde rechthoek
-      function roundRect(ctx, x, y, w, h, r){
-        const rr = Math.min(r, h/2, w/2);
-        ctx.beginPath();
-        ctx.moveTo(x+rr, y);
-        ctx.arcTo(x+w, y, x+w, y+h, rr);
-        ctx.arcTo(x+w, y+h, x, y+h, rr);
-        ctx.arcTo(x, y+h, x, y, rr);
-        ctx.arcTo(x, y, x+w, y, rr);
-        ctx.closePath();
+  // Helper: afgeronde rechthoek
+  function roundRect(ctx, x, y, w, h, r){
+    const rr = Math.min(r, h/2, w/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr, y);
+    ctx.arcTo(x+w, y, x+w, y+h, rr);
+    ctx.arcTo(x+w, y+h, x, y+h, rr);
+    ctx.arcTo(x, y+h, x, y, rr);
+    ctx.arcTo(x, y, x+w, y, rr);
+    ctx.closePath();
+  }
+
+  // ===== Per-label overrides (op index) =====
+  // 0: Productie — iets naar rechts
+  // 1: Transport  — geen staartje/horizontale lijn
+  // 4: Einde levensduur — iets omhoog
+  const overrides = {
+    0: { dx: 8 },        // pixels naar rechts
+    1: { noTail: true }, // geen horizontaal staartje
+    4: { dy: -14 }       // pixels omhoog (negatief = omhoog)
+  };
+
+  const outsideLabelsV2 = {
+    id: 'outsideLabelsV2',
+    afterDatasetsDraw(chart) {
+      const { ctx, chartArea: { top, bottom, left, right } } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data) return;
+
+      const DPR = window.devicePixelRatio || 1;
+      ctx.save();
+      ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
+      ctx.lineWidth = 1 * DPR;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Tunables
+      const offset = 30;
+      const kneeOut = 18;
+      const tail = 8;
+      const gap = 8;
+      const lineH = 19;
+      const tether = 28;
+      const padX = 8, padY = 5;
+      const maxTextWidth = Math.min(180, (right-left) * 0.33);
+      const marginX = 16, marginTop = 20, marginBottom = 16;
+
+      // 1) Ruwe metingen
+      const items = meta.data.map((arc, i) => {
+        const mid = (arc.startAngle + arc.endAngle) / 2;
+        const cos = Math.cos(mid), sin = Math.sin(mid);
+        const rOuter = arc.outerRadius;
+
+        const anchor = {
+          x: arc.x + cos * (rOuter + offset),
+          y: arc.y + sin * (rOuter + offset)
+        };
+        const start = { x: arc.x + cos * rOuter, y: arc.y + sin * rOuter };
+
+        const rightSide = cos >= 0;
+        const label = `${labelsShort[i]} ${values[i]}%`;
+
+        // Wrap op 2 regels indien nodig
+        let line1 = label, line2 = '';
+        let w = ctx.measureText(label).width;
+        if (w > maxTextWidth) {
+          const parts = label.split(' ');
+          line1 = ''; line2 = '';
+          for (let k=0;k<parts.length;k++){
+            const test = (line1 ? line1+' ' : '') + parts[k];
+            if (ctx.measureText(test).width <= maxTextWidth) line1 = test;
+            else { line2 = parts.slice(k).join(' '); break; }
+          }
+          w = Math.max(ctx.measureText(line1).width, ctx.measureText(line2).width);
+        }
+        const lines = line2 ? [line1, line2] : [line1];
+        const textHeight = lines.length * 14 + (lines.length-1)*2;
+
+        const xTextRaw = rightSide
+          ? anchor.x + kneeOut + tail + gap
+          : anchor.x - kneeOut - tail - gap;
+
+        return {
+          i, arc, start, anchor, rightSide, w, textHeight, lines,
+          xTextRaw, y0: anchor.y, xText: 0, yText: 0
+        };
+      });
+
+      // 2) Clamp X
+      items.forEach(it => {
+        if (it.rightSide) {
+          const maxL = right - marginX - (it.w + 2*padX);
+          it.xText = Math.min(it.xTextRaw, maxL);
+        } else {
+          const minR = left + marginX + (it.w + 2*padX);
+          it.xText = Math.max(it.xTextRaw, minR);
+        }
+        it.yText = it.y0;
+      });
+
+      // 3) Anti-overlap
+      function layoutSide(sideItems){
+        if (!sideItems.length) return;
+        sideItems.sort((a,b)=> a.y0 - b.y0);
+        const minY = top + marginTop;
+        const maxY = bottom - marginBottom;
+        sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
+        for (let k=1;k<sideItems.length;k++){
+          const prev = sideItems[k-1], cur = sideItems[k];
+          const need = prev.yText + prev.textHeight + lineH;
+          cur.yText = Math.max(cur.y0, need);
+        }
+        for (let k=sideItems.length-2;k>=0;k--){
+          const next = sideItems[k+1], cur = sideItems[k];
+          const maxAllowed = next.yText - (cur.textHeight + lineH);
+          cur.yText = Math.min(cur.yText, maxAllowed);
+        }
+        sideItems.forEach(it=>{
+          const halfH = it.textHeight/2;
+          if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
+          if (it.yText < it.y0 - tether) it.yText = it.y0 - tether;
+          it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
+        });
       }
 
-      // Plugin v2: robuuste buitenlabels
-      const outsideLabelsV2 = {
-        id: 'outsideLabelsV2',
-        afterDatasetsDraw(chart) {
-          const { ctx, chartArea: { top, bottom, left, right } } = chart;
-          const meta = chart.getDatasetMeta(0);
-          if (!meta || !meta.data) return;
+      const leftSide  = items.filter(i=>!i.rightSide);
+      const rightSide = items.filter(i=> i.rightSide);
+      layoutSide(leftSide);
+      layoutSide(rightSide);
 
-          const DPR = window.devicePixelRatio || 1;
-          ctx.save();
-          ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
-          ctx.lineWidth = 1 * DPR;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-
-          // Tunables
-          const offset = 30;     // afstand buiten rand donut tot eerste knik
-          const kneeOut = 18;    // extra “weg van donut” vóór de verticale lijn
-          const tail = 8;        // horizontaal staartje naar de tekst
-          const gap = 8;         // ruimte tussen staartje en tekst
-          const lineH = 19;      // minimale verticale afstand tussen labels
-          const tether = 28;     // max verticale uitwijking vs natuurlijke positie
-          const padX = 8, padY = 5; // padding label achtergrond
-          const maxTextWidth = Math.min(180, (right-left) * 0.33); // begrens tekstbreedte rechts/links
-          const marginX = 16, marginTop = 20, marginBottom = 16;
-
-          // 1) Ruwe metingen
-          const items = meta.data.map((arc, i) => {
-            const mid = (arc.startAngle + arc.endAngle) / 2;
-            const cos = Math.cos(mid), sin = Math.sin(mid);
-            const rOuter = arc.outerRadius;
-
-            const anchor = {
-              x: arc.x + cos * (rOuter + offset),
-              y: arc.y + sin * (rOuter + offset)
-            };
-            const start = { x: arc.x + cos * rOuter, y: arc.y + sin * rOuter };
-
-            const rightSide = cos >= 0;
-            const label = `${labelsShort[i]} ${values[i]}%`;
-
-            // Tekst width met begrenzing: wrap in 2 regels indien nodig
-            let line1 = label, line2 = '';
-            let w = ctx.measureText(label).width;
-            if (w > maxTextWidth) {
-              // simpele breker op laatste spatie
-              const parts = label.split(' ');
-              line1 = '';
-              line2 = '';
-              for (let k=0;k<parts.length;k++){
-                const test = (line1 ? line1+' ' : '') + parts[k];
-                if (ctx.measureText(test).width <= maxTextWidth) {
-                  line1 = test;
-                } else {
-                  line2 = parts.slice(k).join(' ');
-                  break;
-                }
-              }
-              w = Math.max(ctx.measureText(line1).width, ctx.measureText(line2).width);
-            }
-            const lines = line2 ? [line1, line2] : [line1];
-            const textHeight = lines.length * 14 + (lines.length-1)*2;
-
-            // voorlopige x-positie van tekst (linker rand als rechts uitlijnen, anders rechter rand)
-            const xTextRaw = rightSide
-              ? anchor.x + kneeOut + tail + gap
-              : anchor.x - kneeOut - tail - gap;
-
-            return {
-              i, arc, start, anchor, rightSide, w, textHeight, lines,
-              xTextRaw,
-              y0: anchor.y, // natuurlijke Y
-              xText: 0, yText: 0
-            };
-          });
-
-          // 2) Clamp X zodat tekst binnen canvas blijft
-          items.forEach(it => {
-            if (it.rightSide) {
-              const maxL = right - marginX - (it.w + 2*padX);
-              it.xText = Math.min(it.xTextRaw, maxL);
-            } else {
-              const minR = left + marginX + (it.w + 2*padX);
-              it.xText = Math.max(it.xTextRaw, minR);
-            }
-            it.yText = it.y0;
-          });
-
-          // 3) Anti-overlap per zijde
-          function layoutSide(sideItems){
-            if (!sideItems.length) return;
-            sideItems.sort((a,b)=> a.y0 - b.y0);
-
-            const minY = top + marginTop;
-            const maxY = bottom - marginBottom;
-
-            // forward
-            sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
-            for (let k=1;k<sideItems.length;k++){
-              const prev = sideItems[k-1];
-              const cur  = sideItems[k];
-              const need = prev.yText + prev.textHeight + lineH;
-              cur.yText = Math.max(cur.y0, need);
-            }
-            // backward
-            for (let k=sideItems.length-2;k>=0;k--){
-              const next = sideItems[k+1];
-              const cur  = sideItems[k];
-              const maxAllowed = next.yText - (cur.textHeight + lineH);
-              cur.yText = Math.min(cur.yText, maxAllowed);
-            }
-            // tether + clamp
-            sideItems.forEach(it=>{
-              const halfH = it.textHeight/2;
-              // tether rond eigen anker
-              if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
-              if (it.yText < it.y0 - tether) it.yText = it.y0 - tether;
-              // binnen canvas
-              it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
-            });
-          }
-
-          const leftSide  = items.filter(i=>!i.rightSide);
-          const rightSide = items.filter(i=> i.rightSide);
-          layoutSide(leftSide);
-          layoutSide(rightSide);
-
-          // 4) Teken leader lines + tekst met achtergrond
-          ctx.strokeStyle = '#94a3b8'; // slate-400
-          ctx.fillStyle = '#111827';   // gray-900 voor tekst
-          items.forEach(it => {
-            const sign = it.rightSide ? 1 : -1;
-            const kneeX = it.anchor.x + sign * kneeOut;
-
-            // lijn: rand donut -> anker (radiaal) -> knee -> verticaal -> staart
-            ctx.beginPath();
-            ctx.moveTo(it.start.x, it.start.y);
-            ctx.lineTo(it.anchor.x, it.anchor.y);
-            ctx.lineTo(kneeX, it.anchor.y);
-            ctx.lineTo(kneeX, it.yText);
-            const tailEndX = it.rightSide
-              ? (it.xText - padX - gap)          // stopt vóór de labelbox
-              : (it.xText + padX + gap);
-            ctx.lineTo(tailEndX, it.yText);
-            ctx.stroke();
-
-            // label achtergrond
-            const boxW = it.w + 2*padX;
-            const boxH = it.textHeight + 2*padY;
-            const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
-            const boxY = it.yText - (boxH/2);
-
-            ctx.save();
-            // schaduw heel licht
-            ctx.shadowColor = 'rgba(0,0,0,0.06)';
-            ctx.shadowBlur = 6;
-            ctx.shadowOffsetY = 2;
-            ctx.fillStyle = 'rgba(255,255,255,0.95)';
-            roundRect(ctx, boxX, boxY, boxW, boxH, 6);
-            ctx.fill();
-            ctx.restore();
-
-            // tekst
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = it.rightSide ? 'left' : 'right';
-            const lineY0 = it.yText - ( (it.lines.length-1) * 8 );
-            it.lines.forEach((line, idx)=>{
-              const y = lineY0 + idx*16;
-              ctx.fillText(line, it.rightSide ? (boxX + padX) : (boxX + boxW - padX), y);
-            });
-          });
-
-          ctx.restore();
+      // 3b) Pas per-label overrides toe (dx/dy, noTail)
+      items.forEach(it => {
+        const o = overrides[it.i];
+        if (!o) return;
+        if (o.dx) it.xText += o.dx * (it.rightSide ? 1 : -1); // dx logisch t.o.v. zijde
+        if (o.dy) it.yText += o.dy;
+        // Clamp X opnieuw na dx
+        const boxW = it.w + 2*padX;
+        if (it.rightSide) {
+          const maxL = right - marginX - boxW;
+          it.xText = Math.min(it.xText, maxL);
+        } else {
+          const minR = left + marginX + boxW;
+          it.xText = Math.max(it.xText, minR);
         }
-      };
-
-      // Chart init
-      new Chart(canvas, {
-        type: 'doughnut',
-        data: {
-          labels: labelsFull,
-          datasets: [{
-            data: values,
-            backgroundColor: colors,
-            borderWidth: 0,
-            hoverOffset: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 1.6,
-          cutout: '62%',
-          layout: { padding: { top: 36, right: 40, bottom: 28, left: 40 } },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (item) => `${item.label}: ${item.parsed}%`,
-                afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
-              }
-            }
-          },
-          animation: { duration: 600 }
-        },
-        plugins: [outsideLabelsV2]
       });
-    });
+
+      // 4) Teken
+      ctx.strokeStyle = '#94a3b8'; // slate-400
+      ctx.fillStyle = '#111827';   // gray-900
+      items.forEach(it => {
+        const sign = it.rightSide ? 1 : -1;
+        const kneeX = it.anchor.x + sign * kneeOut;
+
+        // Lijn: rand donut -> anker -> knee -> verticaal
+        ctx.beginPath();
+        ctx.moveTo(it.start.x, it.start.y);
+        ctx.lineTo(it.anchor.x, it.anchor.y);
+        ctx.lineTo(kneeX, it.anchor.y);
+        ctx.lineTo(kneeX, it.yText);
+
+        // Staart (horizontaal) tenzij override.noTail
+        const o = overrides[it.i];
+        const drawTail = !(o && o.noTail);
+        if (drawTail) {
+          const boxW = it.w + 2*padX;
+          const tailEndX = it.rightSide
+            ? (it.xText - padX - gap)
+            : (it.xText + padX + gap - boxW);
+          ctx.lineTo(tailEndX, it.yText);
+        }
+        ctx.stroke();
+
+        // Label box
+        const boxW = it.w + 2*padX;
+        const boxH = it.textHeight + 2*padY;
+        const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
+        const boxY = it.yText - (boxH/2);
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.06)';
+        ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        roundRect(ctx, boxX, boxY, boxW, boxH, 6);
+        ctx.fill();
+        ctx.restore();
+
+        // Tekst
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = it.rightSide ? 'left' : 'right';
+        const lineY0 = it.yText - ((it.lines.length-1) * 8);
+        it.lines.forEach((line, idx)=>{
+          const y = lineY0 + idx*16;
+          ctx.fillText(line, it.rightSide ? (boxX + padX) : (boxX + boxW - padX), y);
+        });
+      });
+
+      ctx.restore();
+    }
+  };
+
+  // Chart init (ongewijzigd)
+  new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: labelsFull,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1.6,
+      cutout: '62%',
+      layout: { padding: { top: 36, right: 40, bottom: 28, left: 40 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => `${item.label}: ${item.parsed}%`,
+            afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
+          }
+        }
+      },
+      animation: { duration: 600 }
+    },
+    plugins: [outsideLabelsV2]
+  });
+});
 
     // Decoratieve streaks-animatie
     const c = document.getElementById('streaks');
