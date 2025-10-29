@@ -84,6 +84,13 @@
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
     }
+
+    /* voorkom afsnijden van staarten (g, j, y, ij) in grote koppen */
+h1, h2 {
+  line-height: 1.25;
+  overflow: visible;
+}
+
   </style>
 </head>
 
@@ -119,14 +126,14 @@
   </nav>
 
   <!-- HERO -->
-  <header class="relative overflow-hidden bg-transparent">
+  <header class="relative bg-transparent">
     <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center py-20 md:py-28" style="isolation:isolate">
       <div data-animate>
         <p class="text-green-500 font-semibold uppercase tracking-wide">Making sustainability count</p>
-        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mt-2 text-gradient">
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.28] md:leading-[1.26] mt-2 pb-1 md:pb-2 text-gradient overflow-visible">
           Duurzaamheid die stand houdt, in cijfers en in de praktijk
         </h1>
-        <p class="text-lg mt-5 text-gray-700">
+        <p class="text-lg mt-5 text-gray-700 leading-relaxed pb-1 overflow-visible">
           InfraImpact helpt aannemers, opdrachtgevers en leveranciers om duurzaamheid
           <strong>tastbaar, toetsbaar en toepasbaar</strong> te maken.
           Met betrouwbare <strong>MKI- en LCA-data</strong>, aanbestedingskennis en ervaring aan beide kanten van de tafel vertalen we ambities naar aantoonbare resultaten.
