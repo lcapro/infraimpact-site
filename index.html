@@ -107,6 +107,7 @@ h1, h2 {
         <a href="over.html" class="hover:text-green-700">Over ons</a>
         <a href="#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="projecten.html" class="hover:text-green-700">Projecten</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -116,10 +117,11 @@ h1, h2 {
     </div>
     <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
-        <a href="over.html" class="block py-2">Over ons</a>
-        <a href="#wat" class="block py-2">Wat we doen</a>
-        <a href="#inzicht" class="block py-2">Inzichten</a>
-        <a href="#contact" class="block py-2">Contact</a>
+        <a href="over.html" class="hover:text-green-700">Over ons</a>
+        <a href="#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="projecten.html" class="hover:text-green-700">Projecten</a>
+        <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
     </div>
@@ -238,6 +240,55 @@ h1, h2 {
       </div>
     </section>
   </main>
+
+
+  <!-- PROJECTEN TEASER -->
+<section class="py-20 md:py-24 bg-white border-t">
+  <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
+    <div class="flex items-end justify-between gap-4 mb-8">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-gradient">Projecten & samenwerkingen</h2>
+        <p class="text-gray-700 mt-2">Een selectie van recente cases in de GWW, zelfstandig of met partners.</p>
+      </div>
+      <a href="projecten.html" class="hidden md:inline-flex px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Bekijk alle projecten</a>
+    </div>
+
+    <div id="projectsTeaser" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
+
+    <div class="mt-8 md:hidden">
+      <a href="projecten.html" class="inline-flex px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Bekijk alle projecten</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Lichtgewicht teaser: pakt eerste 3 projecten uit assets/projects.json
+  ;(function(){
+    const el = document.getElementById('projectsTeaser');
+    if (!el) return;
+    fetch('/assets/projects.json', {cache:'no-store'})
+      .then(r=>r.json())
+      .then(list=>{
+        const three = list.slice(0,3);
+        el.innerHTML = three.map(p => `
+          <article class="bg-white rounded-2xl border shadow-sm hover:shadow-md transition hover:-translate-y-1">
+            <a href="${p.url || 'projecten.html'}">
+              <img src="${p.hero || '/assets/case-placeholder.webp'}" alt="${p.title}" class="w-full h-40 object-cover rounded-t-2xl" loading="lazy" decoding="async">
+            </a>
+            <div class="p-5">
+              <div class="flex gap-2 mb-3">
+                <span class="inline-block text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">${p.type}</span>
+                <span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">${p.collaboration || 'Zelfstandig'}</span>
+              </div>
+              <h3 class="text-lg font-semibold"><a class="hover:underline" href="${p.url || 'projecten.html'}">${p.title}</a></h3>
+              <p class="text-sm text-gray-500">${p.client || ''}</p>
+              <p class="mt-3 text-gray-700 text-sm">${p.summary}</p>
+            </div>
+          </article>
+        `).join('');
+      });
+  })();
+</script>
 
   <!-- FOOTER / CONTACT -->
   <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-16 pb-10">
