@@ -4,19 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>InfraImpact – EPD MKI-check (asfalt)</title>
-  <meta name="description" content="Upload EPD's en toets automatisch of de MKI voldoet aan plafondwaarden per asfaltsoort en jaar. Bestanden worden veilig bewaard.">
+  <meta name="description" content="Upload EPD's (PDF) en toets of de MKI voldoet aan de plafondwaarden per asfaltsoort en jaar. Werkt client-side; optioneel met opslag (Supabase).">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- pdf.js -->
   <script src="https://unpkg.com/pdfjs-dist@4.6.82/build/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://unpkg.com/pdfjs-dist@4.6.82/build/pdf.worker.min.js";</script>
-  <!-- Supabase -->
+  <!-- Supabase (optioneel) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
   <style>
     .dropzone{border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer}
     .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
     .badge-pass{background:#ecfdf5;color:#065f46}
     .badge-fail{background:#fef2f2;color:#991b1b}
+    .badge-info{background:#eff6ff;color:#1e40af}
     .mono{font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .hint{font-size:.8rem;color:#6b7280}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -28,22 +30,33 @@
 </header>
 
 <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-  <!-- Status/toasts -->
+  <!-- Toast -->
   <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
 
   <!-- Stap 1: eisen -->
   <section class="bg-white rounded-2xl shadow p-6 space-y-4">
     <h2 class="text-xl font-semibold">1) Upload bijlage met eisen (PDF)</h2>
+    <p class="hint">Tip: gebruik de PDF met uniforme MKI-plafondwaarden en A4–C4-tabel. Deze pagina leest jaar-kolommen, mengselnamen en A4–C4 automatisch.</p>
     <div id="req-drop" class="dropzone p-6 bg-gray-50" title="Klik of sleep PDF hierheen">
       <input id="req-file" type="file" accept="application/pdf,.pdf" class="hidden" />
       <div class="flex items-center justify-between gap-4">
-        <div><p class="font-medium">Sleep hier je bijlage PDF heen (of klik)</p>
-          <p class="text-sm text-gray-500">“Uniforme MKI Plafondwaarden Asfalt”.</p></div>
+        <div>
+          <p class="font-medium">Sleep hier je eisen-PDF heen (of klik)</p>
+          <p class="text-sm text-gray-500">Bijv. “Uniforme MKI plafondwaarden asfalt”.</p>
+        </div>
         <button id="req-choose" type="button" class="px-4 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">Kies PDF…</button>
       </div>
     </div>
-    <div id="req-status" class="text-sm text-gray-700"></div>
-    <div class="grid sm:grid-cols-3 gap-4 items-end">
+    <div id="req-card" class="hidden border rounded-xl p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-medium" id="req-fn"></div>
+        <div class="badge badge-info" id="req-store-badge">niet opgeslagen</div>
+      </div>
+      <div class="text-sm text-gray-700 mt-1" id="req-status">—</div>
+      <div class="text-sm text-gray-700 mt-2" id="req-scan">—</div>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-4 items-end mt-2">
       <div>
         <label class="block text-sm font-medium mb-1">PCR waarop je wilt toetsen</label>
         <select id="pcr-target" class="w-full border rounded-xl px-3 py-2">
@@ -68,8 +81,10 @@
     <div id="epd-drop" class="dropzone p-6 bg-gray-50" title="Klik of sleep PDF's hierheen">
       <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="hidden" />
       <div class="flex items-center justify-between gap-4">
-        <div><p class="font-medium">Sleep hier je EPD-PDF’s heen (of klik)</p>
-          <p class="text-sm text-gray-500">Meerdere tegelijk toegestaan.</p></div>
+        <div>
+          <p class="font-medium">Sleep hier je EPD-PDF’s heen (of klik)</p>
+          <p class="text-sm text-gray-500">Meerdere tegelijk toegestaan.</p>
+        </div>
         <button id="epd-choose" type="button" class="px-4 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">Kies PDF’s…</button>
       </div>
     </div>
@@ -77,7 +92,7 @@
     <div id="epd-list" class="space-y-4"></div>
 
     <div class="flex items-center gap-4">
-      <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer & Opslaan</button>
+      <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer & (optioneel) opslaan</button>
       <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
     </div>
 
@@ -86,7 +101,7 @@
 </main>
 
 <script>
-/* ====== Helpers ====== */
+/* ========== Basishulpmiddelen ========== */
 const $ = s => document.querySelector(s);
 const el = (tag, attrs={}, children=[]) => {
   const n = document.createElement(tag);
@@ -95,11 +110,14 @@ const el = (tag, attrs={}, children=[]) => {
   return n;
 };
 const toastEl = $('#toast');
-function toast(msg, ok=true){ toastEl.textContent=msg; toastEl.classList.remove('hidden'); toastEl.style.background=ok?'#111827':'#991b1b'; setTimeout(()=>toastEl.classList.add('hidden'), 2500); }
+function toast(msg, ok=true){ toastEl.textContent=msg; toastEl.classList.remove('hidden'); toastEl.style.background=ok?'#111827':'#991b1b'; setTimeout(()=>toastEl.classList.add('hidden'), 2600); }
+function fmtBytes(b){ if(!b && b!==0) return ''; const u=['B','KB','MB','GB']; let i=0; while(b>=1024 && i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
+
+/* ========== Nummers & PDF uitlezen ========== */
 function parseNumberEU(str){
   if(!str) return NaN; let s=String(str).trim().replace(/\u202F/g,'');
-  if(/[Ee][\+\-]?\d+/.test(s)) s=s.replace(',', '.');
-  else if (s.includes(',') && s.includes('.')) s=s.replace(/\./g,'').replace(',', '.');
+  if(/[Ee][\+\-]?\d+/.test(s)) s=s.replace(',', '.'); // wetenschappelijke notatie
+  else if (s.includes(',') && s.includes('.')) s=s.replace(/\./g,'').replace(',', '.'); // NL-decimaal
   else if (s.includes(',')) s=s.replace(',', '.');
   s=s.replace(/[^0-9Ee\+\-\.]/g,''); const n=Number(s); return isFinite(n)?n:NaN;
 }
@@ -110,193 +128,338 @@ async function pdfToText(file){
   for(let p=1; p<=pdf.numPages; p++){
     const page = await pdf.getPage(p);
     const content = await page.getTextContent();
+    // spaties tussen items, zodat kolommen niet aan elkaar plakken
     const txt = content.items.map(it => it.str).join(' ');
     full += '\n' + txt;
   }
   return full;
 }
 
-/* ====== Bijlage (eisen) parser ====== */
-async function parseRequirementsPDF(file){
-  const text = await pdfToText(file);
-  const yearsMatch = text.match(/2022\s+2024\s+2026\s+2028\s+2030/);
-  const years = yearsMatch ? ['2022','2024','2026','2028','2030'] : [];
+/* ========== Eisen-PDF parser (robuust) ========== */
+function detectYearColumns(text){
+  // Zoek 5 jaartallen kolommen die oplopen en in dezelfde regel/cluster staan
+  // fallback: pak alle jaartallen 2018..2035 en kies de 5 meest voorkomende “header” set
+  const yearCandidates = [...text.matchAll(/\b(20[1-3]\d)\b/g)].map(m=>m[1]);
+  const counts = yearCandidates.reduce((a,y)=> (a[y]=(a[y]||0)+1, a), {});
+  const years = Object.keys(counts).map(Number).sort((a,b)=>a-b);
+  // probeer bekende set
+  const preferred = [2022,2024,2026,2028,2030].every(y=>years.includes(y)) ? ['2022','2024','2026','2028','2030'] : null;
+  if(preferred) return preferred;
+  // anders: kies 5 opeenvolgende even-stappen of 5 dichtste jaartallen
+  for(let i=0;i<years.length-4;i++){
+    const w = years.slice(i,i+5);
+    if(w[4]-w[0] <= 10) return w.map(String);
+  }
+  return years.slice(0,5).map(String); // best effort
+}
+
+function parsePlafondAndA4C4(text){
+  const years = detectYearColumns(text);
   const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+
+  // Herken rows met 5 numerieke kolommen (x/n.b. toegestaan)
+  const rowRegex = /^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)$/i;
   const plafond = {};
-  const mixRowRegex = /^([A-Za-z0-9\-\+\s\/\%\,\.()]+?)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)$/;
   for(const ln of lines){
-    const m = ln.match(mixRowRegex); if(!m) continue;
+    const m = ln.match(rowRegex);
+    if(!m) continue;
     const name = m[1].replace(/\s+/g,' ').trim();
     const vals = m.slice(2).map(v=>/x|X|n\.b\./i.test(v) ? NaN : parseNumberEU(v));
-    if (years.length===5 && vals.filter(v=>!isNaN(v)).length>=2){
+    if(vals.filter(v=>!isNaN(v)).length >= 2 && years.length>=5){
       plafond[name] = {};
-      years.forEach((y,i)=>{ plafond[name][y] = vals[i]; });
+      years.slice(0,5).forEach((y,i)=>{ plafond[name][y] = vals[i]; });
     }
   }
+
+  // A4–C4 blok; accepteer varianten op schrijfwijze
   const a4c4 = {};
-  const a4c4Start = text.indexOf('MKI waarden A4 t/m C4');
-  if (a4c4Start >= 0){
-    const tail = text.slice(a4c4Start);
-    const a4c4Regex = /^([A-Za-z0-9\-\+\s\/\%\,\.()]+?)\s+([\d\.,]+)\s*$/gm;
-    let mm; while((mm = a4c4Regex.exec(tail))!==null){
+  const tagIdx = text.search(/A4\s*(t\/m|-|tot en met)\s*C4/i);
+  if(tagIdx >= 0){
+    const tail = text.slice(tagIdx);
+    const reg = /^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\-]?\d[\d\.,]*)\s*$/gm;
+    let mm; while((mm = reg.exec(tail))!==null){
       const name = mm[1].replace(/\s+/g,' ').trim();
       const val = parseNumberEU(mm[2]);
       if(!isNaN(val)) a4c4[name] = val;
     }
   }
   const mixes = Object.keys(plafond).length ? Object.keys(plafond) : Object.keys(a4c4);
-  return { years, plafond, a4c4, mixes, rawText: text };
+  return {years, plafond, a4c4, mixes};
 }
 
-/* ====== EPD parser ====== */
+async function parseRequirementsPDF(file){
+  const text = await pdfToText(file);
+  const out = parsePlafondAndA4C4(text);
+  if ((!out.years || out.years.length<1) || (!out.mixes || out.mixes.length<1)) {
+    throw new Error('Geen jaar-kolommen of mengsels gevonden in eisen-PDF.');
+  }
+  return {...out, rawText:text};
+}
+
+/* ========== EPD-parser (robuust) ========== */
+function pickFirst(re, text){ const m = text.match(re); return m ? m[1].trim() : ''; }
 async function parseEpdPDF(file){
   const text = await pdfToText(file);
-  let product = (text.match(/Product:\s*([^\n]+?)\s+Eenheid:/) || [,''])[1]?.trim() || '';
-  if(!product){ product = (text.match(/Product\s+([^\n]+)\s+Eenheid/i)||[,''])[1] || ''; }
-  if(!product){ const m = text.match(/Product\s*\n\s*([^\n]+)/i); if(m) product = m[1].trim(); }
-  let pcr = (text.match(/PCR[:\s]+([^\n]+?Asfalt[^\n]+)/i) || [,''])[1]?.trim() || '';
-  if(!pcr){ const m = text.match(/NL-?PCR\s+Asfalt\s+[^\n]+/i); if(m) pcr = m[0].trim(); }
-  const pub = (text.match(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i) || [,''])[1] || '';
 
+  let product = pickFirst(/Product:\s*([^\n]+?)\s+Eenheid:/i, text)
+            || pickFirst(/Product\s+([^\n]+)\s+Eenheid/i, text)
+            || pickFirst(/Product\s*\n\s*([^\n]+)/i, text)
+            || file.name.replace(/\.pdf$/i,'');
+
+  let pcr = pickFirst(/PCR[:\s]+([^\n]+?Asfalt[^\n]+)/i, text)
+         || (text.match(/NL-?PCR\s+Asfalt\s+[^\n]+/i)?.[0] || '');
+
+  const pub = pickFirst(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text);
+
+  // MKI A1-A3 en D (meerdere patronen)
   let mkiA1A3 = NaN, mkiD = NaN;
-  let m = text.match(/MKI[^\n]*?\bA1-?A3\b[^\n]*?\bD\b[^\n]*?([\-]?\d[\d,\.Ee\+\-]*)[^\n]*?([\-]?\d[\d,\.Ee\+\-]*)/i);
+
+  // 1) Regel met MKI ... A1-A3 ... D ...
+  let m = text.match(/MKI[^\n]{0,500}?\bA1-?A3\b[^\n]{0,200}?\bD\b[^\n]{0,200}?([\-]?\d[\d\.,Ee\+\-]*)[^\n]{0,80}?([\-]?\d[\d\.,Ee\+\-]*)/i);
   if(m){ mkiA1A3=parseNumberEU(m[1]); mkiD=parseNumberEU(m[2]); }
+
+  // 2) Environmental Costs Indicator blok
   if (isNaN(mkiA1A3) || isNaN(mkiD)){
-    const block = text.match(/Environmental\s+Costs\s+Indicator[\s\S]{0,400}/i);
+    const block = text.match(/Environmental\s+Costs\s+Indicator[\s\S]{0,800}/i);
     if(block){
       const b=block[0];
-      const mm1=b.match(/\bSubtotaal\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
-      const mm2=b.match(/\bD\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+      const mm1=b.match(/\bSubtotaal\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i);
+      const mm2=b.match(/\bD\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i);
       if(mm1) mkiA1A3=parseNumberEU(mm1[1]);
       if(mm2) mkiD=parseNumberEU(mm2[1]);
     }
   }
+
+  // 3) SBK set 1 blok
   if (isNaN(mkiA1A3) || isNaN(mkiD)){
-    const eco = text.match(/Milieu-impact\s+SBK\s+set\s+1[\s\S]{0,1200}/i);
+    const eco = text.match(/(Milieu-impact|Milieu impact)\s+SBK\s+set\s+1[\s\S]{0,1500}/i);
     if(eco){
-      const line = eco[0].split(/\n/).find(l => /^\s*MKI\s+/i.test(l));
+      // Zoek rij met MKI en kolommen
+      const lines = eco[0].split(/\n/);
+      const line = lines.find(l => /\bMKI\b/.test(l) && /\bA1-?A3\b/.test(l));
       if(line){
-        const a13m=line.match(/\bA1-?A3\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
-        const dm  =line.match(/\bD\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+        const a13m = line.match(/\bA1-?A3\b\s+([\-]?\d[\d\.,Ee\+\-]*)/i);
+        const dm   = line.match(/\bD\b\s+([\-]?\d[\d\.,Ee\+\-]*)/i);
         if(a13m) mkiA1A3=parseNumberEU(a13m[1]);
         if(dm)   mkiD=parseNumberEU(dm[1]);
       }
     }
   }
-  return { text, product: product || file.name.replace(/\.pdf$/i,''), pcr, pubDate: pub, mkiA1A3, mkiD, mixHint: product||'' };
+
+  // 4) Fallback: pak dichtstbijzijnde getallen rond “A1-A3” en “D”
+  if (isNaN(mkiA1A3)) {
+    const a13 = text.match(/\bA1-?A3\b[^\n]{0,40}?([\-]?\d[\d\.,Ee\+\-]*)/i);
+    if(a13) mkiA1A3 = parseNumberEU(a13[1]);
+  }
+  if (isNaN(mkiD)) {
+    const dd = text.match(/\bD\b[^\n]{0,24}?([\-]?\d[\d\.,Ee\+\-]*)/i);
+    if(dd) mkiD = parseNumberEU(dd[1]);
+  }
+
+  return { text, product, pcr, pubDate: pub, mkiA1A3, mkiD, mixHint: product };
 }
 
-/* ====== SUPABASE CONFIG (VUL DIT IN) ====== */
-const SUPABASE_URL = "https://fblenxtccwpsjwrkirtc.supabase.co";   // <-- vul in
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI";                              // <-- vul in
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ========== Supabase (optioneel) ========== */
+const SUPABASE_URL = ""; // ← laat leeg voor geen opslag, of vul je URL in, bv: "https://xxxx.supabase.co"
+const SUPABASE_ANON_KEY = ""; // ← laat leeg of vul je public anon key in
+const hasSB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+const sb = hasSB ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const BUCKET = "epd-uploads";
 
-/* ====== State ====== */
+/* ========== State/UI ========== */
 const state = { req:null, epds:[], results:[], runId:null, clientSession:crypto.randomUUID() };
 
-/* ====== UI Wiring (klik/dragdrop) ====== */
-function decorateDZ(box){ ['dragenter','dragover'].forEach(ev=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.add('bg-green-50');}));
-  ['dragleave','dragend','drop'].forEach(ev=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.remove('bg-green-50');})); }
-const reqBox=$('#req-drop'), reqInput=$('#req-file'), reqBtn=$('#req-choose'), reqStatus=$('#req-status'), yearSel=$('#year-target'), pcrSel=$('#pcr-target');
-const epdBox=$('#epd-drop'), epdInput=$('#epd-files'), epdBtn=$('#epd-choose'), epdList=$('#epd-list'), runBtn=$('#run-checks'), csvBtn=$('#export-csv'), resultsBox=$('#results');
+const reqBox=$('#req-drop'), reqInput=$('#req-file'), reqBtn=$('#req-choose');
+const reqCard=$('#req-card'), reqFn=$('#req-fn'), reqStatus=$('#req-status'), reqScan=$('#req-scan'), reqStoreBadge=$('#req-store-badge');
+const yearSel=$('#year-target'), pcrSel=$('#pcr-target');
+
+const epdBox=$('#epd-drop'), epdInput=$('#epd-files'), epdBtn=$('#epd-choose'), epdList=$('#epd-list');
+const runBtn=$('#run-checks'), csvBtn=$('#export-csv'), resultsBox=$('#results');
+
+/* ========== Drop/klik wiring ========== */
+function decorateDZ(box){
+  ['dragenter','dragover'].forEach(ev => box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.add('bg-green-50');}));
+  ['dragleave','dragend','drop'].forEach(ev => box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.remove('bg-green-50');}));
+}
 decorateDZ(reqBox); decorateDZ(epdBox);
-reqBox.addEventListener('click', ()=>reqInput.click()); reqBtn.addEventListener('click', (e)=>{e.stopPropagation();reqInput.click();});
-epdBox.addEventListener('click', ()=>epdInput.click()); epdBtn.addEventListener('click', (e)=>{e.stopPropagation();epdInput.click();});
+reqBox.addEventListener('click', ()=>reqInput.click());
+epdBox.addEventListener('click', ()=>epdInput.click());
+reqBtn.addEventListener('click', (e)=>{e.stopPropagation();reqInput.click();});
+epdBtn.addEventListener('click', (e)=>{e.stopPropagation();epdInput.click();});
 reqBox.addEventListener('drop', async (e)=>{ const f=[...(e.dataTransfer?.files||[])].find(f=>/\.pdf$/i.test(f.name)); if(f) await handleReqFile(f); });
 epdBox.addEventListener('drop', async (e)=>{ const files=[...(e.dataTransfer?.files||[])].filter(f=>/\.pdf$/i.test(f.name)); if(files.length) await handleEpdFiles(files); });
 reqInput.addEventListener('change', async ()=>{ if(reqInput.files[0]) await handleReqFile(reqInput.files[0]); reqInput.value='';});
 epdInput.addEventListener('change', async ()=>{ if(epdInput.files.length) await handleEpdFiles([...epdInput.files]); epdInput.value='';});
 
-/* ====== Upload helpers (Supabase) ====== */
+/* ========== DB helpers (veilig optioneel) ========== */
 async function sbUpload(path, file){
+  if(!hasSB) return null; // geen opslag
   const { data, error } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
-  if(error){ throw error; }
-  return data?.path || path;
+  if(error) throw error; return data?.path || path;
 }
 async function createRun(reqPath){
+  if(!hasSB){ state.runId = 'local-'+crypto.randomUUID(); return state.runId; }
   const { data, error } = await sb.from('epd_runs')
     .insert({ client_session: state.clientSession, pcr_target: pcrSel.value, year_target: yearSel.value, req_pdf_path: reqPath })
     .select('id').single();
   if(error) throw error; state.runId = data.id; return data.id;
 }
 async function insertFile(runId, meta){
+  if(!hasSB) return 'local-file-'+crypto.randomUUID();
   const { data, error } = await sb.from('epd_files').insert({ run_id:runId, ...meta }).select('id').single();
   if(error) throw error; return data.id;
 }
 async function insertResult(runId, fileId, r){
+  if(!hasSB) return;
   const payload = { run_id:runId, file_id:fileId, mix:r.mix, year:r.year, mki_a1a3:r.mkiA1A3,
     mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond, pass:r.pass, notes:r.notes.join(' | ') };
   const { error } = await sb.from('epd_results').insert(payload);
   if(error) throw error;
 }
 
-/* ====== Business logic ====== */
+/* ========== Logica eisen-PDF ========== */
 async function handleReqFile(file){
+  reqCard.classList.remove('hidden');
+  reqFn.textContent = `${file.name} (${fmtBytes(file.size)})`;
+  reqStatus.textContent = 'Lezen & parsen…';
+  reqScan.textContent = '—';
+  reqStoreBadge.textContent = hasSB ? 'opslaan…' : 'niet opgeslagen (client-side)';
+
   try{
-    reqStatus.textContent='Bijlage wordt gelezen…';
-    state.req = await parseRequirementsPDF(file);
-    const years = state.req.years.length ? state.req.years : ['2024','2026'];
+    const parsed = await parseRequirementsPDF(file);
+    state.req = parsed;
+
+    // jaren in dropdown
+    const years = parsed.years?.length ? parsed.years.slice(0,5) : ['2024','2026'];
     yearSel.innerHTML = years.map(v=>`<option value="${v}">${v}</option>`).join('');
-    // Upload bijlage
-    const path = `requirements/${new Date().toISOString().slice(0,10)}_${crypto.randomUUID()}_${file.name}`;
-    const storedPath = await sbUpload(path, file);
-    // Start run
-    if(!state.runId){ await createRun(storedPath); }
-    reqStatus.innerHTML = `✅ Bijlage gelezen & opgeslagen. Mengsels: <strong>${state.req.mixes.length}</strong>. Jaren: <strong>${years.join(', ')}</strong>.`;
+
+    // optioneel opslaan
+    let storePath = null;
+    try{
+      if(hasSB){
+        const path = `requirements/${new Date().toISOString().slice(0,10)}_${crypto.randomUUID()}_${file.name}`;
+        storePath = await sbUpload(path, file);
+        reqStoreBadge.textContent = 'opgeslagen';
+        reqStoreBadge.className = 'badge badge-pass';
+      }else{
+        reqStoreBadge.textContent = 'niet opgeslagen (client-side)';
+        reqStoreBadge.className = 'badge badge-info';
+      }
+    }catch(storeErr){
+      reqStoreBadge.textContent = 'opslaan mislukt (client-side verder)';
+      reqStoreBadge.className = 'badge badge-fail';
+    }
+
+    if(!state.runId){ await createRun(storePath); }
+
+    reqStatus.innerHTML = `✅ Gelezen. Gevonden mengsels: <strong>${parsed.mixes.length}</strong>. Jaren: <strong>${years.join(', ')}</strong>.`;
+    // kleine scan-preview (eerste 3 mengsels)
+    const preview = parsed.mixes.slice(0,3).map(m => {
+      const p = parsed.plafond[m] || {};
+      const yv = years.map(y => (isNaN(p[y])?'—':p[y])).join(' | ');
+      const a4 = (parsed.a4c4[m]!=null && !isNaN(parsed.a4c4[m])) ? parsed.a4c4[m] : '—';
+      return `• ${m} → A4–C4: ${a4} | plafonds: ${yv}`;
+    }).join('<br>');
+    reqScan.innerHTML = `<span class="text-gray-600">Voorbeeld uit tabel:</span><br>${preview || '—'}`;
+
     enableRunIfReady();
+    toast('Eisen-PDF verwerkt', true);
   }catch(err){
-    console.error(err); toast('Fout bij lezen/opslag eisen-PDF', false);
-    reqStatus.textContent='❌ Kon de bijlage niet parsen of opslaan.';
+    console.error(err);
+    reqStatus.innerHTML = `❌ Fout: ${err.message || 'Kon de bijlage niet parsen.'}`;
+    toast('Kon de eisen-PDF niet parsen', false);
   }
 }
 
+/* ========== Logica EPD’s ========== */
 async function handleEpdFiles(files){
-  epdList.innerHTML=''; state.epds=[];
+  // geen reset van lijst; voeg toe zodat je ziet wat je net hebt geüpload
   for(const file of files){
     const card = el('div', {class:'border rounded-xl p-4'});
-    card.appendChild(el('div', {class:'font-medium'}, file.name));
-    const meta = el('div', {class:'text-sm text-gray-600 mt-1'}, 'Lezen…'); card.appendChild(meta);
-    const row = el('div', {class:'mt-3 grid sm:grid-cols-2 gap-3 items-end'});
-    const mixWrap = el('div'); mixWrap.appendChild(el('label', {class:'block text-sm font-medium mb-1'}, 'Asfaltsoort'));
-    const mixSel = el('select', {class:'w-full border rounded-xl px-3 py-2'}); mixWrap.appendChild(mixSel);
-    const info = el('div', {class:'text-sm text-gray-700 space-y-1'}); row.appendChild(mixWrap); row.appendChild(info);
-    card.appendChild(row); epdList.appendChild(card);
+    const head = el('div', {class:'flex items-center justify-between'});
+    const title = el('div', {class:'font-medium'}, `${file.name} (${fmtBytes(file.size)})`);
+    const badge = el('div', {class:'badge badge-info'}, hasSB ? 'uploaden…' : 'niet opgeslagen');
+    head.appendChild(title); head.appendChild(badge); card.appendChild(head);
 
+    const meta = el('div', {class:'text-sm text-gray-700 mt-1'}, 'Lezen…');
+    card.appendChild(meta);
+
+    const row = el('div', {class:'mt-3 grid sm:grid-cols-2 gap-3 items-end'});
+    const mixWrap = el('div');
+    mixWrap.appendChild(el('label', {class:'block text-sm font-medium mb-1'}, 'Asfaltsoort'));
+    const mixSel = el('select', {class:'w-full border rounded-xl px-3 py-2'});
+    mixWrap.appendChild(mixSel);
+    const info = el('div', {class:'text-sm text-gray-700 space-y-1'});
+    row.appendChild(mixWrap); row.appendChild(info);
+    card.appendChild(row);
+    $('#epd-list').appendChild(card);
+
+    // opslag
+    let storedPath=null, fileId=null;
+    try{
+      if(hasSB){
+        if(!state.runId){ await createRun(null); }
+        const path = `epds/${state.runId}/${crypto.randomUUID()}_${file.name}`;
+        storedPath = await sbUpload(path, file);
+        badge.textContent = 'opgeslagen';
+        badge.className = 'badge badge-pass';
+      }else{
+        badge.textContent = 'niet opgeslagen (client-side)';
+        badge.className = 'badge badge-info';
+      }
+    }catch(upErr){
+      console.error(upErr);
+      badge.textContent = 'opslaan mislukt (client-side verder)';
+      badge.className = 'badge badge-fail';
+    }
+
+    // parse
     try{
       const parsed = await parseEpdPDF(file);
+
+      // mengsels in dropdown (pas als eisen-PDF aanwezig is)
       const mixes = (state.req?.mixes?.length) ? state.req.mixes : [];
       mixSel.innerHTML = '<option value="">— kies asfaltsoort —</option>' + mixes.map(m=>`<option>${m}</option>`).join('') + '<option value="__other">Andere (vrije invoer)</option>';
-      if(parsed.mixHint){
+
+      // suggestie
+      if(parsed.mixHint && mixes.length){
         const cand = mixes.find(m => parsed.mixHint.toLowerCase().includes(m.toLowerCase().split(' ')[0]));
         if(cand) mixSel.value = cand;
       }
-      let otherInput = null;
+
+      // vrije invoer
+      let otherInput=null;
       mixSel.addEventListener('change', () => {
         if(mixSel.value === '__other'){
           if(!otherInput){
-            otherInput = el('input', {class:'w-full border rounded-xl px-3 py-2 mt-2', placeholder:'Typ mengselnaam exact zoals in bijlage/A4–C4 tabel'});
+            otherInput = el('input', {class:'w-full border rounded-xl px-3 py-2 mt-2', placeholder:'Typ mengselnaam exact zoals in eisen-PDF'});
             mixWrap.appendChild(otherInput);
           }
-        } else if(otherInput){ otherInput.remove(); otherInput=null; }
+        }else if(otherInput){ otherInput.remove(); otherInput=null; }
       });
+
       meta.innerHTML = `
         <span class="badge ${parsed.pcr ? 'badge-pass':'badge-fail'}">${parsed.pcr || 'PCR niet gevonden'}</span>
-        <span class="badge bg-gray-100">Publicatie: ${parsed.pubDate || 'onbekend'}</span>`;
+        <span class="badge bg-gray-100">Publicatie: ${parsed.pubDate || 'onbekend'}</span>
+      `;
       info.innerHTML = `
         <div>MKI A1–A3: <span class="mono">${isNaN(parsed.mkiA1A3) ? '—' : parsed.mkiA1A3.toFixed(3)}</span></div>
-        <div>MKI D: <span class="mono">${isNaN(parsed.mkiD) ? '—' : parsed.mkiD.toFixed(3)}</span></div>`;
-      // Upload file direct
-      if(!state.runId){ await createRun(null); }
-      const path = `epds/${state.runId}/${crypto.randomUUID()}_${file.name}`;
-      const storedPath = await sbUpload(path, file);
-      // Bewaar in state + db metadata
-      const fileId = await insertFile(state.runId, {
-        file_name:file.name, file_path:storedPath,
-        product: parsed.product, pcr_epd: parsed.pcr, pub_date: parsed.pubDate
-      });
+        <div>MKI D: <span class="mono">${isNaN(parsed.mkiD) ? '—' : parsed.mkiD.toFixed(3)}</span></div>
+      `;
+
+      if(hasSB){
+        try{
+          if(!state.runId){ await createRun(null); }
+          fileId = await insertFile(state.runId, {
+            file_name:file.name, file_path:storedPath, product: parsed.product, pcr_epd: parsed.pcr, pub_date: parsed.pubDate
+          });
+        }catch(dbErr){
+          console.error(dbErr);
+        }
+      }
+
       state.epds.push({
-        fileId, file, parsed,
+        file, fileId, parsed,
         get mix(){
           if(mixSel.value === '__other'){
             const v = mixWrap.querySelector('input')?.value?.trim(); return v || '';
@@ -304,55 +467,68 @@ async function handleEpdFiles(files){
           return mixSel.value || '';
         }
       });
+
+      enableRunIfReady();
     }catch(err){
-      console.error(err); toast('Fout bij lezen/opslag van een EPD', false);
-      meta.innerHTML = `<span class="badge badge-fail">Kon EPD niet lezen of opslaan</span>`;
+      console.error(err);
+      meta.innerHTML = `<span class="badge badge-fail">Kon EPD niet parsen</span>`;
     }
   }
-  enableRunIfReady();
 }
 
 function enableRunIfReady(){
   const okReq = !!state.req, okEpd = state.epds.length>0;
-  runBtn.disabled = !(okReq && okEpd); csvBtn.disabled = true; resultsBox.innerHTML = '';
+  runBtn.disabled = !(okReq && okEpd);
+  csvBtn.disabled = true;
+  resultsBox.innerHTML = '';
 }
 
+/* ========== Rekenen & tonen resultaten ========== */
 function computeFor(epd, req, year, pcrTarget){
   const {parsed} = epd;
   const res = {
-    fileId: epd.fileId,
+    fileId: epd.fileId || null,
     file: epd.file?.name || '',
     product: parsed.product,
     pcr: parsed.pcr || '',
     pubDate: parsed.pubDate || '',
     mix: epd.mix || '',
     year,
-    mkiA1A3: parsed.mkiA1A3, mkiD: parsed.mkiD, mkiA4C4: NaN,
-    mkiTotalAD: NaN, plafond: NaN, pass: false, notes: []
+    mkiA1A3: parsed.mkiA1A3, mkiD: parsed.mkiD,
+    mkiA4C4: NaN, mkiTotalAD: NaN, plafond: NaN, pass: false, notes: []
   };
+  if(!res.mix){ res.notes.push('Geen asfaltsoort gekozen.'); return res; }
   if(!parsed.pcr){ res.notes.push('PCR niet aangetroffen in EPD.'); }
   else if(pcrTarget && !parsed.pcr.toLowerCase().includes(pcrTarget.toLowerCase().replace(/\s+/g,' '))){
-    res.notes.push(`EPD PCR (“${parsed.pcr}”) wijkt af van doel (“${pcrTarget}”).`);
+    res.notes.push(`EPD PCR (“${parsed.pcr}”) ≠ doel (“${pcrTarget}”).`);
   }
-  if(!res.mix){ res.notes.push('Geen asfaltsoort gekozen.'); return res; }
-  const plafObj = req.plafond[res.mix]; const a4c4Val = req.a4c4[res.mix];
-  if(typeof a4c4Val === 'number') res.mkiA4C4 = a4c4Val; else res.notes.push('A4–C4 niet gevonden (bijlage).');
+
+  const plafObj = req.plafond[res.mix];
+  const a4c4Val = req.a4c4[res.mix];
+  if(typeof a4c4Val === 'number') res.mkiA4C4 = a4c4Val; else res.notes.push('A4–C4 niet gevonden (eisen-PDF).');
   if(plafObj && typeof plafObj[year] === 'number' && !isNaN(plafObj[year])) res.plafond = plafObj[year];
-  else res.notes.push(`Geen plafondwaarde gevonden voor “${res.mix}” in ${year}.`);
+  else res.notes.push(`Geen plafondwaarde voor “${res.mix}” in ${year}.`);
+
   if(!isNaN(res.mkiA1A3) && !isNaN(res.mkiD) && !isNaN(res.mkiA4C4)){
-    res.mkiTotalAD = res.mkiA1A3 + res.mkiA4C4 + res.mkiD; res.pass = !isNaN(res.plafond) && (res.mkiTotalAD <= res.plafond);
-  } else { res.notes.push('Onvoldoende data om A–D totaal te berekenen.'); }
+    res.mkiTotalAD = res.mkiA1A3 + res.mkiA4C4 + res.mkiD; // D kan negatief zijn
+    if(!isNaN(res.plafond)) res.pass = res.mkiTotalAD <= res.plafond;
+  } else {
+    res.notes.push('Onvoldoende data om A–D totaal te berekenen.');
+  }
   return res;
 }
 
-/* ====== Run & persist results ====== */
 runBtn.addEventListener('click', async ()=>{
   const year = yearSel.value, pcrTarget = pcrSel.value;
   if(!state.runId){ await createRun(null); }
-  const rows=[]; resultsBox.innerHTML='';
+  state.results = []; resultsBox.innerHTML = '';
+  const rows=[];
+
   for(const epd of state.epds){
-    const r = computeFor(epd, state.req, year, pcrTarget); state.results.push(r);
-    // UI kaart
+    const r = computeFor(epd, state.req, year, pcrTarget);
+    state.results.push(r);
+
+    // UI-kaart
     const card = el('div', {class:'border rounded-2xl p-4 bg-white'});
     card.appendChild(el('div', {class:'flex justify-between items-start gap-4'}, [
       el('div', {class:'font-semibold'}, r.product || r.file),
@@ -378,13 +554,10 @@ runBtn.addEventListener('click', async ()=>{
       mki_a1a3:r.mkiA1A3, mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond,
       margin: (!isNaN(r.mkiTotalAD)&&!isNaN(r.plafond))?(r.plafond-r.mkiTotalAD):'', pass:r.pass?'PASS':'FAIL', notes:r.notes.join(' | ') });
 
-    // Persist per EPD
-    try{
-      await insertResult(state.runId, r.fileId, r);
-    }catch(err){ console.error(err); toast('Fout bij opslaan resultaat (db)', false); }
+    try{ await insertResult(state.runId, epd.fileId || null, r); }catch(e){ console.error(e); }
   }
 
-  // CSV export
+  // CSV
   if(rows.length){
     const headers = Object.keys(rows[0]);
     const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => {
@@ -395,7 +568,7 @@ runBtn.addEventListener('click', async ()=>{
     csvBtn.onclick = () => { const a=document.createElement('a'); a.href=url; a.download='epd-mki-checks.csv'; a.click(); };
     csvBtn.disabled = false;
   }
-  toast('Controle voltooid en opgeslagen');
+  toast('Controle uitgevoerd' + (hasSB?' en opgeslagen':''), true);
 });
 </script>
 </body>
