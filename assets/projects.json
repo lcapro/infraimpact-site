@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "actualisatie-lca-achtergrondrapportages",
+    "title": "Actualisatie LCA-achtergrondrapportages",
+    "client": "Brancheorganisatie (onder embargo)",
+    "type": "LCA",
+    "tags": ["NMD","achtergronddata","verificatie","documentatie"],
+    "summary": "Hermodellering, navolgbaarheid en kwaliteitscheck van LCA-achtergrondrapportages t.b.v. landelijke database. Na toestemming wordt de opdrachtgever expliciet genoemd.",
+    "collaboration": "In samenwerking",
+    "hero": "/assets/cases/lca-achtergrondrapportages.webp",
+    "date": "2025-09",
+    "url": "#"
+  },
+  {
+    "slug": "mki-optimalisatie-betonnen-viaduct",
+    "title": "MKI-optimalisatie voor betonnen viaduct",
+    "client": "Aannemer (conf.)",
+    "type": "MKI",
+    "tags": ["GWW","beton","ontwerp","scenarioanalyse"],
+    "summary": "Scenariovergelijking van betonsamenstellingen en dwarsprofielen met ~15–20% lagere MKI bij gelijkblijvende kosten.",
+    "collaboration": "Zelfstandig",
+    "hero": "/assets/cases/viaduct-mki.webp",
+    "date": "2025-05",
+    "url": "#"
+  },
+  {
+    "slug": "beleid-en-toetsingskader-duurzaam-inkopen",
+    "title": "Beleid & toetsingskader duurzaam inkopen",
+    "client": "Gemeentelijke opdrachtgever",
+    "type": "Beleid",
+    "tags": ["beleid","aanbesteding","GWW","toetsing"],
+    "summary": "Uitwerking van een praktisch toetsingskader met MKI-eisen en beoordelingscriteria voor infrastructurele werken.",
+    "collaboration": "In samenwerking",
+    "hero": "/assets/cases/beleid-kader.webp",
+    "date": "2025-06",
+    "url": "#"
+  },
+  {
+    "slug": "epd-hermodellering-lijnbeschoeiing",
+    "title": "EPD-hermodellering voor lijnbeschoeiing",
+    "client": "Toeleverancier (conf.)",
+    "type": "LCA",
+    "tags": ["EPD","NMD","product","hout/kunststof"],
+    "summary": "Herbouw van LCA-model met verbeterde transparantie van processen en data; oplevering EPD-dossier conform bepalingsmethode v1.2.",
+    "collaboration": "Zelfstandig",
+    "hero": "/assets/cases/lijnbeschoeiing-lca.webp",
+    "date": "2025-03",
+    "url": "#"
+  },
+  {
+    "slug": "aanbestedingsadvies-mki-emvi",
+    "title": "Aanbestedingsadvies MKI & EMVI",
+    "client": "Combinatie (conf.)",
+    "type": "Aanbesteding",
+    "tags": ["EMVI","prijs-kwaliteit","strategie","GWW"],
+    "summary": "Vertaling van MKI-kansen naar biedingsstrategie met onderbouwing, risico-afweging en realistisch uitvoeringsplan.",
+    "collaboration": "In samenwerking",
+    "hero": "/assets/cases/aanbesteding-mki.webp",
+    "date": "2025-07",
+    "url": "#"
+  },
+  {
+    "slug": "training-mki-en-lca-voor-projectteams",
+    "title": "Incompany training MKI & LCA voor projectteams",
+    "client": "Regionale waterbeheerder",
+    "type": "Training",
+    "tags": ["opleiding","kennisborging","praktijkcases"],
+    "summary": "Tweedaagse training met eigen projectcases, tooling-oefeningen en checklists voor ontwerp- en aanbestedingsfase.",
+    "collaboration": "Zelfstandig",
+    "hero": "/assets/cases/training-mki.webp",
+    "date": "2025-05",
+    "url": "#"
+  },
+  {
+    "slug": "materiaalkeuze-en-hergebruik",
+    "title": "Materiaalkeuze & hergebruik in ontwerp",
+    "client": "Ingenieursbureau (conf.)",
+    "type": "MKI",
+    "tags": ["circulair","hergebruik","ontwerpkeuzes"],
+    "summary": "Vergelijking van primaire vs. secundaire materialen en logistieke varianten; advies voor MKI-reductie en leveringszekerheid.",
+    "collaboration": "In samenwerking",
+    "hero": "/assets/cases/materiaal-hergebruik.webp",
+    "date": "2025-08",
+    "url": "#"
+  },
+  {
+    "slug": "monitoring-mki-door-projectcyclus",
+    "title": "Monitoring MKI door de projectcyclus",
+    "client": "Provinciale opdrachtgever",
+    "type": "Beleid",
+    "tags": ["monitoring","kpi","dashboard"],
+    "summary": "Inrichting van KPI-set en rapportagecyclus van VO tot en met uitvoering, inclusief voorbeeld-dashboards.",
+    "collaboration": "Zelfstandig",
+    "hero": "/assets/cases/monitoring-mki.webp",
+    "date": "2025-02",
+    "url": "#"
+  }
+]
