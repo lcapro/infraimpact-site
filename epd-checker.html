@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InfraImpact – EPD MKI-check (asfalt)</title>
+  <meta name="description" content="Upload EPD's (PDF) en toets automatisch of de MKI voldoet aan uniforme plafondwaarden (A–D) per asfaltsoort en jaar." />
+  <!-- Tailwind via CDN (geen build nodig) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- pdf.js (text extraction) -->
+  <script src="https://unpkg.com/pdfjs-dist@4.6.82/build/pdf.min.js"></script>
+  <script>
+    // pdf.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://unpkg.com/pdfjs-dist@4.6.82/build/pdf.worker.min.js";
+  </script>
+  <style>
+    .dropzone{border:2px dashed #e5e7eb;border-radius:1rem}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
+    .badge-pass{background:#ecfdf5;color:#065f46}
+    .badge-fail{background:#fef2f2;color:#991b1b}
+    .mono{font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .table-fixed td, .table-fixed th { word-break: break-word; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold">EPD MKI-check (asfalt)</h1>
+      <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <!-- Stap 1: Bijlage (eisen + A4–C4) -->
+    <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+      <h2 class="text-xl font-semibold">1) Upload bijlage met eisen (PDF)</h2>
+      <p class="text-gray-600">
+        Upload de PDF met de <strong>uniforme MKI-plafondwaarden</strong> (A–D per ton) en de tabel met <strong>A4–C4</strong>.
+        De tool leest hieruit automatisch de mixnamen, plafondwaarden per jaar en de A4–C4-waarden.
+      </p>
+      <div id="req-drop" class="dropzone p-6 bg-gray-50">
+        <input id="req-file" type="file" accept="application/pdf" class="hidden" />
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="font-medium">Sleep hier je bijlage PDF heen (of klik)</p>
+            <p class="text-sm text-gray-500">Bijv. “Uniforme MKI Plafondwaarden Asfalt”.</p>
+          </div>
+          <button id="req-choose" class="px-4 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">Kies PDF…</button>
+        </div>
+      </div>
+      <div id="req-status" class="text-sm text-gray-700"></div>
+      <div class="grid sm:grid-cols-3 gap-4 items-end">
+        <div>
+          <label class="block text-sm font-medium mb-1">PCR waarop je wilt toetsen</label>
+          <select id="pcr-target" class="w-full border rounded-xl px-3 py-2">
+            <option value="NL-PCR Asfalt 2.0" selected>NL-PCR Asfalt 2.0</option>
+            <option value="NL-PCR Asfalt 2025/2026">NL-PCR Asfalt 2025/2026 (vooruitlopend)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">We controleren of de EPD aangeeft aan deze PCR te voldoen.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Jaar van de eis</label>
+          <select id="year-target" class="w-full border rounded-xl px-3 py-2">
+            <!-- Jaaropties worden gezet na het parsen van de bijlage -->
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Welke kolom uit de bijlage van toepassing is.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Eenheid</label>
+          <input class="w-full border rounded-xl px-3 py-2 bg-gray-50" value="MKI [€] per ton, A–D" disabled />
+        </div>
+      </div>
+    </section>
+
+    <!-- Stap 2: EPD’s -->
+    <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+      <h2 class="text-xl font-semibold">2) Upload één of meer EPD’s (PDF)</h2>
+      <div id="epd-drop" class="dropzone p-6 bg-gray-50">
+        <input id="epd-files" type="file" accept="application/pdf" multiple class="hidden" />
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="font-medium">Sleep hier je EPD-PDF’s heen (of klik)</p>
+            <p class="text-sm text-gray-500">Je kunt meerdere EPD’s tegelijk kiezen.</p>
+          </div>
+          <button id="epd-choose" class="px-4 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">Kies PDF’s…</button>
+        </div>
+      </div>
+
+      <div id="epd-list" class="space-y-4"></div>
+
+      <div class="flex items-center gap-4">
+        <button id="run-checks" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer alles</button>
+        <button id="export-csv" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
+      </div>
+
+      <div id="results" class="mt-4"></div>
+    </section>
+
+    <!-- Uitleg -->
+    <section class="bg-white rounded-2xl shadow p-6 space-y-3">
+      <h3 class="font-semibold">Werkwijze in het kort</h3>
+      <ol class="list-decimal ml-6 space-y-1 text-gray-700">
+        <li>Lees A1–A3 en D uit elke EPD (ongeacht tabelopmaak of NL/EN notatie).</li>
+        <li>Lees uit de bijlage voor de gekozen asfaltsoort het A4–C4 addendum en de plafondwaarde per gekozen jaar.</li>
+        <li>Bereken A–D totaal = (A1–A3) + (A4–C4 uit bijlage) + (D) en toets ≤ plafondwaarde.</li>
+      </ol>
+      <p class="text-sm text-gray-500">
+        Context uit je bijlagen: het eisen-overzicht specificeert plafondwaarden per mengsel en jaar
+        en bevat losse A4–C4-waarden per mengsel die je mag gebruiken als ze niet projectspecifiek gedeclareerd zijn
+        (zie o.a. “Uniforme MKI Plafondwaarden …”, incl. A4–C4 bijlage; en voorbeeld-EPD’s met SBK set 1 en MKI-kolommen). 
+      </p>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Helpers ----------
+    const $ = sel => document.querySelector(sel);
+    const el = (tag, attrs={}, children=[]) => {
+      const n = document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v]) => {
+        if (k === "class") n.className = v;
+        else if (k === "html") n.innerHTML = v;
+        else n.setAttribute(k, v);
+      });
+      (Array.isArray(children) ? children : [children]).forEach(c => c && n.appendChild(c));
+      return n;
+    };
+
+    // Parse numbers in EU/EN & scientific (e.g. "1,033E+1" or "7.501E+0")
+    function parseNumberEU(str){
+      if(!str) return NaN;
+      let s = String(str).trim();
+      // remove thin spaces
+      s = s.replace(/\u202F/g,'');
+      // Handle scientific with comma decimal
+      // replace comma with dot only when it's decimal, not thousands
+      // Strategy: if contains 'E' or 'e', replace comma with dot; else, if both . and , exist, remove thousand sep then unify
+      if(/[Ee][\+\-]?\d+/.test(s)){
+        s = s.replace(',', '.');
+      }else{
+        // remove thousands (either . or ,) heuristics
+        // if there is both separators, assume comma decimal
+        if (s.indexOf(',') > -1 && s.indexOf('.') > -1){
+          s = s.replace(/\./g,'').replace(',', '.');
+        } else if (s.indexOf(',') > -1){
+          // assume comma decimal
+          s = s.replace(',', '.');
+        }
+      }
+      // Remove non numeric/signs/E
+      s = s.replace(/[^0-9Ee\+\-\.]/g,'');
+      const n = Number(s);
+      return isFinite(n) ? n : NaN;
+    }
+
+    // Extract all text from a PDF (concatenate all pages)
+    async function pdfToText(file){
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+      let full = '';
+      for(let p=1; p<=pdf.numPages; p++){
+        const page = await pdf.getPage(p);
+        const content = await page.getTextContent();
+        const txt = content.items.map(it => it.str).join(' ');
+        full += '\n' + txt;
+      }
+      return full;
+    }
+
+    // ---------- Bijlage parser (plafondwaarden + A4–C4) ----------
+    // Verwacht rijen zoals: "AC surf 9,9 9,1 8,2 7,5 6,7"
+    // en later een blok: "MKI waarden A4 t/m C4 ... AC surf 1,34 ..."
+    async function parseRequirementsPDF(file){
+      const text = await pdfToText(file);
+      // Vind jaarkop (kolommen). In jouw bijlage: "2022 2024 2026 2028 2030"
+      const yearsMatch = text.match(/2022\s+2024\s+2026\s+2028\s+2030/);
+      const years = yearsMatch ? ['2022','2024','2026','2028','2030'] : [];
+
+      // Tabel plafondwaarden: neem regels met mengsel + 5 cijfers
+      const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+      const plafond = {}; // { mix: {year: value}}
+      const mixRowRegex = /^([A-Za-z0-9\-\+\s\/\%\,\.()]+?)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)\s+([\d\.,xX\-]+)$/;
+      for(const ln of lines){
+        const m = ln.match(mixRowRegex);
+        if(!m) continue;
+        const name = m[1].replace(/\s+/g,' ').trim();
+        const vals = m.slice(2).map(v=>/x|X|n\.b\./.test(v) ? NaN : parseNumberEU(v));
+        if (years.length===5 && vals.filter(v=>!isNaN(v)).length>=2){
+          plafond[name] = {};
+          years.forEach((y,i)=>{ plafond[name][y] = vals[i]; });
+        }
+      }
+
+      // A4–C4 tabel: blok na kop "MKI waarden A4 t/m C4"
+      const a4c4 = {}; // { mix: number }
+      const a4c4Start = text.indexOf('MKI waarden A4 t/m C4');
+      if (a4c4Start >= 0){
+        const tail = text.slice(a4c4Start);
+        // regels zoals "AC surf 1,34"
+        const a4c4Regex = /^([A-Za-z0-9\-\+\s\/\%\,\.()]+?)\s+([\d\.,]+)\s*$/gm;
+        let mm;
+        while((mm = a4c4Regex.exec(tail))!==null){
+          const name = mm[1].replace(/\s+/g,' ').trim();
+          const val = parseNumberEU(mm[2]);
+          if(!isNaN(val)) a4c4[name] = val;
+        }
+      }
+
+      // Kandidaten asfaltsoorten (lijst voor dropdowns)
+      const mixes = Object.keys(plafond).length ? Object.keys(plafond) : Object.keys(a4c4);
+
+      return { years, plafond, a4c4, mixes, rawText: text };
+    }
+
+    // ---------- EPD parser ----------
+    // Haalt: product/mixnaam, PCR tekst, publicatie, MKI A1-A3, MKI D.
+    async function parseEpdPDF(file){
+      const text = await pdfToText(file);
+
+      // Product / mix (heuristiek)
+      let product = (text.match(/Product:\s*([^\n]+?)\s+Eenheid:/) || [,''])[1].trim();
+      if(!product){
+        // alternatief uit kop
+        product = (text.match(/Product\s+([^\n]+)\s+Eenheid/i)||[,''])[1] || '';
+      }
+      if(!product){
+        // alternatief: "Product" op aparte regel
+        const m = text.match(/Product\s*\n\s*([^\n]+)/i);
+        if(m) product = m[1].trim();
+      }
+
+      // PCR vermelding
+      let pcr = (text.match(/PCR[:\s]+([^\n]+?Asfalt[^\n]+)/i) || [,''])[1].trim();
+      if(!pcr){
+        const m = text.match(/NL-?PCR\s+Asfalt\s+[^\n]+/i);
+        if(m) pcr = m[0].trim();
+      }
+
+      // Publicatiedatum
+      const pub = (text.match(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i) || [,''])[1];
+
+      // MKI blok: varianten
+      // Variant A: tabel met "MKI Euro ... A1 A2 A3 A1-A3 D"
+      // Variant B: "Environmental Costs Indicator euro ..." met "Subtotaal" (A1-A3) en D
+      let mkiA1A3 = NaN, mkiD = NaN;
+
+      // Zoek regel met kolomtitels
+      if (/\bMKI\b/i.test(text)){
+        // Probeer kolomlabels
+        // 1) “A1-A3” expliciet
+        let m = text.match(/MKI[^\n]*?\bA1-?A3\b[^\n]*?\bD\b[^\n]*?([\d,\.Ee\+\-]+)[^\n]*?([\-]?\d[\d,\.Ee\+\-]*)/i);
+        if(m){
+          mkiA1A3 = parseNumberEU(m[1]);
+          mkiD    = parseNumberEU(m[2]);
+        } else {
+          // 2) vind een rij “A1 ... A2 ... A3 ...” én een “D”
+          // Pak dichtstbijzijnde “A1-A3” of som van A1+A2+A3 als fallback
+          const row = text.split(/\n/).find(l => /MKI/i.test(l) && /A1/i.test(l) && /A2/i.test(l) && /A3/i.test(l));
+          if(row){
+            // probeer A1-A3 direct
+            let mm = row.match(/\bA1-?A3\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+            if(mm) mkiA1A3 = parseNumberEU(mm[1]);
+            // D
+            mm = row.match(/\bD\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+            if(mm) mkiD = parseNumberEU(mm[1]);
+          }
+        }
+      }
+      // Variant B (zoals “Environmental Costs Indicator … Subtotaal … D”)
+      if (isNaN(mkiA1A3) || isNaN(mkiD)){
+        const block = text.match(/Environmental\s+Costs\s+Indicator[\s\S]{0,400}/i);
+        if(block){
+          const b = block[0];
+          const mm1 = b.match(/\bSubtotaal\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+          const mm2 = b.match(/\bD\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+          if(mm1) mkiA1A3 = parseNumberEU(mm1[1]);
+          if(mm2) mkiD    = parseNumberEU(mm2[1]);
+        }
+      }
+      // Variant C (zoals Ecochain SBK set 1 met kolom “A1-A3 D Totaal”)
+      if (isNaN(mkiA1A3) || isNaN(mkiD)){
+        const eco = text.match(/Milieu-impact\s+SBK\s+set\s+1[\s\S]{0,1200}/i);
+        if(eco){
+          const e = eco[0];
+          // Zoek de rij die met "MKI" begint en lees kolommen
+          const line = e.split(/\n/).find(l => /^\s*MKI\s+/i.test(l));
+          if(line){
+            // Verwachte volgorde: "MKI ... A1 A2 A3 A1-A3 D Totaal"
+            const a13m = line.match(/\bA1-?A3\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+            const dm   = line.match(/\bD\b\s+([\-]?\d[\d,\.Ee\+\-]*)/i);
+            if(a13m) mkiA1A3 = parseNumberEU(a13m[1]);
+            if(dm)   mkiD    = parseNumberEU(dm[1]);
+          }
+        }
+      }
+
+      // Eventuele mix suggestie (uit EPD kop)
+      let mixHint = '';
+      // productregel bevat vaak "AC 16 Base..." etc.
+      mixHint = product || '';
+
+      return {
+        text,
+        product: product || file.name.replace(/\.pdf$/i,''),
+        pcr,
+        pubDate: pub || '',
+        mkiA1A3, mkiD,
+        mixHint
+      };
+    }
+
+    // ---------- UI & Logica ----------
+    const state = {
+      req: null,          // { years, plafond, a4c4, mixes }
+      epds: [],           // [{file, parsed, choiceMix}]
+      results: []         // computed results
+    };
+
+    // Dropzones
+    function makeDrop(elBox, input, opener){
+      ['dragenter','dragover'].forEach(ev => elBox.addEventListener(ev, e => {
+        e.preventDefault(); elBox.classList.add('bg-green-50');
+      }));
+      ['dragleave','drop'].forEach(ev => elBox.addEventListener(ev, e => {
+        e.preventDefault(); elBox.classList.remove('bg-green-50');
+      }));
+      elBox.addEventListener('drop', e => {
+        const files = [...e.dataTransfer.files].filter(f => f.type==='application/pdf');
+        if(input.multiple){
+          input.files = new DataTransfer(); files.forEach(f => input.files.items.add(f));
+        }else{
+          input.files = new DataTransfer(); input.files.items.add(files[0]);
+        }
+        input.dispatchEvent(new Event('change'));
+      });
+      opener.addEventListener('click', () => input.click());
+    }
+
+    // Elements
+    const reqBox = $('#req-drop'), reqInput = $('#req-file'), reqBtn = $('#req-choose'), reqStatus = $('#req-status');
+    const yearSel = $('#year-target'), pcrSel = $('#pcr-target');
+    const epdBox = $('#epd-drop'), epdInput = $('#epd-files'), epdBtn = $('#epd-choose'), epdList = $('#epd-list');
+    const runBtn = $('#run-checks'), csvBtn = $('#export-csv'), resultsBox = $('#results');
+
+    makeDrop(reqBox, reqInput, reqBtn);
+    makeDrop(epdBox, epdInput, epdBtn);
+
+    reqInput.addEventListener('change', async () => {
+      if(!reqInput.files[0]) return;
+      reqStatus.textContent = 'Bijlage wordt gelezen…';
+      try{
+        state.req = await parseRequirementsPDF(reqInput.files[0]);
+        const y = state.req.years.length ? state.req.years : ['2024','2026'];
+        yearSel.innerHTML = y.map(v=>`<option value="${v}">${v}</option>`).join('');
+        reqStatus.innerHTML = `
+          ✅ Bijlage gelezen. Gevonden mengsels: <strong>${(state.req.mixes||[]).length}</strong>.
+          Jaar-kolommen: <strong>${y.join(', ')}</strong>.
+        `;
+        enableRunIfReady();
+      }catch(err){
+        console.error(err);
+        reqStatus.innerHTML = `❌ Kon de bijlage niet parsen. Controleer of dit de juiste PDF is.`;
+      }
+    });
+
+    epdInput.addEventListener('change', async () => {
+      epdList.innerHTML = '';
+      state.epds = [];
+      for(const file of epdInput.files){
+        const card = el('div', {class:'border rounded-xl p-4'});
+        card.appendChild(el('div', {class:'font-medium'}, file.name));
+        const meta = el('div', {class:'text-sm text-gray-600 mt-1'}, 'Lezen…');
+        card.appendChild(meta);
+        const row = el('div', {class:'mt-3 grid sm:grid-cols-2 gap-3 items-end'});
+
+        const mixWrap = el('div');
+        mixWrap.appendChild(el('label', {class:'block text-sm font-medium mb-1'}, 'Asfaltsoort'));
+        const mixSel = el('select', {class:'w-full border rounded-xl px-3 py-2'});
+        // opties worden pas gezet na parsing bijlage, maar we vullen alvast indien mogelijk
+        mixWrap.appendChild(mixSel);
+
+        const info = el('div', {class:'text-sm text-gray-700 space-y-1'});
+        row.appendChild(mixWrap);
+        row.appendChild(info);
+        card.appendChild(row);
+        epdList.appendChild(card);
+
+        try{
+          const parsed = await parseEpdPDF(file);
+          // Stel mix opties
+          const mixes = (state.req && state.req.mixes && state.req.mixes.length) ? state.req.mixes : [];
+          mixSel.innerHTML = '<option value="">— kies asfaltsoort —</option>' + mixes.map(m=>`<option>${m}</option>`).join('') + '<option value="__other">Andere (vrije invoer)</option>';
+          // Suggestie
+          if(parsed.mixHint){
+            const cand = mixes.find(m => parsed.mixHint.toLowerCase().includes(m.toLowerCase().split(' ')[0]));
+            if(cand) mixSel.value = cand;
+          }
+          // Vrije invoer veld
+          let otherInput = null;
+          mixSel.addEventListener('change', () => {
+            if(mixSel.value === '__other'){
+              if(!otherInput){
+                otherInput = el('input', {class:'w-full border rounded-xl px-3 py-2 mt-2', placeholder:'Typ mengselnaam exact zoals in bijlage/A4–C4 tabel'});
+                mixWrap.appendChild(otherInput);
+              }
+            }else if(otherInput){
+              otherInput.remove(); otherInput = null;
+            }
+          });
+
+          meta.innerHTML = `
+            <span class="badge ${parsed.pcr ? 'badge-pass':'badge-fail'}">${parsed.pcr || 'PCR niet gevonden'}</span>
+            <span class="badge bg-gray-100">Publicatie: ${parsed.pubDate || 'onbekend'}</span>
+          `;
+          info.innerHTML = `
+            <div>MKI A1–A3: <span class="mono">${isNaN(parsed.mkiA1A3) ? '—' : parsed.mkiA1A3.toFixed(3)}</span></div>
+            <div>MKI D: <span class="mono">${isNaN(parsed.mkiD) ? '—' : parsed.mkiD.toFixed(3)}</span></div>
+          `;
+
+          state.epds.push({file, parsed, get mix(){
+            if(mixSel.value === '__other'){
+              const v = mixWrap.querySelector('input')?.value?.trim();
+              return v || '';
+            }
+            return mixSel.value || '';
+          }});
+        }catch(err){
+          console.error(err);
+          meta.innerHTML = `<span class="badge badge-fail">Kon EPD niet lezen</span>`;
+        }
+      }
+      enableRunIfReady();
+    });
+
+    function enableRunIfReady(){
+      const okReq = !!state.req;
+      const okEpd = state.epds.length > 0;
+      runBtn.disabled = !(okReq && okEpd);
+      csvBtn.disabled = true;
+      resultsBox.innerHTML = '';
+    }
+
+    function computeFor(epd, req, year, pcrTarget){
+      const {parsed} = epd;
+      const res = {
+        file: epd.file.name,
+        product: parsed.product,
+        pcr: parsed.pcr || '',
+        pubDate: parsed.pubDate || '',
+        mix: epd.mix || '',
+        year,
+        mkiA1A3: parsed.mkiA1A3,
+        mkiD: parsed.mkiD,
+        mkiA4C4: NaN,
+        mkiTotalAD: NaN,
+        plafond: NaN,
+        pass: false,
+        notes: []
+      };
+
+      // PCR check
+      if(!parsed.pcr){
+        res.notes.push('PCR niet aangetroffen in EPD.');
+      }else if(pcrTarget && !parsed.pcr.toLowerCase().includes(pcrTarget.toLowerCase().replace(/\s+/g,' '))){
+        res.notes.push(`EPD PCR (“${parsed.pcr}”) wijkt af van doel (“${pcrTarget}”).`);
+      }
+
+      if(!res.mix){
+        res.notes.push('Geen asfaltsoort gekozen.');
+        return res;
+      }
+
+      // Haal A4–C4 en plafond
+      // Exacte naam match; als niet gevonden, probeer losse normalisatie
+      const plafObj = req.plafond[res.mix];
+      const a4c4Val = req.a4c4[res.mix];
+      if(typeof a4c4Val === 'number') res.mkiA4C4 = a4c4Val;
+      else res.notes.push('A4–C4 niet gevonden voor dit mengsel (bijlage).');
+
+      if(plafObj && typeof plafObj[year] === 'number' && !isNaN(plafObj[year])){
+        res.plafond = plafObj[year];
+      }else{
+        res.notes.push(`Geen plafondwaarde gevonden voor “${res.mix}” in ${year}.`);
+      }
+
+      // Bereken A–D
+      if(!isNaN(res.mkiA1A3) && !isNaN(res.mkiD) && !isNaN(res.mkiA4C4)){
+        res.mkiTotalAD = res.mkiA1A3 + res.mkiA4C4 + res.mkiD; // D is vaak negatief
+        if(!isNaN(res.plafond)){
+          res.pass = res.mkiTotalAD <= res.plafond;
+        }
+      }else{
+        res.notes.push('Onvoldoende data om A–D totaal te berekenen.');
+      }
+
+      return res;
+    }
+
+    runBtn.addEventListener('click', () => {
+      const year = yearSel.value;
+      const pcrTarget = pcrSel.value;
+      const rows = [];
+      resultsBox.innerHTML = '';
+
+      for(const epd of state.epds){
+        const r = computeFor(epd, state.req, year, pcrTarget);
+        state.results.push(r);
+
+        const card = el('div', {class:'border rounded-2xl p-4 bg-white'});
+        card.appendChild(el('div', {class:'flex justify-between items-start gap-4'},
+          [
+            el('div', {class:'font-semibold'}, r.product || r.file),
+            el('div', {class:'badge ' + (r.pass ? 'badge-pass' : 'badge-fail')}, r.pass ? 'PASS' : 'FAIL')
+          ]
+        ));
+        const tbl = el('div', {class:'overflow-x-auto mt-3'},
+          el('table', {class:'min-w-full table-fixed text-sm'},
+            [
+              el('thead', {}, el('tr', {},
+                ['Bestand','Asfaltsoort','Jaar','PCR (EPD)','A1–A3','A4–C4','D','A–D totaal','Plafond','Marge'].map(h=>el('th',{class:'text-left py-2 pr-4 text-gray-600'},h)))
+              )),
+              el('tbody', {}, el('tr', {},
+                [
+                  r.file,
+                  r.mix || '—',
+                  r.year,
+                  r.pcr || '—',
+                  isNaN(r.mkiA1A3)?'—':r.mkiA1A3.toFixed(3),
+                  isNaN(r.mkiA4C4)?'—':r.mkiA4C4.toFixed(3),
+                  isNaN(r.mkiD)?'—':r.mkiD.toFixed(3),
+                  isNaN(r.mkiTotalAD)?'—':r.mkiTotalAD.toFixed(3),
+                  isNaN(r.plafond)?'—':r.plafond.toFixed(3),
+                  (!isNaN(r.mkiTotalAD) && !isNaN(r.plafond)) ? (r.plafond - r.mkiTotalAD).toFixed(3) : '—'
+                ].map(v=>el('td',{class:'py-2 pr-4 mono'},v)))
+              ))
+            ]
+          )
+        );
+        card.appendChild(tbl);
+
+        if(r.notes.length){
+          card.appendChild(el('div', {class:'mt-2 text-xs text-gray-600'}, 'Opmerkingen: ' + r.notes.join(' · ')));
+        }
+
+        resultsBox.appendChild(card);
+
+        // Voor CSV
+        rows.push({
+          file: r.file,
+          product: r.product,
+          mix: r.mix,
+          year: r.year,
+          pcr_epd: r.pcr,
+          mki_a1a3: isNaN(r.mkiA1A3)?'':r.mkiA1A3,
+          mki_a4c4: isNaN(r.mkiA4C4)?'':r.mkiA4C4,
+          mki_d: isNaN(r.mkiD)?'':r.mkiD,
+          mki_total_ad: isNaN(r.mkiTotalAD)?'':r.mkiTotalAD,
+          plafond: isNaN(r.plafond)?'':r.plafond,
+          margin: (!isNaN(r.mkiTotalAD) && !isNaN(r.plafond)) ? (r.plafond - r.mkiTotalAD) : '',
+          pass: r.pass ? 'PASS' : 'FAIL',
+          notes: r.notes.join(' | ')
+        });
+      }
+
+      // CSV export
+      if(rows.length){
+        const headers = Object.keys(rows[0]);
+        const csv = [headers.join(',')].concat(
+          rows.map(r => headers.map(h => {
+            const v = r[h];
+            const s = (v===undefined||v===null) ? '' : String(v);
+            return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+          }).join(','))
+        ).join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        csvBtn.onclick = () => {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'epd-mki-checks.csv';
+          a.click();
+        };
+        csvBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
