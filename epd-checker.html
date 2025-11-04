@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.7)</title>
+<title>MKI-toetsing asfalt check (v2.6)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -25,7 +25,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.7)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -86,7 +86,7 @@
 /* ===== Helpers ===== */
 const $=s=>document.querySelector(s);
 function el(t,a={},c=[]){const n=document.createElement(t);
- for(const[k,v]of Object.entries(a)){k==="class"?n.className=v;k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
+ for(const[k,v]of Object.entries(a)){k==="class"?n.className=v:k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
  (Array.isArray(c)?c:[c]).forEach(x=>{if(x==null)return;if(typeof x==="string"||typeof x==="number")n.appendChild(document.createTextNode(String(x)));else n.appendChild(x);});
  return n;}
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
@@ -218,14 +218,15 @@ async function parseEpd(file){
   return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, text };
 }
 
-/* ===== Asfaltsoort-suggestie: EPD-tekst leidend, filename als fallback ===== */
+/* ===== Asfaltsoort-suggestie (eerst type, dan PR/gemod) ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
 
-// PR-detectie zonder "4060" false positives
+// PR-detectie: vangt '60PR', 'PR 60', 'PR-60', '60 PR' (maar niet '4060')
 function detectPR(t){
   if(/(?:^|[\s_\-])(?:60\s*pr|pr\s*60|60pr)(?:$|[\s_\-])/i.test(t)) return 60;
   if(/(?:^|[\s_\-])(?:50\s*pr|pr\s*50|50pr)(?:$|[\s_\-])/i.test(t)) return 50;
   if(/(?:^|[\s_\-])(?:30\s*pr|pr\s*30|30pr)(?:$|[\s_\-])/i.test(t)) return 30;
+  // ook "minimaal 30% PR" in lopende tekst
   if(/\bminimaal\s*30\s*%?\s*pr\b/i.test(t)) return 30;
   if(/\bminimaal\s*50\s*%?\s*pr\b/i.test(t)) return 50;
   if(/\bminimaal\s*60\s*%?\s*pr\b/i.test(t)) return 60;
@@ -233,34 +234,34 @@ function detectPR(t){
 }
 function detectGemod(t){ return /gemod|pmb|polymeer/i.test(t); }
 
-function decideMixFromString(src){
-  if(!src) return "";
-  const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
+function suggestMixFromText(txt, fileName=""){
+  // combineer bestandsnaam + tekst; normaliseer scheidingstekens
+  const all = ((fileName || "") + " " + (txt || "")).replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
 
-  // SMA geluidsreducerend (8G+) hoogste prioriteit
-  if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
-  // SMA
-  if(/\bsma\b/.test(all)){
+  // 0) SMA geluidsreducerend (8G+) heeft hoogste prioriteit
+  if(has(all, /8g\+?/, /geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
+  // 1) SMA-familie
+  if(/sma\b/.test(all)){
     if(/rood|clobred|red/.test(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
     if(/gemod|pmb|polymeer/.test(all)) return "SMA 8-11 met gemodificeerd bitumen";
+    if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
     const pr=detectPR(all);
     if(pr===30) return "SMA 8-11 minimaal 30% PR";
-    if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
     return "SMA 8-11";
   }
-
-  // ZOAB / DZOAB / 2L ZOAB
+  // 2) 2L ZOAB / ZOAB / DZOAB
   if(/2l.*zoab.*top/.test(all)) return "2L ZOAB toplaag met gemodificeerd bitumen";
   if(/2l.*zoab.*onderlaag.*30/.test(all)) return "2L ZOAB onderlaag, minimaal 30% PR";
   if(/2l.*zoab.*onderlaag/.test(all)) return "2L ZOAB onderlaag";
   if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)) return "ZOAB regulier+ / DZOAB";
   if(/\bzoab\b/.test(all)) return "ZOAB regulier";
 
-  // AC-wereld: eerst type
+  // === 3) AC-wereld: eerst type bepalen ===
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
   const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
   const isAC     = /\bac\b|asfaltbeton/.test(all);
+
   const pr = detectPR(all);
   const gm = detectGemod(all);
   const rood = /rood|clobred|red/.test(all);
@@ -268,8 +269,8 @@ function decideMixFromString(src){
   if(isAC){
     if(isSurf){
       if(rood) return "AC surf rood";
-      if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-      if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
+      if(gm && (pr===30 || pr===50 || pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+      if(pr===30 || pr===50 || pr===60) return "AC surf, minimaal 30% PR";
       if(gm) return "AC surf met gemodificeerd bitumen";
       return "AC surf";
     }
@@ -280,25 +281,18 @@ function decideMixFromString(src){
       if(gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       return "AC bin/base, minimaal 50% PR";
     }
-    // Geen expliciet surf/binbase: heuristiek
+    // Geen expliciet surf/binbase: probeer via PR/gemod/rood
     if(rood) return "AC surf rood";
-    if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-    if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
+    if(gm && (pr===30 || pr===50 || pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+    if(pr===30 || pr===50 || pr===60) return "AC surf, minimaal 30% PR";
     if(gm) return "AC surf met gemodificeerd bitumen";
-    return "AC surf";
+    return "AC surf"; // veilige default voor AC
   }
 
+  // los rood
   if(rood) return "AC surf rood";
-  return "";
-}
 
-function suggestMixFromText(epdText, fileName=""){
-  // 1) Probeer EPD-tekst (leidend)
-  let mix = decideMixFromString(epdText || "");
-  if(mix) return mix;
-  // 2) Fallback: bestandsnaam
-  mix = decideMixFromString(fileName || "");
-  return mix || "";
+  return "";
 }
 
 /* ===== Precisie: invoer normaliseren (komma/punt) ===== */
@@ -385,7 +379,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(!isNaN(parsed.mkiA1A3)) ui.a13Input.value = parsed.mkiA1A3;
       if(!isNaN(parsed.mkiD))    ui.dInput.value  = parsed.mkiD;
 
-      // EPD-tekst leidend, filename fallback
+      // Suggestie: eerst type → dan PR/gemod
       const hint = suggestMixFromText(parsed.text, file.name);
       if(hint) ui.mixSel.value = hint;
 
