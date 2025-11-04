@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.7)</title>
+<title>MKI-toetsing asfalt check (v2.6.8)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -19,9 +19,6 @@
   .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
   .hint{font-size:.8rem;color:#6b7280}
   .highlight-col{background:#dcfce7!important}
-  .btn{display:inline-flex;align-items:center;gap:.4rem;border-radius:.75rem;padding:.45rem .8rem;font-size:.875rem}
-  .btn-gray{background:#f3f4f6;color:#111827}
-  .btn-gray:hover{background:#e5e7eb}
   .btn-danger{background:#fee2e2;color:#991b1b}
   .btn-danger:hover{background:#fecaca}
 </style>
@@ -30,7 +27,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.7)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.8)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -88,7 +85,7 @@
 </main>
 
 <script>
-/* ===== Helpers ===== */
+/* ===== Mini-helpers ===== */
 const $=s=>document.querySelector(s);
 function el(t,a={},c=[]){const n=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(k==="class")n.className=v; else if(k==="html")n.innerHTML=v; else n.setAttribute(k,v);}
@@ -97,28 +94,15 @@ function el(t,a={},c=[]){const n=document.createElement(t);
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
 function fmtNL(n){return (typeof n!=="number"||isNaN(n))?"—":n.toFixed(2).replace(".",",");}
 
-/* ===== CSV number formatter (volledige precisie, nl-decimaal, geen exponent) ===== */
-function toCsvNumber(value, rawIfString=true){
-  // Als we al een string (ruwe EPD) kregen: zet alleen . -> , en trim spaties.
+/* CSV: komma-decimaal, geen exponent, volledige precisie */
+function toCsvNumber(value){
   if (typeof value === 'string') {
-    const s=value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ');
-    return s.replace(/\./g, ',');
+    return value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ').replace(/\./g, ',');
   }
-  // Anders: formatteer zonder exponent en zonder duizendtallen.
   if (typeof value !== 'number' || !isFinite(value)) return '';
-  // Gebruik hoge resolutie, daarna trailing nullen weg
   let s = value.toLocaleString('nl-NL',{useGrouping:false, maximumFractionDigits:20});
-  // Verzeker geen exponent
-  if (/e\+|e\-|E\+|E\-/.test(s)) {
-    // laatste redmiddel: via Intl met veel fraction digits is al non-exp; als nog exp, converteer handmatig
-    s = Number(value).toFixed(20).replace(/0+$/,'').replace(/,$/,'');
-    s = s.replace('.',',');
-    return s;
-  }
-  // Locale geeft al komma; zeker weten dat het een komma is
-  s = s.replace(/\./g, ',');
-  // trailing komma niet laten eindigen
-  if (s.endsWith(',')) s = s.slice(0,-1);
+  if (/e\+|e\-|E\+|E\-/.test(s)) { s = Number(value).toFixed(20); }
+  s = s.replace(/\./g, ',').replace(/0+$/,'').replace(/,$/,'');
   return s;
 }
 
@@ -234,13 +218,13 @@ async function pdfToText(file){
 }
 function pick(re,txt){const m=txt.match(re);return m?m[1].trim():'';}
 
-/* Specifieke ECI-rij (APE) */
+/* APE-ECI rij */
 function extractECITable(txt){
   const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
   const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
   const m = t.match(re);
   if(!m) return null;
-  const a13 = m[5], d = m[6]; // kolommen: A1 A2 A3 A1-A3 D Total
+  const a13 = m[5], d = m[6];
   if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
   return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
 }
@@ -261,7 +245,7 @@ function extractLabeledValues(txt){
   return null;
 }
 
-/* Back-up blok */
+/* Back-up */
 function extractFromMKIResults(txt){
   const mm = txt.match(/Resultaten[\s\S]{0,400}(?:MKI|ECI)\s+Euro([\s\S]{0,260})/i);
   if(!mm) return null;
@@ -309,26 +293,29 @@ async function parseEpd(file){
       if(isNaN(d)){ d=res.d; dRaw=res.dRaw; }
     }
   }
-
   return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, a1a3Raw:a13Raw, dRaw, text };
 }
 
-/* ===== Asfaltsoort-suggestie: EPD-tekst leidend, filename fallback ===== */
+/* ===== Asfaltsoort-suggestie ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
 
-/* PR/KA-detectie — zoekt naar "30% PR" of "30% KA", en "minimaal 30% PR/KA" (voorkomt 4060-vals) */
+/* PR/KA-detectie — “30% PR/KA”, “minimaal 30% PR/KA”, etc. */
 function detectPRorKA(t){
   const w = t.replace(/\u00A0/g,' ');
   const any = (p)=>new RegExp(p,'i').test(w);
-  if ( any('(?:^|[^\\w])(?:60\\s*%?\\s*(?:pr|ka)|(pr|ka)\\s*%?\\s*60)(?!\\w)') || /\bminimaal\s*60\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 60;
-  if ( any('(?:^|[^\\w])(?:50\\s*%?\\s*(?:pr|ka)|(pr|ka)\\s*%?\\s*50)(?!\\w)') || /\bminimaal\s*50\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 50;
-  if ( any('(?:^|[^\\w])(?:30\\s*%?\\s*(?:pr|ka)|(pr|ka)\\s*%?\\s*30)(?!\\w)') || /\bminimaal\s*30\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 30;
+  if ( any('(?:^|[^\\w])(?:60\\s*%?\\s*(?:pr|ka)|(?:pr|ka)\\s*%?\\s*60)(?!\\w)') || /\bminimaal\s*60\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 60;
+  if ( any('(?:^|[^\\w])(?:50\\s*%?\\s*(?:pr|ka)|(?:pr|ka)\\s*%?\\s*50)(?!\\w)') || /\bminimaal\s*50\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 50;
+  if ( any('(?:^|[^\\w])(?:30\\s*%?\\s*(?:pr|ka)|(?:pr|ka)\\s*%?\\s*30)(?!\\w)') || /\bminimaal\s*30\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 30;
   return null;
 }
-/* GEMOD detectie: gemod, PMB, SFB, SBS, polymeer/polymer */
+/* GEMOD detectie */
 function detectGemod(t){ return /gemod|pmb|sfb|sbs|polymeer|polymer/i.test(t); }
-/* striktere 'rood' */
 function isRood(t){ return /\brood\b|clobred\b|penbitumen/i.test(t); }
+
+/* BELANGRIJK: 8G+ vóór generieke SMA check (voorrang) */
+function isSma8GPlus(t){
+  return /\b8\s*G\s*\+?\b/i.test(t) || /8g\+?/i.test(t) || /geluidsreducer/i.test(t);
+}
 
 function decideMixFromString(src){
   if(!src) return "";
@@ -351,12 +338,17 @@ function decideMixFromString(src){
   /* ---- ZOAB / DZOAB (niet-2L) ---- */
   if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)){
     const pr=detectPRorKA(all);
-    if(pr===30) return "DZOAB, minimaal 30% PR";
+    if(pr>=30) return "DZOAB, minimaal 30% PR";
     return "ZOAB regulier+ / DZOAB";
   }
   if(/\bzoab\b/.test(all)) return "ZOAB regulier";
 
-  /* ---- SMA ---- */
+  /* ---- SMA 8G+ vóór generiek SMA ---- */
+  if (isSma8GPlus(all)) {
+    return "SMA geluidsreducerende deklaag (op basis van 8G+)";
+  }
+
+  /* ---- SMA generiek ---- */
   if(/\bsma\b/.test(all)){
     if(isRood(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
@@ -366,9 +358,6 @@ function decideMixFromString(src){
     if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
     return "SMA 8-11";
   }
-
-  /* ---- SMA geluidsreducerend 8G+ ---- */
-  if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
 
   /* ---- AC ---- */
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
@@ -454,7 +443,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const card=el("div",{class:"border rounded-xl p-4 bg-white", "data-uid":uid});
     const headLeft=el("div",{class:"font-medium truncate pr-2", title:file.name},file.name);
     const status=el("div",{class:"badge badge-info"},"lezen…");
-    const delBtn=el("button",{class:"btn btn-danger", type:"button", title:"Verwijderen"}, "Verwijderen");
+    const delBtn=el("button",{class:"btn-danger px-3 py-1 rounded-lg", type:"button", title:"Verwijderen"}, "Verwijderen");
 
     const head=el("div",{class:"flex justify-between items-center mb-2 gap-2"},[
       headLeft,
@@ -619,7 +608,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ]);
       results.appendChild(card);
 
-      // CSV: ruwe strings voor uitgelezen velden; berekende velden netjes met NL-decimaal en volledige precisie.
+      // CSV (ruwe EPD-strings waar mogelijk; berekeningen volledig/komma)
       const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(a1)?a1.toString():"");
       const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(d) ?d.toString() :"");
       const a4Raw = Number.isFinite(a4) ? a4.toString() : "";
@@ -655,7 +644,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 
     // CSV export
-    const csvBtn=$("#export-csv");
     if(rows.length){
       const headers=Object.keys(rows[0]);
       const csvLines=[headers.join(";")].concat(
@@ -667,10 +655,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
       const BOM="\uFEFF";
       const blob=new Blob([BOM+csvLines.join("\n")],{type:"text/csv;charset=utf-8"});
       const url=URL.createObjectURL(blob);
-      csvBtn.disabled=false;
-      csvBtn.onclick=()=>{const a=document.createElement("a");a.href=url;a.download="mki-resultaten.csv";a.click();};
+      const btn=$("#export-csv");
+      btn.disabled=false;
+      btn.onclick=()=>{const a=document.createElement("a");a.href=url;a.download="mki-resultaten.csv";a.click();};
     }else{
-      csvBtn.disabled=true;
+      $("#export-csv").disabled=true;
     }
     toast("Controle uitgevoerd", true);
   });
