@@ -13,44 +13,31 @@
     window.__PDFJS_MODE__ = null; // 'esm' of 'umd'
 
     async function loadPdfjsESM() {
-      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs?v=1');
-      // ESM worker hoort ook ESM te zijn:
+      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs?v=2');
       pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs?v=1';
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs?v=2';
       window.pdfjsLib = pdfjsLib;
       window.__PDFJS_MODE__ = 'esm';
       window.__PDFJS_READY__ = true;
     }
-
     async function loadPdfjsUMD() {
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js?v=1';
+        s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js?v=2';
         s.defer = true;
         s.onload = resolve;
         s.onerror = reject;
         document.head.appendChild(s);
       });
       if (!window.pdfjsLib) throw new Error('UMD pdf.js kon niet geladen worden');
-      // UMD worker moet UMD zijn:
       window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js?v=1';
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js?v=2';
       window.__PDFJS_MODE__ = 'umd';
       window.__PDFJS_READY__ = true;
     }
-
     (async () => {
-      try {
-        await loadPdfjsESM();
-      } catch (e) {
-        console.warn('[PDFJS] ESM laden faalde, val terug op UMD:', e);
-        try {
-          await loadPdfjsUMD();
-        } catch (e2) {
-          console.error('[PDFJS] UMD laden faalde ook:', e2);
-          window.__PDFJS_READY__ = false;
-        }
-      }
+      try { await loadPdfjsESM(); }
+      catch (e) { console.warn('[PDFJS] ESM mislukte, fallback UMD:', e); try { await loadPdfjsUMD(); } catch(e2){ console.error('[PDFJS] UMD ook mislukt:', e2); } }
     })();
   </script>
 
@@ -165,7 +152,7 @@ async function waitForPdfjs(timeoutMs=20000){
 
 /* Numbers & PDF text */
 function parseNumberEU(str){
-  if(!str) return NaN; let s=String(str).trim().replace(/\u202F/g,'');
+  if(!str) return NaN; let s=String(str).trim().replace(/\u202F/g,'').replace(/\s/g,'');
   if(/[Ee][\+\-]?\d+/.test(s)) s=s.replace(',', '.');
   else if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',', '.');
   else if(s.includes(',')) s=s.replace(',', '.');
@@ -185,46 +172,104 @@ async function pdfToText(file){
   return full;
 }
 
-/* Eisen parser */
-function detectYearColumns(text){
-  const arr=[...text.matchAll(/\b(20[1-3]\d)\b/g)].map(m=>m[1]);
-  const counts = arr.reduce((a,y)=>(a[y]=(a[y]||0)+1,a),{});
-  const years = Object.keys(counts).map(Number).sort((a,b)=>a-b);
-  if([2022,2024,2026,2028,2030].every(y=>years.includes(y))) return ['2022','2024','2026','2028','2030'];
-  for(let i=0;i<years.length-4;i++){ const w=years.slice(i,i+5); if(w[4]-w[0]<=10) return w.map(String); }
-  return years.slice(0,5).map(String);
+/* ========= NEW: super-robuuste eisen parser ========= */
+function normaliseTextForParsing(text){
+  return text
+    .replace(/\r/g,'\n')
+    .replace(/[ \u00A0]/g,' ')     // NBSP -> space
+    .replace(/\s+\/\s+/g,'/')      // tidy slashes
+    .replace(/\s{2,}/g,' ')        // collapse spaces
+    .replace(/(\S)[–—](\S)/g,'$1 - $2')
+    .replace(/\b(\d)\s+(\d)\b/g,'$1$2') // footnote digit glued
+    ;
 }
-function parsePlafondAndA4C4(text){
-  const years = detectYearColumns(text);
-  const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
-  const rowRegex = /^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)\s+([\d\.,xX\-n\.b\.]+)$/i;
-  const plafond={};
+function sliceBetween(text, startLabel, endLabel){
+  const a = text.indexOf(startLabel);
+  if(a<0) return '';
+  const b = endLabel ? text.indexOf(endLabel, a+startLabel.length) : -1;
+  return text.slice(a + startLabel.length, b>0?b:undefined);
+}
+function extractA4C4Block(text){
+  const block = sliceBetween(text, 'Bijlage MKI waarden A4 – C4', '');
+  const lines = block.split(/\n/).map(s=>s.trim()).filter(Boolean);
+  const a4c4 = {};
+  const mixes = [];
   for(const ln of lines){
-    const m=ln.match(rowRegex); if(!m) continue;
-    const name=m[1].replace(/\s+/g,' ').trim();
-    const vals=m.slice(2).map(v=>/x|X|n\.b\./i.test(v)?NaN:parseNumberEU(v));
-    if(vals.filter(v=>!isNaN(v)).length>=2 && years.length>=5){
-      plafond[name]={}; years.slice(0,5).forEach((y,i)=>plafond[name][y]=vals[i]);
+    // pattern: "<mix> <value>"
+    const m = ln.match(/^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\-]?\d[\d\.,]*)$/);
+    if(m){
+      const name = m[1].replace(/\s+/g,' ').trim();
+      const val = parseNumberEU(m[2]);
+      if(!isNaN(val)){
+        a4c4[name] = val;
+        if(!mixes.includes(name)) mixes.push(name);
+      }
     }
   }
-  const a4c4={};
-  const tagIdx=text.search(/A4\s*(t\/m|-|tot en met)\s*C4/i);
-  if(tagIdx>=0){
-    const tail=text.slice(tagIdx);
-    const reg=/^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\-]?\d[\d\.,]*)\s*$/gm;
-    let mm; while((mm=reg.exec(tail))!==null){ const name=mm[1].replace(/\s+/g,' ').trim(); const val=parseNumberEU(mm[2]); if(!isNaN(val)) a4c4[name]=val; }
+  return {a4c4, mixes};
+}
+function detectYearsInPlafondSection(text){
+  const sec = sliceBetween(text, 'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)', 'Werkwijze en uitgangspunten');
+  const years = [...sec.matchAll(/\b(2022|2024|2026|2028|2030)\b/g)].map(m=>m[1]);
+  const uniq = [...new Set(years)];
+  if(uniq.length>=3) return ['2022','2024','2026','2028','2030']; // expected layout
+  // fallback any 5 increasing years in 2010-2035
+  const all = [...sec.matchAll(/\b(20[1-3]\d)\b/g)].map(m=>parseInt(m[1],10));
+  const sorted = [...new Set(all)].sort((a,b)=>a-b);
+  for(let i=0;i+4<sorted.length;i++){
+    const w = sorted.slice(i,i+5);
+    if(w[4]-w[0] <= 10) return w.map(String);
   }
-  const mixes=Object.keys(plafond).length?Object.keys(plafond):Object.keys(a4c4);
-  return {years, plafond, a4c4, mixes};
+  return ['2022','2024','2026','2028','2030'];
+}
+function extractPlafondValues(text, mixes, years){
+  const sec = sliceBetween(text, 'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)', 'Werkwijze en uitgangspunten');
+  const plafond = {};
+  for(const mix of mixes){
+    // Build a tolerant regex: mix name + capture up to 200 chars, harvest first 5 numeric/x tokens
+    const safeMix = mix.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');
+    const re = new RegExp(safeMix + '[^\\n]{0,200}', 'i');
+    const m = sec.match(re);
+    if(m){
+      const tail = m[0];
+      // tokens: numbers (with , or .), 'x', 'n.b.' etc.
+      const tokens = [...tail.matchAll(/(?:[xX]|n\.b\.|[\-]?\d[\d\.,]*)/g)].map(t=>t[0]).filter(Boolean);
+      const vals = [];
+      for(const t of tokens){
+        if(/^x|X|n\.b\.$/i.test(t)) { vals.push(NaN); }
+        else {
+          const n = parseNumberEU(t);
+          if(!isNaN(n)) vals.push(n);
+        }
+        if(vals.length>=5) break;
+      }
+      if(vals.length>=2){ // need at least some
+        plafond[mix] = {};
+        years.forEach((y,i)=>{ plafond[mix][y] = (typeof vals[i] === 'number' ? vals[i] : NaN); });
+      }
+    }
+  }
+  return plafond;
+}
+function parsePlafondAndA4C4(textRaw){
+  const text = normaliseTextForParsing(textRaw);
+  const {a4c4, mixes} = extractA4C4Block(text);
+  const years = detectYearsInPlafondSection(text);
+  const plafond = extractPlafondValues(text, mixes, years);
+  // If no mixes found in A4–C4 (edge case), fallback: scan generic rows (rare)
+  const finalMixes = mixes.length ? mixes : Object.keys(plafond);
+  return { years, plafond, a4c4, mixes: finalMixes };
 }
 async function parseRequirementsPDF(file){
-  const text=await pdfToText(file);
-  const out=parsePlafondAndA4C4(text);
-  if((!out.years||out.years.length<1)||(!out.mixes||out.mixes.length<1)) throw new Error('Geen jaar-kolommen of mengsels gevonden in eisen-PDF.');
+  const text = await pdfToText(file);
+  const out = parsePlafondAndA4C4(text);
+  if ((!out.years || out.years.length<1) || (!out.mixes || out.mixes.length<1)) {
+    throw new Error('Geen jaar-kolommen of mengsels gevonden in eisen-PDF.');
+  }
   return {...out, rawText:text};
 }
 
-/* EPD parser */
+/* ========= EPD parser (ongewijzigd, maar robuust) ========= */
 function pickFirst(re, text){ const m=text.match(re); return m?m[1].trim():''; }
 async function parseEpdPDF(file){
   const text=await pdfToText(file);
@@ -313,13 +358,14 @@ async function handleReqFile(file){
   reqStatus.textContent = 'Lezen & parsen…';
   reqScan.textContent = '—';
   reqStoreBadge.textContent = hasSB ? 'opslaan…' : 'niet opgeslagen (client-side)';
-  reqStoreBadge.className = 'badge ' + (hasSB ? 'badge-info' : 'badge-info');
+  reqStoreBadge.className = 'badge badge-info';
 
   try{
     await waitForPdfjs();
     const parsed=await parseRequirementsPDF(file);
     state.req=parsed;
-    const years=parsed.years?.length?parsed.years.slice(0,5):['2024','2026'];
+
+    const years=parsed.years?.length ? parsed.years.slice(0,5) : ['2024','2026'];
     yearSel.innerHTML=years.map(v=>`<option value="${v}">${v}</option>`).join('');
 
     let storePath=null;
@@ -341,7 +387,7 @@ async function handleReqFile(file){
     if(!state.runId){ await createRun(storePath); }
 
     reqStatus.innerHTML = `✅ Gelezen. Gevonden mengsels: <strong>${parsed.mixes.length}</strong>. Jaren: <strong>${years.join(', ')}</strong>.`;
-    const preview=parsed.mixes.slice(0,3).map(m=>{ const p=parsed.plafond[m]||{}; const yv=years.map(y=>isNaN(p[y])?'—':p[y]).join(' | '); const a4=(parsed.a4c4[m]!=null && !isNaN(parsed.a4c4[m]))?parsed.a4c4[m]:'—'; return `• ${m} → A4–C4: ${a4} | plafonds: ${yv}`; }).join('<br>');
+    const preview=parsed.mixes.slice(0,6).map(m=>{ const p=parsed.plafond[m]||{}; const yv=years.map(y=>isNaN(p[y])?'—':p[y]).join(' | '); const a4=(parsed.a4c4[m]!=null && !isNaN(parsed.a4c4[m]))?parsed.a4c4[m]:'—'; return `• ${m} → A4–C4: ${a4} | plafonds: ${yv}`; }).join('<br>');
     reqScan.innerHTML = `<span class="text-gray-600">Voorbeeld uit tabel:</span><br>${preview||'—'}`;
 
     enableRunIfReady();
@@ -356,7 +402,7 @@ async function handleReqFile(file){
 /* EPD handling */
 async function handleEpdFiles(files){
   for(const file of files){
-    // Kaart altijd eerst tonen (directe feedback)
+    // direct visuele feedback
     const card=el('div',{class:'border rounded-xl p-4'});
     const head=el('div',{class:'flex items-center justify-between'});
     const title=el('div',{class:'font-medium'},`${file.name} (${fmtBytes(file.size)})`);
@@ -411,6 +457,7 @@ function computeFor(epd, req, year, pcrTarget){
   return res;
 }
 
+const runBtn=$('#run-checks'), csvBtn=$('#export-csv'), resultsBox=$('#results');
 runBtn.addEventListener('click', async ()=>{
   const year=yearSel.value, pcrTarget=pcrSel.value;
   if(!state.runId){ await createRun(null); }
