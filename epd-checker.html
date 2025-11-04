@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.1)</title>
+<title>MKI-toetsing asfalt check (v2.6.3)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -30,7 +30,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.1)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.3)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -184,9 +184,9 @@ function extractFromMKIResults(txt){
   const after=mm[1].replace(/\s+/g,' ').trim();
   const nums=[...after.matchAll(/([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/g)].map(m=>m[1]);
   if(nums.length<5) return null; // verwacht: ... A1-A3 (index 3), D (index 4)
-  const a13=parseNumEUexp(nums[3]);
-  const d  =parseNumEUexp(nums[4]);
-  if(!isNaN(a13) || !isNaN(d)) return {a13,d};
+  const a13Raw=nums[3], dRaw=nums[4];
+  const a13=parseNumEUexp(a13Raw), d=parseNumEUexp(dRaw);
+  if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
   return null;
 }
 function cleanPCR(txt){
@@ -201,35 +201,35 @@ async function parseEpd(file){
   const pcr     = cleanPCR(pcrRaw || text);
   const pubDate = pick(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
 
-  let a13, d;
+  let a13, d, a13Raw="", dRaw="";
   const res = extractFromMKIResults(text);
-  if(res){ a13=res.a13; d=res.d; }
+  if(res){ a13=res.a13; d=res.d; a13Raw=res.a13Raw; dRaw=res.dRaw; }
 
   if(isNaN(a13)){
     const m = text.match(/\bA1-?A3\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-    if(m) a13 = parseNumEUexp(m[1]);
+    if(m){ a13Raw = m[1]; a13 = parseNumEUexp(a13Raw); }
   }
   if(isNaN(d)){
     const m = text.match(/(?:^|\s|\b)D(?:\s|:)[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-    if(m) d = parseNumEUexp(m[1]);
+    if(m){ dRaw = m[1]; d = parseNumEUexp(dRaw); }
     else {
       const blk = text.match(/Environmental\s+Costs?\s+Indicator[\s\S]{0,600}/i);
       if(blk){
         const md=blk[0].match(/(?:^|\s|\b)D(?:\s|:)[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-        if(md) d=parseNumEUexp(md[1]);
+        if(md){ dRaw = md[1]; d=parseNumEUexp(dRaw); }
       }
     }
   }
-  return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, text };
+  return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, a1a3Raw:a13Raw, dRaw, text };
 }
 
 /* ===== Asfaltsoort-suggestie: EPD-tekst leidend, filename fallback ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
-// PR-detectie zonder "4060" false positives
+/* PR-detectie — accepteert varianten met/zonder spatie en met/zonder % (en voorkomt 4060) */
 function detectPR(t){
-  if(/(?:^|[\s_\-])(?:60\s*pr|pr\s*60|60pr)(?:$|[\s_\-])/i.test(t)) return 60;
-  if(/(?:^|[\s_\-])(?:50\s*pr|pr\s*50|50pr)(?:$|[\s_\-])/i.test(t)) return 50;
-  if(/(?:^|[\s_\-])(?:30\s*pr|pr\s*30|30pr)(?:$|[\s_\-])/i.test(t)) return 30;
+  if(/(?:^|[^\d\w])(60\s*%?\s*pr|pr\s*%?\s*60)(?!\w)/i.test(t)) return 60;
+  if(/(?:^|[^\d\w])(50\s*%?\s*pr|pr\s*%?\s*50)(?!\w)/i.test(t)) return 50;
+  if(/(?:^|[^\d\w])(30\s*%?\s*pr|pr\s*%?\s*30)(?!\w)/i.test(t)) return 30;
   if(/\bminimaal\s*30\s*%?\s*pr\b/i.test(t)) return 30;
   if(/\bminimaal\s*50\s*%?\s*pr\b/i.test(t)) return 50;
   if(/\bminimaal\s*60\s*%?\s*pr\b/i.test(t)) return 60;
@@ -241,9 +241,28 @@ function decideMixFromString(src){
   if(!src) return "";
   const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
 
-  // SMA geluidsreducerend (8G+) hoogste prioriteit
-  if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
-  // SMA
+  /* ---- 2L ZOAB eerst (voorrang op generiek ZOAB) ---- */
+  const mentions2L = /\b2\s*l\b/.test(all);
+  const mentionsZOAB = /\bzoab\b/.test(all);
+  const mentionsTop = /\btop\s*laag\b|\btoplaag\b|\bbovenlaag\b/.test(all);
+  const mentionsUnder = /\bonder\s*laag\b|\bonderlaag\b/.test(all);
+  const gm = detectGemod(all) || /pmb|45\/?80/.test(all); // PMB/bitumencode detectie
+
+  if( (mentions2L && mentionsZOAB) || /\b2\s*l[^a-z0-9]*zoab\b/.test(all) || /\bpa\s*\d*\s*2\s*l[^a-z0-9]*zoab\b/.test(all) ){
+    if(mentionsUnder){
+      const pr=detectPR(all);
+      if(pr===30) return "2L ZOAB onderlaag, minimaal 30% PR";
+      return "2L ZOAB onderlaag";
+    }
+    // default: toplaag; als PMB/gemod aanwezig → met gemod (en dat is ook onze set)
+    return "2L ZOAB toplaag met gemodificeerd bitumen";
+  }
+
+  /* ---- ZOAB / DZOAB (niet-2L) ---- */
+  if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)) return "ZOAB regulier+ / DZOAB";
+  if(/\bzoab\b/.test(all)) return "ZOAB regulier";
+
+  /* ---- SMA ---- */
   if(/\bsma\b/.test(all)){
     if(/rood|clobred|red/.test(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
@@ -254,45 +273,45 @@ function decideMixFromString(src){
     return "SMA 8-11";
   }
 
-  // ZOAB / DZOAB / 2L ZOAB
-  if(/2l.*zoab.*top/.test(all)) return "2L ZOAB toplaag met gemodificeerd bitumen";
-  if(/2l.*zoab.*onderlaag.*30/.test(all)) return "2L ZOAB onderlaag, minimaal 30% PR";
-  if(/2l.*zoab.*onderlaag/.test(all)) return "2L ZOAB onderlaag";
-  if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)) return "ZOAB regulier+ / DZOAB";
-  if(/\bzoab\b/.test(all)) return "ZOAB regulier";
+  /* ---- SMA geluidsreducerend 8G+ (expliciete check) ---- */
+  if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
 
-  // AC-wereld: eerst type
+  /* ---- AC-wereld ---- */
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
   const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
   const isAC     = /\bac\b|asfaltbeton/.test(all);
   const pr = detectPR(all);
-  const gm = detectGemod(all);
+  const gmAC = detectGemod(all);
   const rood = /rood|clobred|red/.test(all);
 
   if(isAC){
     if(isSurf){
       if(rood) return "AC surf rood";
-      if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-      if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
-      if(gm) return "AC surf met gemodificeerd bitumen";
+      // >>> Normalisatie: alle PR ≥30 → “minimaal 30% PR” (optioneel met gemod)
+      if(pr===30 || pr===50 || pr===60){
+        if(gmAC) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+        return "AC surf, minimaal 30% PR";
+      }
+      if(gmAC) return "AC surf met gemodificeerd bitumen";
       return "AC surf";
     }
     if(isBinBase){
       if(pr===60) return "AC bin/base minimaal 60% PR";
-      if(pr===50 && gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
+      if(pr===50 && gmAC) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       if(pr===50) return "AC bin/base, minimaal 50% PR";
-      if(gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
+      if(gmAC) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       return "AC bin/base, minimaal 50% PR";
     }
     // Geen expliciet surf/binbase: heuristiek
     if(rood) return "AC surf rood";
-    if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-    if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
-    if(gm) return "AC surf met gemodificeerd bitumen";
+    if(pr===30 || pr===50 || pr===60){
+      if(gmAC) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+      return "AC surf, minimaal 30% PR";
+    }
+    if(gmAC) return "AC surf met gemodificeerd bitumen";
     return "AC surf";
   }
 
-  if(rood) return "AC surf rood";
   return "";
 }
 
@@ -433,27 +452,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
     // 3) Verwijderen
     ui.delBtn.addEventListener('click', async ()=>{
-      // UI verwijderen
       rec.removeCard();
-      // State verwijderen
       const idx = state.epds.findIndex(e=>e.uid===uid);
       if(idx>-1) state.epds.splice(idx,1);
-      // DB verwijderen (cascade pakt epd_results)
       if(rec.fileId){
-        try{
-          await sb.from("epd_files").delete().eq("id", rec.fileId);
-        }catch(e){
-          toast("Kon item niet uit database verwijderen.", false);
-        }
+        try{ await sb.from("epd_files").delete().eq("id", rec.fileId); }
+        catch(e){ toast("Kon item niet uit database verwijderen.", false); }
       }
-      // Knoppen (de)activeren
       document.querySelectorAll("#epd-list > div").length===0
         ? (runBtn.disabled=true,csvBtn.disabled=true)
         : (runBtn.disabled=false);
       toast("EPD verwijderd", true);
     });
 
-    // Buttons activeren
     runBtn.disabled=false;
   }
 
@@ -463,7 +474,44 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
     for(const epd of state.epds){
       const mix = epd.mix;
-      if(!mix) continue;
+
+      if(!mix){
+        const card=el("div",{class:`border rounded-xl p-4 mb-4 bg-red-50`},[
+          el("div",{class:"flex justify-between"},[
+            el("div",{class:"font-medium"},epd.file.name),
+            el("div",{class:`badge badge-fail`}, 'FAIL')
+          ]),
+          el("div",{class:"mt-2 text-sm text-red-900"}, "Geen asfaltsoort geselecteerd. Kies een asfaltsoort om te kunnen toetsen.")
+        ]);
+        results.appendChild(card);
+
+        const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(epd.a13)?epd.a13.toString():"");
+        const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(epd.d)  ?epd.d.toString()  :"");
+        rows.push({
+          "Bestand": epd.file.name,
+          "Asfaltsoort": "",
+          "Jaar": jaar,
+          "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
+          "MKI A1-A3": a1Raw,
+          "MKI A4-C4": "",
+          "MKI D": dRaw,
+          "MKI A-D totaal": "",
+          "Plafondwaarde": "",
+          "Marginale ruimte": "",
+          "Voldoet aan eis": "Nee",
+          "Eisenset": "Uniforme MKI-plafondwaarden 2025 (PCR 2.0)",
+          "Eis-jaar": jaar
+        });
+
+        try{
+          await sb.from("epd_results").insert({
+            run_id: state.runId, file_id: epd.fileId, mix: "",
+            year: jaar, mki_a1a3: epd.a13, mki_a4c4: null, mki_d: epd.d,
+            mki_total_ad: null, plafond: null, pass: false, notes: "Geen asfaltsoort geselecteerd"
+          });
+        }catch{}
+        continue;
+      }
 
       const a1=epd.a13, a4=MKI_EISEN.a4c4[mix] ?? NaN, d=epd.d, plaf=MKI_EISEN.plafonds[mix]?.[jIdx];
       const tot=(a1||0)+(a4||0)+(d||0);
@@ -487,17 +535,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ]);
       results.appendChild(card);
 
+      // CSV: ruwe strings (alle decimalen)
+      const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(a1)?a1.toString():"");
+      const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(d) ?d.toString() :"");
+      const a4Raw = Number.isFinite(a4) ? a4.toString() : "";
+      const totRaw= Number.isFinite(tot)? tot.toString(): "";
+      const plRaw = Number.isFinite(plaf)?plaf.toString(): "";
+      const marRaw= (Number.isFinite(plaf)&&Number.isFinite(tot)) ? (plaf-tot).toString() : "";
+
       rows.push({
         "Bestand": epd.file.name,
         "Asfaltsoort": mix,
         "Jaar": jaar,
         "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
-        "MKI A1-A3": fmtNL(a1),
-        "MKI A4-C4": fmtNL(a4),
-        "MKI D": fmtNL(d),
-        "MKI A-D totaal": fmtNL(tot),
-        "Plafondwaarde": fmtNL(plaf),
-        "Marginale ruimte": fmtNL(plaf - tot),
+        "MKI A1-A3": a1Raw,
+        "MKI A4-C4": a4Raw,
+        "MKI D": dRaw,
+        "MKI A-D totaal": totRaw,
+        "Plafondwaarde": plRaw,
+        "Marginale ruimte": marRaw,
         "Voldoet aan eis": pass ? "Ja" : "Nee",
         "Eisenset": "Uniforme MKI-plafondwaarden 2025 (PCR 2.0)",
         "Eis-jaar": jaar
@@ -514,12 +570,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
       }catch{}
     }
 
-    // CSV export (UTF-8 BOM + ;)
+    // CSV export (UTF-8 BOM + ;) — raw strings zonder afronding
     const csvBtn=$("#export-csv");
     if(rows.length){
       const headers=Object.keys(rows[0]);
       const csvLines=[headers.join(";")].concat(
-        rows.map(r=>headers.map(h=>String(r[h]??"")).join(";"))
+        rows.map(r=>headers.map(h=>{
+          const v = (r[h]??"").toString();
+          return /[;"\n]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v;
+        }).join(";"))
       );
       const BOM="\uFEFF";
       const blob=new Blob([BOM+csvLines.join("\n")],{type:"text/csv;charset=utf-8"});
