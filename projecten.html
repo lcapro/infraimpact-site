@@ -14,20 +14,22 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.webp">
   <meta name="theme-color" content="#2F6F65">
 
-  <!-- Canonical -->
+  <!-- Canonical + Hreflang -->
   <link rel="canonical" href="https://infraimpact.nl/projecten.html"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/projecten.html">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <!-- Preload veelgebruikte afbeeldingen -->
-  <link rel="preload" as="image" href="assets/logo_full.png" type="image/png" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/logo_full.webp" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/og-infraimpact.webp" type="image/webp">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:title" content="Projecten & samenwerkingen – InfraImpact">
   <meta property="og:description" content="MKI- en LCA-projecten met aantoonbare resultaten in aanbestedingen en beleid.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://infraimpact.nl/projecten.html">
+  <meta property="og:site_name" content="InfraImpact">
   <meta property="og:image" content="/assets/og-infraimpact.webp">
   <meta property="og:locale" content="nl_NL">
   <meta name="twitter:card" content="summary_large_image">
@@ -41,7 +43,7 @@
 
     .text-gradient { background: linear-gradient(90deg, var(--brand-green), var(--brand-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* Sticky nav + scrollrichting (identiek gedrag) */
+    /* Sticky nav + scrollrichting (identiek gedrag als home) */
     nav { position: sticky; top:0; background:#ffffffcc; backdrop-filter: blur(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform .3s ease; z-index: 50; }
     .scroll-down { transform: translateY(-100%); }
     .scroll-up { transform: translateY(0); }
@@ -59,7 +61,7 @@
 
   <!-- Gestructureerde data (ItemList) wordt dynamisch geïnjecteerd in <head> door JS onderaan. -->
 
-  <!-- Google Analytics 4 -->
+  <!-- GA4 (config zoals nu, consent kun je later synchroniseren met je banner) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -70,20 +72,19 @@
       cookie_flags: 'SameSite=None;Secure'
     });
   </script>
-  <!-- /Google Analytics 4 -->
 </head>
 
 <body class="bg-white text-gray-700">
   <!-- NAV -->
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
-      <a href="index.html" class="flex items-center">
+      <a href="/" class="flex items-center">
         <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
       </a>
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
-        <a href="index.html" class="hover:text-green-700">Home</a>
-        <a href="index.html#wat" class="hover:text-green-700">Wat we doen</a>
-        <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
         <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
         <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="over.html" class="hover:text-green-700">Over ons</a>
@@ -97,9 +98,9 @@
     </div>
     <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
-        <a href="index.html" class="block py-2">Home</a>
-        <a href="index.html#wat" class="block py-2">Wat we doen</a>
-        <a href="index.html#inzicht" class="block py-2">Inzichten</a>
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
         <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
         <a href="over.html" class="block py-2">Over ons</a>
@@ -124,8 +125,8 @@
   <!-- FILTERS -->
   <section class="border-t">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-6 md:py-8 flex flex-wrap gap-3 items-center" data-animate>
-      <label class="text-sm text-gray-600">Filter:</label>
-      <select id="typeFilter" class="border rounded-lg px-3 py-2">
+      <label class="text-sm text-gray-600" for="typeFilter">Filter:</label>
+      <select id="typeFilter" class="border rounded-lg px-3 py-2" aria-label="Filter op type">
         <option value="">Alle typen</option>
         <option value="LCA">LCA</option>
         <option value="MKI">MKI</option>
@@ -133,19 +134,19 @@
         <option value="Beleid">Beleid</option>
         <option value="Training">Training</option>
       </select>
-      <select id="collabFilter" class="border rounded-lg px-3 py-2">
+      <select id="collabFilter" class="border rounded-lg px-3 py-2" aria-label="Filter op samenwerkingsvorm">
         <option value="">Zelfstandig & samenwerking</option>
         <option value="Zelfstandig">Zelfstandig</option>
         <option value="In samenwerking">In samenwerking</option>
       </select>
-      <input id="searchInput" class="border rounded-lg px-3 py-2 flex-1 min-w-[220px]" placeholder="Zoek op opdrachtgever, project, trefwoord…"/>
+      <input id="searchInput" class="border rounded-lg px-3 py-2 flex-1 min-w-[220px]" placeholder="Zoek op opdrachtgever, project, trefwoord…" aria-label="Zoek in projecten"/>
     </div>
   </section>
 
   <!-- GRID -->
-  <main class="py-6 md:py-10">
+  <main class="py-6 md:py-10" role="main">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
-      <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" data-animate></div>
+      <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" data-animate aria-live="polite"></div>
 
       <!-- CTA -->
       <div class="mt-16 text-center" data-animate>
@@ -222,7 +223,7 @@
     },{threshold:0.1});
     document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
 
-    // Data laden en renderen
+    // ---------- Data laden en renderen ----------
     const grid = document.getElementById('grid');
     const typeFilter = document.getElementById('typeFilter');
     const collabFilter = document.getElementById('collabFilter');
@@ -262,7 +263,12 @@
     }
 
     function render(){
-      grid.innerHTML = DATA.filter(matches).map(cardHTML).join('') || `<p class="text-gray-600">Geen projecten gevonden met deze filters.</p>`;
+      if (!DATA.length){
+        grid.innerHTML = `<p class="text-gray-600">Projecten laden…</p>`;
+        return;
+      }
+      const html = DATA.filter(matches).map(cardHTML).join('');
+      grid.innerHTML = html || `<p class="text-gray-600">Geen projecten gevonden met deze filters.</p>`;
       injectJSONLD(DATA);
     }
 
@@ -291,13 +297,15 @@
       const s = document.createElement('script');
       s.type = 'application/ld+json';
       s.dataset.jsonld = 'projects';
-      s.textContent = JSON.stringify(itemList, null, 2);
+      s.textContent = JSON.stringify(itemList);
       document.head.appendChild(s);
     }
 
+    // Ophalen met nette foutafhandeling
     fetch('/assets/projects.json', {cache:'no-store'})
-      .then(r=>r.json())
-      .then(json=>{ DATA = json; render(); });
+      .then(r=> r.ok ? r.json() : Promise.reject(new Error('Niet gevonden')))
+      .then(json=>{ DATA = Array.isArray(json) ? json : []; render(); })
+      .catch(()=>{ DATA = []; grid.innerHTML = `<p class="text-gray-600">Kon projecten niet laden. Probeer het later opnieuw.</p>`; });
 
     [typeFilter, collabFilter].forEach(el=> el.addEventListener('change', render));
     searchInput.addEventListener('input', render);
@@ -312,20 +320,17 @@
       const a = e.target.closest('a');
       if (!a) return;
       const href = (a.getAttribute('href') || '').toLowerCase();
-      // Mailto & telefoon
       if (href.startsWith('mailto:')){
         track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
       }
       if (href.startsWith('tel:')){
         track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
       }
-      // CTA-knoppen
       const text = (a.textContent || '').trim();
       if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
         track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
       }
     });
   </script>
-  <!-- /GA4 event tracking -->
 </body>
 </html>
