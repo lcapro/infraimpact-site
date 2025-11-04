@@ -7,38 +7,51 @@
   <meta name="description" content="Upload EPD's (PDF) en toets of de MKI voldoet aan plafondwaarden per asfaltsoort en jaar. Werkt client-side; met opslag (Supabase).">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- pdf.js loader: module import met UMD fallback -->
+  <!-- pdf.js loader: ESM + ESM worker (fallback naar UMD + UMD worker) -->
   <script type="module">
     window.__PDFJS_READY__ = false;
+    window.__PDFJS_MODE__ = null; // 'esm' of 'umd'
 
-    async function loadPdfjs() {
-      try {
-        // 1) ESM import (betrouwbaar in moderne browsers / GitHub Pages)
-        const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs');
-        // Worker voor ESM varianten
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js';
-        window.pdfjsLib = pdfjsLib;
-        window.__PDFJS_READY__ = true;
-      } catch (e) {
-        // 2) Fallback op UMD (autoloader)
-        await new Promise((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js';
-          s.defer = true;
-          s.onload = resolve;
-          s.onerror = reject;
-          document.head.appendChild(s);
-        });
-        if (!window.pdfjsLib) throw new Error('UMD pdf.js kon niet geladen worden');
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js';
-        window.__PDFJS_READY__ = true;
-      }
+    async function loadPdfjsESM() {
+      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs?v=1');
+      // ESM worker hoort ook ESM te zijn:
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs?v=1';
+      window.pdfjsLib = pdfjsLib;
+      window.__PDFJS_MODE__ = 'esm';
+      window.__PDFJS_READY__ = true;
     }
 
-    loadPdfjs().catch(err => {
-      console.error('[PDFJS] load error', err);
-      window.__PDFJS_READY__ = false;
-    });
+    async function loadPdfjsUMD() {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js?v=1';
+        s.defer = true;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+      if (!window.pdfjsLib) throw new Error('UMD pdf.js kon niet geladen worden');
+      // UMD worker moet UMD zijn:
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js?v=1';
+      window.__PDFJS_MODE__ = 'umd';
+      window.__PDFJS_READY__ = true;
+    }
+
+    (async () => {
+      try {
+        await loadPdfjsESM();
+      } catch (e) {
+        console.warn('[PDFJS] ESM laden faalde, val terug op UMD:', e);
+        try {
+          await loadPdfjsUMD();
+        } catch (e2) {
+          console.error('[PDFJS] UMD laden faalde ook:', e2);
+          window.__PDFJS_READY__ = false;
+        }
+      }
+    })();
   </script>
 
   <!-- Supabase -->
@@ -141,10 +154,10 @@ function toast(msg, ok=true){ toastEl.textContent=msg; toastEl.classList.remove(
 function fmtBytes(b){ if(!b&&b!==0) return ''; const u=['B','KB','MB','GB']; let i=0; while(b>=1024&&i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
 
 /* pdf.js wait */
-async function waitForPdfjs(timeoutMs=15000){
+async function waitForPdfjs(timeoutMs=20000){
   const start=Date.now();
   while(!window.__PDFJS_READY__ || !window.pdfjsLib){
-    await new Promise(r=>setTimeout(r,60));
+    await new Promise(r=>setTimeout(r,80));
     if(Date.now()-start>timeoutMs){ throw new Error('pdf.js is niet beschikbaar (timeout).'); }
   }
   return window.pdfjsLib;
@@ -303,7 +316,6 @@ async function handleReqFile(file){
   reqStoreBadge.className = 'badge ' + (hasSB ? 'badge-info' : 'badge-info');
 
   try{
-    // Zorg dat pdf.js er écht is
     await waitForPdfjs();
     const parsed=await parseRequirementsPDF(file);
     state.req=parsed;
@@ -344,6 +356,7 @@ async function handleReqFile(file){
 /* EPD handling */
 async function handleEpdFiles(files){
   for(const file of files){
+    // Kaart altijd eerst tonen (directe feedback)
     const card=el('div',{class:'border rounded-xl p-4'});
     const head=el('div',{class:'flex items-center justify-between'});
     const title=el('div',{class:'font-medium'},`${file.name} (${fmtBytes(file.size)})`);
