@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cookiebeleid | InfraImpact</title>
+<meta name="description" content="Cookiebeleid InfraImpact: uitleg over noodzakelijke, statistiek en marketingcookies en hoe je voorkeuren beheert.">
+<link rel="canonical" href="https://infraimpact.nl/cookies.html"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+<style>main{max-width:860px;margin:0 auto;padding:2rem 1.25rem}</style>
+</head>
+<body class="text-gray-800">
+<main class="prose prose-green">
+<h1>Cookiebeleid</h1>
+
+
+<h2>Categorieën</h2>
+<ul>
+<li><strong>Noodzakelijk</strong> – functionele en beveiligingscookies (altijd actief; geen toestemming vereist).</li>
+<li><strong>Statistiek</strong> – Google Analytics (alleen met jouw toestemming; Consent Mode v2 toegepast).</li>
+<li><strong>Marketing</strong> – momenteel niet actief; als we dit inschakelen, vragen we aparte toestemming.</li>
+</ul>
+
+
+<h2>Cookieoverzicht (voorbeeld)</h2>
+<table>
+<thead><tr><th>Categorie</th><th>Naam</th><th>Doel</th><th>Bewaartermijn</th><th>Provider</th></tr></thead>
+<tbody>
+<tr><td>Noodzakelijk</td><td>cookie_consent</td><td>Onthoudt uw keuze</td><td>6–12 maanden</td><td>InfraImpact</td></tr>
+<tr><td>Statistiek</td><td>_ga, _gid (pas na toestemming)</td><td>Bezoekstatistiek</td><td>max. 14 maanden</td><td>Google LLC</td></tr>
+</tbody>
+</table>
+
+
+<h2>Voorkeuren wijzigen</h2>
+<p>Open <a href="#" id="openCookieSettings">Cookie‑instellingen</a> om je keuzes bij te werken.</p>
+</main>
+<script>document.getElementById('openCookieSettings')?.addEventListener('click',e=>{e.preventDefault();window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));});</script>
+</body>
+</html>
