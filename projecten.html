@@ -7,12 +7,12 @@
   <meta name="description" content="Bekijk MKI- en LCA-projecten van InfraImpact voor publieke en private partijen in de GWW. Aantoonbare resultaten in aanbestedingen en beleid.">
 
   <!-- Favicons & App Icons -->
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
-<link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.webp">
-<meta name="theme-color" content="#2F6F65">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://infraimpact.nl/projecten.html"/>
@@ -38,36 +38,43 @@
   <style>
     :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
     body { color: var(--ink); background: #fff; font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+
     .text-gradient { background: linear-gradient(90deg, var(--brand-green), var(--brand-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    nav { position: sticky; top:0; background:#ffffffcc; backdrop-filter: blur(6px); z-index: 50; }
+
+    /* Sticky nav + scrollrichting (identiek gedrag) */
+    nav { position: sticky; top:0; background:#ffffffcc; backdrop-filter: blur(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform .3s ease; z-index: 50; }
+    .scroll-down { transform: translateY(-100%); }
+    .scroll-up { transform: translateY(0); }
+
     :focus-visible { outline:3px solid var(--brand-green); outline-offset:3px }
     html { scroll-behavior: smooth; }
     [id]{ scroll-margin-top: 96px;}
-    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0,0,0,0.08);}
+
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0,0,0,0.08); transition: transform .2s ease, box-shadow .2s ease; }
+
+    /* Reveal on scroll */
+    [data-animate]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    [data-animate].visible{opacity:1;transform:translateY(0)}
   </style>
 
-  <!-- Gestructureerde data: lijst van projecten (ItemList) -->
-  <script>
-    // Dit script wordt dynamisch gevuld nadat projects.json geladen is (zie onderaan).
-    // We bouwen hier één JSON-LD ItemList met Project items.
-  </script>
+  <!-- Gestructureerde data (ItemList) wordt dynamisch geïnjecteerd in <head> door JS onderaan. -->
 
   <!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-9578ZQ8GWD', {
-    anonymize_ip: true,
-    cookie_flags: 'SameSite=None;Secure'
-  });
-</script>
-<!-- /Google Analytics 4 -->
-
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9578ZQ8GWD', {
+      anonymize_ip: true,
+      cookie_flags: 'SameSite=None;Secure'
+    });
+  </script>
+  <!-- /Google Analytics 4 -->
 </head>
-<body>
-    <!-- NAV -->
+
+<body class="bg-white text-gray-700">
+  <!-- NAV -->
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="index.html" class="flex items-center">
@@ -77,9 +84,9 @@
         <a href="index.html" class="hover:text-green-700">Home</a>
         <a href="index.html#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>  
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
         <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
-        <a href="over.html" class="hover:text-green-700">Over</a>
+        <a href="over.html" class="hover:text-green-700">Over ons</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -93,9 +100,9 @@
         <a href="index.html" class="block py-2">Home</a>
         <a href="index.html#wat" class="block py-2">Wat we doen</a>
         <a href="index.html#inzicht" class="block py-2">Inzichten</a>
-       <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
-        <a href="over.html" class="block py-2">Over</a>
+        <a href="over.html" class="block py-2">Over ons</a>
         <a href="#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -105,9 +112,9 @@
   <!-- HEADER -->
   <header class="bg-gray-50">
     <section class="max-w-screen-xl mx-auto px-6 sm:px-8 py-14 md:py-20">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient">Projecten & samenwerkingen</h1>
-      <p class="mt-5 max-w-3xl text-gray-700 text-lg">
-        InfraImpact voert opdrachten uit voor publieke en private partijen in de GWW. 
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient" data-animate>Projecten & samenwerkingen</h1>
+      <p class="mt-5 max-w-3xl text-gray-700 text-lg" data-animate>
+        InfraImpact voert opdrachten uit voor publieke en private partijen in de GWW.
         Soms zelfstandig, soms in een kernteam met partners. Altijd gericht op aantoonbare resultaten:
         lagere MKI, betere onderbouwingen en praktische sturing.
       </p>
@@ -116,7 +123,7 @@
 
   <!-- FILTERS -->
   <section class="border-t">
-    <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-6 md:py-8 flex flex-wrap gap-3 items-center">
+    <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-6 md:py-8 flex flex-wrap gap-3 items-center" data-animate>
       <label class="text-sm text-gray-600">Filter:</label>
       <select id="typeFilter" class="border rounded-lg px-3 py-2">
         <option value="">Alle typen</option>
@@ -131,17 +138,17 @@
         <option value="Zelfstandig">Zelfstandig</option>
         <option value="In samenwerking">In samenwerking</option>
       </select>
-      <input id="searchInput" class="border rounded-lg px-3 py-2 flex-1 min-w-[220px]" placeholder="Zoek op opdrachtgever, project, trefwoord…" />
+      <input id="searchInput" class="border rounded-lg px-3 py-2 flex-1 min-w-[220px]" placeholder="Zoek op opdrachtgever, project, trefwoord…"/>
     </div>
   </section>
 
   <!-- GRID -->
   <main class="py-6 md:py-10">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
-      <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
+      <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" data-animate></div>
 
       <!-- CTA -->
-      <div class="mt-16 text-center">
+      <div class="mt-16 text-center" data-animate>
         <h2 class="text-2xl md:text-3xl font-bold text-gradient mb-4">Ook sturen op aantoonbare duurzaamheid?</h2>
         <p class="text-gray-700 mb-6">We denken graag mee over MKI, LCA, aanbestedingen of beleid.</p>
         <a href="mailto:info@infraimpact.nl" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium">Plan kennismaking</a>
@@ -149,14 +156,71 @@
     </div>
   </main>
 
-  <footer class="mt-10 border-t">
-    <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-8 text-sm text-gray-500">
-      © <span id="year"></span> InfraImpact – Making sustainability count.
+  <!-- FOOTER / CONTACT (compact) -->
+  <footer id="contact" class="mt-10 border-t">
+    <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-8 text-sm text-gray-600">
+      <div class="grid md:grid-cols-3 gap-6">
+        <div>
+          <strong>InfraImpact B.V.</strong><br>
+          Westzeedijk 639, 3024 PJ Rotterdam
+        </div>
+        <div>
+          E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a><br>
+          T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a>
+        </div>
+        <div class="md:text-right">
+          © <span id="year"></span> InfraImpact – Making sustainability count.
+        </div>
+      </div>
     </div>
   </footer>
 
   <script>
+    // Jaar
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobile menu toggle + sluiten bij klik/Escape
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu){
+      btn.addEventListener('click',()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a=>{
+        a.addEventListener('click',()=>{
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        });
+      });
+      document.addEventListener('keydown',(e)=>{
+        if (e.key==='Escape' && !menu.classList.contains('hidden')){
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
+
+    // Sticky nav show/hide op scrollrichting
+    let lastY = window.scrollY; const nav = document.getElementById('nav');
+    window.addEventListener('scroll',()=>{
+      const y = window.scrollY;
+      if (y>lastY && y>80) nav.classList.add('scroll-down'), nav.classList.remove('scroll-up');
+      else nav.classList.add('scroll-up'), nav.classList.remove('scroll-down');
+      lastY = y;
+    },{passive:true});
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.1});
+    document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
 
     // Data laden en renderen
     const grid = document.getElementById('grid');
@@ -167,7 +231,7 @@
 
     function cardHTML(p){
       const tag = p.collaboration || 'Zelfstandig';
-      const img = p.hero || '/assets/case-placeholder.webp';
+      const img = p.hero || '/assets/og-infraimpact.webp';
       const badge = `<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">${tag}</span>`;
       const type  = `<span class="inline-block text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">${p.type}</span>`;
       const client = p.client ? `<p class="text-sm text-gray-500 mt-1">${p.client}</p>` : '';
@@ -240,32 +304,28 @@
   </script>
 
   <!-- GA4 event tracking -->
-<script>
-  function track(eventName, params){
-    if (typeof gtag === 'function') gtag('event', eventName, params || {});
-  }
-
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a');
-    if (!a) return;
-    const href = (a.getAttribute('href') || '').toLowerCase();
-
-    // Mailto & telefoon
-    if (href.startsWith('mailto:')){
-      track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
+  <script>
+    function track(eventName, params){
+      if (typeof gtag === 'function') gtag('event', eventName, params || {});
     }
-    if (href.startsWith('tel:')){
-      track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
-    }
-
-    // CTA-knoppen (“Plan kennismaking”, “Start de check”, etc.)
-    const text = (a.textContent || '').trim();
-    if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
-      track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
-    }
-  });
-</script>
-<!-- /GA4 event tracking -->
-
+    document.addEventListener('click', function(e){
+      const a = e.target.closest('a');
+      if (!a) return;
+      const href = (a.getAttribute('href') || '').toLowerCase();
+      // Mailto & telefoon
+      if (href.startsWith('mailto:')){
+        track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
+      }
+      if (href.startsWith('tel:')){
+        track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
+      }
+      // CTA-knoppen
+      const text = (a.textContent || '').trim();
+      if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
+        track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
+      }
+    });
+  </script>
+  <!-- /GA4 event tracking -->
 </body>
 </html>
