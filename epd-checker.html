@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.3)</title>
+<title>MKI-toetsing asfalt check (v2.6.4)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -30,7 +30,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.3)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.4)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -91,7 +91,7 @@
 /* ===== Helpers ===== */
 const $=s=>document.querySelector(s);
 function el(t,a={},c=[]){const n=document.createElement(t);
- for(const[k,v]of Object.entries(a)){k==="class"?n.className=v:k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
+ for(const[k,v]of Object.entries(a)){k==="class"?n.className=v;k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
  (Array.isArray(c)?c:[c]).forEach(x=>{if(x==null)return;if(typeof x==="string"||typeof x==="number")n.appendChild(document.createTextNode(String(x)));else n.appendChild(x);});
  return n;}
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
@@ -225,7 +225,7 @@ async function parseEpd(file){
 
 /* ===== Asfaltsoort-suggestie: EPD-tekst leidend, filename fallback ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
-/* PR-detectie — accepteert varianten met/zonder spatie en met/zonder % (en voorkomt 4060) */
+/* PR-detectie — varianten met/zonder spatie en % (en voorkomt 4060) */
 function detectPR(t){
   if(/(?:^|[^\d\w])(60\s*%?\s*pr|pr\s*%?\s*60)(?!\w)/i.test(t)) return 60;
   if(/(?:^|[^\d\w])(50\s*%?\s*pr|pr\s*%?\s*50)(?!\w)/i.test(t)) return 50;
@@ -237,25 +237,25 @@ function detectPR(t){
 }
 function detectGemod(t){ return /gemod|pmb|polymeer/i.test(t); }
 
+/* striktere 'rood'-detectie (geen generieke 'red' meer) */
+function isRood(t){ return /\brood\b|clobred\b|penbitumen/i.test(t); }
+
 function decideMixFromString(src){
   if(!src) return "";
   const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
 
-  /* ---- 2L ZOAB eerst (voorrang op generiek ZOAB) ---- */
+  /* ---- 2L ZOAB (voorrang) ---- */
   const mentions2L = /\b2\s*l\b/.test(all);
   const mentionsZOAB = /\bzoab\b/.test(all);
-  const mentionsTop = /\btop\s*laag\b|\btoplaag\b|\bbovenlaag\b/.test(all);
   const mentionsUnder = /\bonder\s*laag\b|\bonderlaag\b/.test(all);
-  const gm = detectGemod(all) || /pmb|45\/?80/.test(all); // PMB/bitumencode detectie
 
   if( (mentions2L && mentionsZOAB) || /\b2\s*l[^a-z0-9]*zoab\b/.test(all) || /\bpa\s*\d*\s*2\s*l[^a-z0-9]*zoab\b/.test(all) ){
+    const pr=detectPR(all);
     if(mentionsUnder){
-      const pr=detectPR(all);
       if(pr===30) return "2L ZOAB onderlaag, minimaal 30% PR";
       return "2L ZOAB onderlaag";
     }
-    // default: toplaag; als PMB/gemod aanwezig → met gemod (en dat is ook onze set)
-    return "2L ZOAB toplaag met gemodificeerd bitumen";
+    return "2L ZOAB toplaag met gemodificeerd bitumen"; // default (PMB/gemod in dataset)
   }
 
   /* ---- ZOAB / DZOAB (niet-2L) ---- */
@@ -264,7 +264,7 @@ function decideMixFromString(src){
 
   /* ---- SMA ---- */
   if(/\bsma\b/.test(all)){
-    if(/rood|clobred|red/.test(all)) return "SMA rood";
+    if(isRood(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
     if(/gemod|pmb|polymeer/.test(all)) return "SMA 8-11 met gemodificeerd bitumen";
     const pr=detectPR(all);
@@ -273,45 +273,40 @@ function decideMixFromString(src){
     return "SMA 8-11";
   }
 
-  /* ---- SMA geluidsreducerend 8G+ (expliciete check) ---- */
+  /* ---- SMA geluidsreducerend 8G+ ---- */
   if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
 
-  /* ---- AC-wereld ---- */
+  /* ---- AC ---- */
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
   const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
   const isAC     = /\bac\b|asfaltbeton/.test(all);
   const pr = detectPR(all);
-  const gmAC = detectGemod(all);
-  const rood = /rood|clobred|red/.test(all);
+  const gm = detectGemod(all);
 
   if(isAC){
     if(isSurf){
-      if(rood) return "AC surf rood";
-      // >>> Normalisatie: alle PR ≥30 → “minimaal 30% PR” (optioneel met gemod)
+      if(isRood(all)) return "AC surf rood";
       if(pr===30 || pr===50 || pr===60){
-        if(gmAC) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-        return "AC surf, minimaal 30% PR";
+        return gm ? "AC surf, minimaal 30% PR met gemodificeerd bitumen" : "AC surf, minimaal 30% PR";
       }
-      if(gmAC) return "AC surf met gemodificeerd bitumen";
+      if(gm) return "AC surf met gemodificeerd bitumen";
       return "AC surf";
     }
     if(isBinBase){
       if(pr===60) return "AC bin/base minimaal 60% PR";
-      if(pr===50 && gmAC) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
+      if(pr===50 && gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       if(pr===50) return "AC bin/base, minimaal 50% PR";
-      if(gmAC) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
+      if(gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       return "AC bin/base, minimaal 50% PR";
     }
-    // Geen expliciet surf/binbase: heuristiek
-    if(rood) return "AC surf rood";
+    // Heuristiek zonder subtype
+    if(isRood(all)) return "AC surf rood";
     if(pr===30 || pr===50 || pr===60){
-      if(gmAC) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-      return "AC surf, minimaal 30% PR";
+      return gm ? "AC surf, minimaal 30% PR met gemodificeerd bitumen" : "AC surf, minimaal 30% PR";
     }
-    if(gmAC) return "AC surf met gemodificeerd bitumen";
+    if(gm) return "AC surf met gemodificeerd bitumen";
     return "AC surf";
   }
-
   return "";
 }
 
@@ -405,7 +400,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const uid=crypto.randomUUID();
     const ui=makeCard(file, uid);
 
-    // 1) Parse PDF
     let parsed=null;
     try{
       await waitPdf();
@@ -414,9 +408,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(!isNaN(parsed.mkiA1A3)) ui.a13Input.value = parsed.mkiA1A3;
       if(!isNaN(parsed.mkiD))    ui.dInput.value  = parsed.mkiD;
 
-      // EPD-tekst leidend, filename fallback
       const hint = suggestMixFromText(parsed.text, file.name);
-      if(hint) ui.mixSel.value = hint;
+      if(hint) ui.mixSel.value = hint;             // alleen invullen bij zekere hint
 
       ui.status.textContent='gereed';
       ui.status.className='badge badge-pass';
@@ -426,7 +419,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ui.status.textContent = 'fout';
     }
 
-    // 2) DB-log (apart) en state push
     let fileId=null;
     try{
       if(state.runId){
@@ -450,7 +442,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     };
     state.epds.push(rec);
 
-    // 3) Verwijderen
     ui.delBtn.addEventListener('click', async ()=>{
       rec.removeCard();
       const idx = state.epds.findIndex(e=>e.uid===uid);
@@ -535,7 +526,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ]);
       results.appendChild(card);
 
-      // CSV: ruwe strings (alle decimalen)
       const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(a1)?a1.toString():"");
       const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(d) ?d.toString() :"");
       const a4Raw = Number.isFinite(a4) ? a4.toString() : "";
@@ -570,7 +560,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       }catch{}
     }
 
-    // CSV export (UTF-8 BOM + ;) — raw strings zonder afronding
     const csvBtn=$("#export-csv");
     if(rows.length){
       const headers=Object.keys(rows[0]);
