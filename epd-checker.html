@@ -7,15 +7,16 @@
   <meta name="description" content="Upload EPD’s en toets direct aan de uniforme MKI-plafondwaarden (Asfalt PCR 2.0). Snel, transparant en exporteerbaar – een tool van InfraImpact.">
   
   <!-- Favicons & App Icons -->
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
-<link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.webp">
-<meta name="theme-color" content="#2F6F65">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
 
-  <!-- Canonical -->
+  <!-- Canonical + Hreflang -->
   <link rel="canonical" href="https://infraimpact.nl/epd-checker.html"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/epd-checker.html">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -23,6 +24,23 @@
   <!-- Preload veelgebruikte afbeeldingen -->
   <link rel="preload" as="image" href="assets/logo_full.png" type="image/png" fetchpriority="high">
   <link rel="preload" as="image" href="assets/og-infraimpact.webp" type="image/webp">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="MKI-toetsing asfalt – EPD-checker (PCR 2.0)">
+  <meta property="og:description" content="Upload EPD’s en toets direct aan de uniforme MKI-plafondwaarden (PCR 2.0).">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://infraimpact.nl/epd-checker.html">
+  <meta property="og:site_name" content="InfraImpact">
+  <meta property="og:image" content="/assets/og-infraimpact.webp">
+  <meta property="og:image" content="/assets/og-infraimpact.jpg">
+  <meta property="og:image:alt" content="InfraImpact – MKI & LCA-tools voor de GWW">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MKI-toetsing asfalt – EPD-checker (PCR 2.0)">
+  <meta name="twitter:description" content="Snel, transparant en exporteerbaar – een tool van InfraImpact.">
+  <meta name="twitter:image" content="/assets/og-infraimpact.jpg">
 
   <!-- Tailwind & Supabase -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -75,50 +93,61 @@
     .btn-danger:hover{background:#fecaca}
   </style>
 
+  <!-- Structured data (Tool + Breadcrumbs) -->
   <script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"SoftwareApplication",
-  "name":"MKI-toetsing asfalt checker",
-  "applicationCategory":"EngineeringApplication",
-  "operatingSystem":"Web",
-  "creator":{"@type":"Organization","name":"InfraImpact B.V."},
-  "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
-  "url":"https://infraimpact.nl/epd-checker.html"
-}
-</script>
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"MKI-toetsing asfalt checker",
+    "applicationCategory":"EngineeringApplication",
+    "operatingSystem":"Web",
+    "creator":{"@type":"Organization","name":"InfraImpact B.V."},
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
+    "url":"https://infraimpact.nl/epd-checker.html"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"},
+      {"@type":"ListItem","position":2,"name":"MKI-toetsing asfalt","item":"https://infraimpact.nl/epd-checker.html"}
+    ]
+  }
+  </script>
 
   <!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-9578ZQ8GWD', {
-    anonymize_ip: true,
-    cookie_flags: 'SameSite=None;Secure'
-  });
-</script>
-<!-- /Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9578ZQ8GWD', {
+      anonymize_ip: true,
+      cookie_flags: 'SameSite=None;Secure'
+    });
+  </script>
+  <!-- /Google Analytics 4 -->
 
 </head>
 
 <body class="bg-transparent text-gray-700">
-    <!-- NAV -->
+  <!-- NAV -->
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
-      <a href="index.html" class="flex items-center">
+      <a href="/" class="flex items-center">
         <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
       </a>
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
-        <a href="index.html" class="hover:text-green-700">Home</a>
-        <a href="index.html#wat" class="hover:text-green-700">Wat we doen</a>
-        <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>  
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
         <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="over.html" class="hover:text-green-700">Over</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
-        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
       <!-- Mobile menu button -->
       <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
@@ -127,14 +156,14 @@
     </div>
     <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
-        <a href="index.html" class="block py-2">Home</a>
-        <a href="index.html#wat" class="block py-2">Wat we doen</a>
-        <a href="index.html#inzicht" class="block py-2">Inzichten</a>
-       <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
         <a href="over.html" class="block py-2">Over</a>
         <a href="#contact" class="block py-2">Contact</a>
-        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
     </div>
   </nav>
@@ -195,7 +224,7 @@
       <div id="epd-list" class="space-y-4"></div>
 
       <div class="flex items-center gap-4">
-        <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer &amp; opslaan</button>
+        <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50">Controleer &amp; opslaan</button>
         <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
       </div>
 
@@ -215,7 +244,7 @@
         <p>T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a></p>
       </div>
       <div class="mt-8">
-        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
+        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium cta">
           Plan een kennismaking
         </a>
       </div>
@@ -225,7 +254,7 @@
     </div>
   </footer>
 
-  <!-- ========= APP LOGICA (functioneel gelijk aan v2.6.10) ========= -->
+  <!-- ========= APP LOGICA ========= -->
   <script>
   // Nav gedrag identiek aan index
   (function(){
@@ -388,7 +417,7 @@
   }
   function pick(re,txt){const m=txt.match(re);return m?m[1].trim():'';}
 
-  // Extracties (zoals eerdere v2.6.x)
+  // Extracties
   function extractECITable(txt){
     const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
     const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
@@ -460,7 +489,7 @@
     return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, a1a3Raw:a13Raw, dRaw, text };
   }
 
-  /* ====== Suggestie asfaltsoort (v2.6.x) ====== */
+  /* ====== Suggestie asfaltsoort ====== */
   function detectPRorKA(t){
     const w = t.replace(/\u00A0/g,' ');
     const any = (p)=>new RegExp(p,'i').test(w);
@@ -822,32 +851,32 @@
   </script>
 
   <!-- GA4 event tracking -->
-<script>
-  function track(eventName, params){
-    if (typeof gtag === 'function') gtag('event', eventName, params || {});
-  }
-
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a');
-    if (!a) return;
-    const href = (a.getAttribute('href') || '').toLowerCase();
-
-    // Mailto & telefoon
-    if (href.startsWith('mailto:')){
-      track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
-    }
-    if (href.startsWith('tel:')){
-      track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
+  <script>
+    function track(eventName, params){
+      if (typeof gtag === 'function') gtag('event', eventName, params || {});
     }
 
-    // CTA-knoppen (“Plan kennismaking”, “Start de check”, etc.)
-    const text = (a.textContent || '').trim();
-    if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
-      track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
-    }
-  });
-</script>
-<!-- /GA4 event tracking -->
+    document.addEventListener('click', function(e){
+      const a = e.target.closest('a');
+      if (!a) return;
+      const href = (a.getAttribute('href') || '').toLowerCase();
+
+      // Mailto & telefoon
+      if (href.startsWith('mailto:')){
+        track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
+      }
+      if (href.startsWith('tel:')){
+        track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
+      }
+
+      // CTA-knoppen
+      const text = (a.textContent || '').trim();
+      if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
+        track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
+      }
+    });
+  </script>
+  <!-- /GA4 event tracking -->
 
 </body>
 </html>
