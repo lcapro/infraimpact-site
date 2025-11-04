@@ -6,6 +6,16 @@
   <title>MKI-toetsing asfalt check (v1.0)</title>
   <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0) en exporteer de resultaten.">
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://infraimpact.nl/epd-checker.html"/>
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <!-- Preload veelgebruikte afbeeldingen -->
+  <link rel="preload" as="image" href="assets/logo_full.png" type="image/png" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/og-infraimpact.webp" type="image/webp">
+
   <!-- Tailwind & Supabase -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -42,7 +52,7 @@
     :focus-visible { outline:3px solid var(--brand-green); outline-offset:3px }
     html { scroll-behavior: smooth; }
 
-    /* Tool UI styles (zoals eerdere versies) */
+    /* Tool UI styles */
     .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer;transition:.2s}
     .dropzone:hover{border-color:#9ca3af;background:#f9fafb}
     .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
@@ -71,6 +81,7 @@
         <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
         <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>  
         <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="over.html" class="hover:text-green-700">Over</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -86,6 +97,7 @@
         <a href="index.html#inzicht" class="block py-2">Inzichten</a>
        <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
+        <a href="over.html" class="block py-2">Over</a>
         <a href="#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
