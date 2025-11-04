@@ -382,5 +382,33 @@
   <noscript>
     <style>[data-animate]{opacity:1;transform:none}</style>
   </noscript>
+  <!-- GA4 event tracking -->
+<script>
+  function track(eventName, params){
+    if (typeof gtag === 'function') gtag('event', eventName, params || {});
+  }
+
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = (a.getAttribute('href') || '').toLowerCase();
+
+    // Mailto & telefoon
+    if (href.startsWith('mailto:')){
+      track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
+    }
+    if (href.startsWith('tel:')){
+      track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
+    }
+
+    // CTA-knoppen (“Plan kennismaking”, “Start de check”, etc.)
+    const text = (a.textContent || '').trim();
+    if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
+      track('select_content', {content_type: 'cta', link_text: text, url: location.pathname});
+    }
+  });
+</script>
+<!-- /GA4 event tracking -->
+
 </body>
 </html>
