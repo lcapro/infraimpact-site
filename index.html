@@ -6,9 +6,16 @@
   <title>InfraImpact - Duurzaamheid die stand houdt.</title>
   <meta name="description" content="InfraImpact maakt duurzaamheid tastbaar, toetsbaar en toepasbaar met MKI- en LCA-berekeningen, strategisch inzicht en praktijkervaring in de GWW-sector.">
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://infraimpact.nl/"/>
+
   <!-- Performance hints -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+  <!-- Preload hero/profielfoto (sneller first paint) -->
+  <link rel="preload" as="image" href="assets/logo_full.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/jim_profile.webp" type="image/webp">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:title" content="InfraImpact – Duurzaamheid die stand houdt">
@@ -93,7 +100,7 @@
 <body class="bg-transparent text-gray-700">
   <div id="top"></div>
 
-    <!-- NAV -->
+  <!-- NAV -->
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="index.html" class="flex items-center">
@@ -118,7 +125,7 @@
         <a href="index.html" class="block py-2">Home</a>
         <a href="index.html#wat" class="block py-2">Wat we doen</a>
         <a href="index.html#inzicht" class="block py-2">Inzichten</a>
-       <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
+        <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
         <a href="#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
@@ -312,236 +319,228 @@
       lastY = y;
     }, { passive: true });
 
-// =========================
-//  MKI-donut: buitenlabels ZONDER lijnen + per-label nudges
-// =========================
-window.addEventListener('load', function(){
-  const canvas = document.getElementById('impactChart');
-  if (!canvas || !window.Chart) return;
+    // =========================
+    //  MKI-donut: buitenlabels ZONDER lijnen + per-label nudges
+    // =========================
+    window.addEventListener('load', function(){
+      const canvas = document.getElementById('impactChart');
+      if (!canvas || !window.Chart) return;
 
-  // Data
-  const labelsFull = [
-    'Grondstoffen & productie',
-    'Transport',
-    'Bouwfase',
-    'Gebruik & onderhoud',
-    'Einde levensduur'
-  ];
-  const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde levensduur'];
-  const values = [55, 10, 15, 15, 5];
-  const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
+      // Data
+      const labelsFull = [
+        'Grondstoffen & productie',
+        'Transport',
+        'Bouwfase',
+        'Gebruik & onderhoud',
+        'Einde levensduur'
+      ];
+      const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde levensduur'];
+      const values = [55, 10, 15, 15, 5];
+      const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
 
-  // Helper: afgeronde rechthoek
-  function roundRect(ctx, x, y, w, h, r){
-    const rr = Math.min(r, h/2, w/2);
-    ctx.beginPath();
-    ctx.moveTo(x+rr, y);
-    ctx.arcTo(x+w, y, x+w, y+h, rr);
-    ctx.arcTo(x+w, y+h, x, y+h, rr);
-    ctx.arcTo(x, y+h, x, y, rr);
-    ctx.arcTo(x, y, x+w, y, rr);
-    ctx.closePath();
-  }
-
-  // ===== Per-label overrides =====
-  // 0: Productie — meer naar rechts
-  // 4: Einde levensduur — verder omhoog
-  const overrides = {
-    0: { dx: 18 },   // pixels naar buiten/naar rechts (logisch t.o.v. zijde)
-    4: { dy: -24 }   // pixels omhoog (negatief = omhoog)
-  };
-
-  // Label-plugin (geen lijnen)
-  const labelsNoLines = {
-    id: 'labelsNoLines',
-    afterDatasetsDraw(chart) {
-      const { ctx, chartArea: { top, bottom, left, right } } = chart;
-      const meta = chart.getDatasetMeta(0);
-      if (!meta || !meta.data) return;
-
-      const DPR = window.devicePixelRatio || 1;
-      ctx.save();
-      ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
-      ctx.lineWidth = 1 * DPR;
-
-      // Tunables
-      const offset = 34;        // iets ruimer omdat er geen lijnen zijn
-      const lineH = 19;         // minimale verticale tussenruimte
-      const tether = 28;        // max verticale uitwijking vs natuurlijke positie
-      const padX = 8, padY = 5; // padding in labelbox
-      const maxTextWidth = Math.min(180, (right-left) * 0.33);
-      const marginX = 16, marginTop = 20, marginBottom = 16;
-
-      // 1) meet posities
-      const items = meta.data.map((arc, i) => {
-        const mid = (arc.startAngle + arc.endAngle) / 2;
-        const cos = Math.cos(mid), sin = Math.sin(mid);
-        const rOuter = arc.outerRadius;
-
-        const anchor = {
-          x: arc.x + cos * (rOuter + offset),
-          y: arc.y + sin * (rOuter + offset)
-        };
-        const rightSide = cos >= 0;
-
-        const label = `${labelsShort[i]} ${values[i]}%`;
-
-        // Wrap naar max breedte (2 regels indien nodig)
-        const wFull = ctx.measureText(label).width;
-        let line1 = label, line2 = '';
-        let w = wFull;
-        if (w > maxTextWidth) {
-          const parts = label.split(' ');
-          line1 = ''; line2 = '';
-          for (let k=0; k<parts.length; k++){
-            const test = (line1 ? line1+' ' : '') + parts[k];
-            if (ctx.measureText(test).width <= maxTextWidth) line1 = test;
-            else { line2 = parts.slice(k).join(' '); break; }
-          }
-          w = Math.max(ctx.measureText(line1).width, ctx.measureText(line2).width);
-        }
-        const lines = line2 ? [line1, line2] : [line1];
-        const textHeight = lines.length * 14 + (lines.length-1)*2;
-
-        // basis x-positie van tekst (zonder lijn, direct naast anchor)
-        const xTextRaw = rightSide
-          ? anchor.x + 8  // mini marge
-          : anchor.x - 8;
-
-        return {
-          i, rightSide, anchor, w, textHeight, lines,
-          xTextRaw, y0: anchor.y, xText: 0, yText: 0
-        };
-      });
-
-      // 2) Clamp X binnen canvas + init Y
-      items.forEach(it => {
-        const boxW = it.w + 2*padX;
-        if (it.rightSide) {
-          const x = it.xTextRaw;
-          // x is linker-rand tekst; schuif niet voorbij rechter canvasrand
-          it.xText = Math.min(x, right - marginX - boxW + padX);
-        } else {
-          const x = it.xTextRaw;
-          // x is rechter-rand tekst; schuif niet voorbij linker canvasrand
-          it.xText = Math.max(x, left + marginX + boxW - padX);
-        }
-        it.yText = it.y0;
-      });
-
-      // 3) Anti-overlap per zijde
-      function layoutSide(sideItems){
-        if (!sideItems.length) return;
-        sideItems.sort((a,b)=> a.y0 - b.y0);
-
-        const minY = top + marginTop;
-        const maxY = bottom - marginBottom;
-
-        // forward
-        sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
-        for (let k=1;k<sideItems.length;k++){
-          const prev = sideItems[k-1], cur = sideItems[k];
-          const need = prev.yText + prev.textHeight + lineH;
-          cur.yText = Math.max(cur.y0, need);
-        }
-        // backward
-        for (let k=sideItems.length-2;k>=0;k--){
-          const next = sideItems[k+1], cur = sideItems[k];
-          const maxAllowed = next.yText - (cur.textHeight + lineH);
-          cur.yText = Math.min(cur.yText, maxAllowed);
-        }
-        // tether + clamp
-        sideItems.forEach(it=>{
-          const halfH = it.textHeight/2;
-          if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
-          if (it.yText < it.y0 - tether) it.yText = it.y0 - tether;
-          it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
-        });
+      // Helper: afgeronde rechthoek
+      function roundRect(ctx, x, y, w, h, r){
+        const rr = Math.min(r, h/2, w/2);
+        ctx.beginPath();
+        ctx.moveTo(x+rr, y);
+        ctx.arcTo(x+w, y, x+w, y+h, rr);
+        ctx.arcTo(x+w, y+h, x, y+h, rr);
+        ctx.arcTo(x, y+h, x, y, rr);
+        ctx.arcTo(x, y, x+w, y, rr);
+        ctx.closePath();
       }
-      const leftSide  = items.filter(i=>!i.rightSide);
-      const rightSide = items.filter(i=> i.rightSide);
-      layoutSide(leftSide);
-      layoutSide(rightSide);
 
-      // 3b) Per-label nudges toepassen
-      items.forEach(it => {
-        const o = overrides[it.i];
-        if (!o) return;
-        if (o.dx) it.xText += o.dx * (it.rightSide ? 1 : -1);
-        if (o.dy) it.yText += o.dy;
+      // ===== Per-label overrides =====
+      const overrides = {
+        0: { dx: 18 },
+        4: { dy: -24 }
+      };
 
-        // Her-clamp X na dx
-        const boxW = it.w + 2*padX;
-        if (it.rightSide) {
-          it.xText = Math.min(it.xText, right - marginX - boxW + padX);
-        } else {
-          it.xText = Math.max(it.xText, left + marginX + boxW - padX);
-        }
-      });
+      // Label-plugin (geen lijnen)
+      const labelsNoLines = {
+        id: 'labelsNoLines',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea: { top, bottom, left, right } } = chart;
+          const meta = chart.getDatasetMeta(0);
+          if (!meta || !meta.data) return;
 
-      // 4) Teken ALLEEN labels (géén lijnen)
-      items.forEach(it => {
-        const boxW = it.w + 2*padX;
-        const boxH = it.textHeight + 2*padY;
-        const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
-        const boxY = it.yText - (boxH/2);
+          const DPR = window.devicePixelRatio || 1;
+          ctx.save();
+          ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto';
+          ctx.lineWidth = 1 * DPR;
 
-        // achtergrond
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.06)';
-        ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
-        ctx.fillStyle = 'rgba(255,255,255,0.95)';
-        roundRect(ctx, boxX, boxY, boxW, boxH, 6);
-        ctx.fill();
-        ctx.restore();
+          // Tunables
+          const offset = 34;
+          const lineH = 19;
+          const tether = 28;
+          const padX = 8, padY = 5;
+          const maxTextWidth = Math.min(180, (right-left) * 0.33);
+          const marginX = 16, marginTop = 20, marginBottom = 16;
 
-        // tekst
-        ctx.fillStyle = '#111827';
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = it.rightSide ? 'left' : 'right';
-        const lineY0 = it.yText - ((it.lines.length-1) * 8);
-        it.lines.forEach((line, idx)=>{
-          const y = lineY0 + idx*16;
-          ctx.fillText(line, it.rightSide ? (boxX + padX) : (boxX + boxW - padX), y);
-        });
-      });
+          // 1) posities
+          const items = meta.data.map((arc, i) => {
+            const mid = (arc.startAngle + arc.endAngle) / 2;
+            const cos = Math.cos(mid), sin = Math.sin(mid);
+            const rOuter = arc.outerRadius;
 
-      ctx.restore();
-    }
-  };
+            const anchor = {
+              x: arc.x + cos * (rOuter + offset),
+              y: arc.y + sin * (rOuter + offset)
+            };
+            const rightSide = cos >= 0;
 
-  // Chart init
-  new Chart(canvas, {
-    type: 'doughnut',
-    data: {
-      labels: labelsFull,
-      datasets: [{
-        data: values,
-        backgroundColor: colors,
-        borderWidth: 0,
-        hoverOffset: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      aspectRatio: 1.6,
-      cutout: '62%',
-      layout: { padding: { top: 36, right: 40, bottom: 28, left: 40 } },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (item) => `${item.label}: ${item.parsed}%`,
-            afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
+            const label = `${labelsShort[i]} ${values[i]}%`;
+
+            // Wrap
+            const wFull = ctx.measureText(label).width;
+            let line1 = label, line2 = '';
+            let w = wFull;
+            if (w > maxTextWidth) {
+              const parts = label.split(' ');
+              line1 = ''; line2 = '';
+              for (let k=0; k<parts.length; k++){
+                const test = (line1 ? line1+' ' : '') + parts[k];
+                if (ctx.measureText(test).width <= maxTextWidth) line1 = test;
+                else { line2 = parts.slice(k).join(' '); break; }
+              }
+              w = Math.max(ctx.measureText(line1).width, ctx.measureText(line2).width);
+            }
+            const lines = line2 ? [line1, line2] : [line1];
+            const textHeight = lines.length * 14 + (lines.length-1)*2;
+
+            const xTextRaw = rightSide ? anchor.x + 8 : anchor.x - 8;
+
+            return {
+              i, rightSide, anchor, w, textHeight, lines,
+              xTextRaw, y0: anchor.y, xText: 0, yText: 0
+            };
+          });
+
+          // 2) Clamp X + init Y
+          items.forEach(it => {
+            const boxW = it.w + 2*padX;
+            if (it.rightSide) {
+              const x = it.xTextRaw;
+              it.xText = Math.min(x, right - marginX - boxW + padX);
+            } else {
+              const x = it.xTextRaw;
+              it.xText = Math.max(x, left + marginX + boxW - padX);
+            }
+            it.yText = it.y0;
+          });
+
+          // 3) Anti-overlap
+          function layoutSide(sideItems){
+            if (!sideItems.length) return;
+            sideItems.sort((a,b)=> a.y0 - b.y0);
+
+            const minY = top + marginTop;
+            const maxY = bottom - marginBottom;
+
+            // forward
+            sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
+            for (let k=1;k<sideItems.length;k++){
+              const prev = sideItems[k-1], cur = sideItems[k];
+              const need = prev.yText + prev.textHeight + lineH;
+              cur.yText = Math.max(cur.y0, need);
+            }
+            // backward
+            for (let k=sideItems.length-2;k>=0;k--){
+              const next = sideItems[k+1], cur = sideItems[k];
+              const maxAllowed = next.yText - (cur.textHeight + lineH);
+              cur.yText = Math.min(cur.yText, maxAllowed);
+            }
+            // tether + clamp
+            sideItems.forEach(it=>{
+              const halfH = it.textHeight/2;
+              if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
+              if (it.yText < it.y0 - tether) it.yText = it.y0 - tether;
+              it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
+            });
           }
+          const leftSide  = items.filter(i=>!i.rightSide);
+          const rightSide = items.filter(i=> i.rightSide);
+          layoutSide(leftSide);
+          layoutSide(rightSide);
+
+          // 3b) Manual nudges
+          items.forEach(it => {
+            const o = overrides[it.i];
+            if (!o) return;
+            if (o.dx) it.xText += o.dx * (it.rightSide ? 1 : -1);
+            if (o.dy) it.yText += o.dy;
+
+            const boxW = it.w + 2*padX;
+            if (it.rightSide) {
+              it.xText = Math.min(it.xText, right - marginX - boxW + padX);
+            } else {
+              it.xText = Math.max(it.xText, left + marginX + boxW - padX);
+            }
+          });
+
+          // 4) Teken labels
+          items.forEach(it => {
+            const boxW = it.w + 2*padX;
+            const boxH = it.textHeight + 2*padY;
+            const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
+            const boxY = it.yText - (boxH/2);
+
+            // achtergrond
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.06)';
+            ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            roundRect(ctx, boxX, boxY, boxW, boxH, 6);
+            ctx.fill();
+            ctx.restore();
+
+            // tekst
+            ctx.fillStyle = '#111827';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = it.rightSide ? 'left' : 'right';
+            const lineY0 = it.yText - ((it.lines.length-1) * 8);
+            it.lines.forEach((line, idx)=>{
+              const y = lineY0 + idx*16;
+              ctx.fillText(line, it.rightSide ? (boxX + padX) : (boxX + boxW - padX), y);
+            });
+          });
+
+          ctx.restore();
         }
-      },
-      animation: { duration: 600 }
-    },
-    plugins: [labelsNoLines]
-  });
-});
+      };
+
+      // Chart init
+      new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labelsFull,
+          datasets: [{
+            data: values,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.6,
+          cutout: '62%',
+          layout: { padding: { top: 36, right: 40, bottom: 28, left: 40 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (item) => `${item.label}: ${item.parsed}%`,
+                afterBody: (items) => items[0].dataIndex === 0 ? ['Hier valt de meeste winst te behalen.'] : []
+              }
+            }
+          },
+          animation: { duration: 600 }
+        },
+        plugins: [labelsNoLines]
+      });
+    });
 
     // Decoratieve streaks-animatie
     const c = document.getElementById('streaks');
