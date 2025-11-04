@@ -1,88 +1,108 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>MKI-toetsing asfalt check</title>
-<meta name="description" content="Controleer of asfalt-EPD’s voldoen aan de uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MKI-toetsing asfalt check (v2.1)</title>
+<meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
+
 <style>
-.dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer}
-.drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
-.badge-pass{background:#ecfdf5;color:#065f46}
-.badge-fail{background:#fef2f2;color:#991b1b}
-.badge-info{background:#eff6ff;color:#1e40af}
-.mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-.hint{font-size:.8rem;color:#6b7280}
+  body{font-family:Inter,system-ui,sans-serif}
+  .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer;transition:.2s}
+  .dropzone:hover{border-color:#9ca3af;background:#f9fafb}
+  .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
+  .badge-pass{background:#ecfdf5;color:#065f46}
+  .badge-fail{background:#fef2f2;color:#991b1b}
+  .badge-info{background:#eff6ff;color:#1e40af}
+  .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  .hint{font-size:.8rem;color:#6b7280}
+  .highlight-col{background:#dcfce7!important}
 </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
 
+<body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
- <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-  <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check</h1>
-  <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
- </div>
+  <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.1)</h1>
+    <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
+  </div>
 </header>
 
 <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
- <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
+  <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
 
- <!-- Info -->
- <section class="bg-white rounded-2xl shadow p-6 space-y-4">
-  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-   <div>
-    <h2 class="text-xl font-semibold">Uniforme MKI-plafondwaarden 2025 (PCR 2.0)</h2>
-    <p class="hint">Automatisch geladen eisenset</p>
-   </div>
-   <div>
-    <label class="block text-sm font-medium mb-1">Kies jaar van de eis</label>
-    <select id="year-target" class="border rounded-xl px-3 py-2">
-      <option>2022</option><option>2024</option><option selected>2026</option>
-      <option>2028</option><option>2030</option>
-    </select>
-   </div>
-  </div>
-
-  <!-- MKI eisen tabel -->
-  <div class="overflow-x-auto mt-4">
-   <table id="eisen-table" class="min-w-full text-sm border border-gray-200"></table>
-  </div>
- </section>
-
- <!-- Upload -->
- <section class="bg-white rounded-2xl shadow p-6 space-y-4">
-  <h2 class="text-xl font-semibold">Upload één of meer EPD’s (PDF)</h2>
-  <div id="epd-drop" class="dropzone p-6 bg-gray-50">
-    <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="drop-input"/>
-    <div class="pointer-events-none flex items-center justify-between gap-4">
+  <!-- Eisen-tabel + jaarselectie -->
+  <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
       <div>
-        <p class="font-medium">Sleep hier je EPD-PDF’s heen of klik</p>
-        <p class="text-sm text-gray-500">Meerdere tegelijk toegestaan.</p>
+        <h2 class="text-xl font-semibold">Uniforme MKI-plafondwaarden 2025 (PCR 2.0)</h2>
+        <p class="hint">Automatisch geladen eisenset</p>
       </div>
-      <span class="px-4 py-2 rounded-xl bg-gray-900 text-white">Kies PDF’s…</span>
+      <div>
+        <label class="block text-sm font-medium mb-1">Kies jaar van de eis</label>
+        <select id="year-target" class="border rounded-xl px-3 py-2">
+          <option>2022</option>
+          <option>2024</option>
+          <option selected>2026</option>
+          <option>2028</option>
+          <option>2030</option>
+        </select>
+      </div>
     </div>
-  </div>
-  <div id="epd-list" class="space-y-4"></div>
 
-  <div class="flex items-center gap-4">
-    <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer & opslaan</button>
-    <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
-  </div>
+    <!-- Eisentabel -->
+    <div class="overflow-x-auto mt-4">
+      <table id="eisen-table" class="min-w-full text-sm border border-gray-200"></table>
+    </div>
+  </section>
 
-  <div id="results" class="mt-4"></div>
- </section>
+  <!-- EPD-upload -->
+  <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <h2 class="text-xl font-semibold">Upload één of meer EPD’s (PDF)</h2>
+    <div id="epd-drop" class="dropzone p-6 bg-gray-50">
+      <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="drop-input" />
+      <div class="pointer-events-none flex items-center justify-between gap-4">
+        <div>
+          <p class="font-medium">Sleep hier je EPD-PDF’s heen of klik</p>
+          <p class="text-sm text-gray-500">Meerdere tegelijk toegestaan.</p>
+        </div>
+        <span class="px-4 py-2 rounded-xl bg-gray-900 text-white">Kies PDF’s…</span>
+      </div>
+    </div>
+
+    <div id="epd-list" class="space-y-4"></div>
+
+    <div class="flex items-center gap-4">
+      <button id="run-checks" type="button"
+        class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>
+        Controleer & opslaan
+      </button>
+      <button id="export-csv" type="button"
+        class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>
+        Exporteer CSV
+      </button>
+    </div>
+
+    <div id="results" class="mt-4"></div>
+  </section>
 </main>
 
+<!-- Start van het script (v2.1) -->
 <script>
+/* ===== Helper-functies ===== */
 const $=s=>document.querySelector(s);
-function el(t,a={},c=[]){const n=document.createElement(t);for(const[k,v]of Object.entries(a)){k=="class"?n.className=v:k=="html"?n.innerHTML=v:n.setAttribute(k,v)};(Array.isArray(c)?c:[c]).forEach(x=>{if(x==null)return;if(typeof x=="string"||typeof x=="number")n.appendChild(document.createTextNode(String(x)));else n.appendChild(x)});return n;}
-function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
+function el(t,a={},c=[]){const n=document.createElement(t);
+ for(const[k,v]of Object.entries(a)){k=="class"?n.className=v:k=="html"?n.innerHTML=v:n.setAttribute(k,v);}
+ (Array.isArray(c)?c:[c]).forEach(x=>{if(x==null)return;if(typeof x=="string"||typeof x=="number")n.appendChild(document.createTextNode(String(x)));else n.appendChild(x);});
+ return n;}
+function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");
+ t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
 function fmtNL(n){return isNaN(n)?"—":n.toFixed(2).replace(".",",");}
 
-/* === Data === */
+/* ===== Dataset (Uniforme MKI-plafondwaarden 2025 PCR 2.0) ===== */
 const MKI_EISEN={jaar:[2022,2024,2026,2028,2030],
   plafonds:{
 "AC surf":[9.9,9.1,8.2,7.5,6.7],"AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
@@ -110,77 +130,158 @@ const MKI_EISEN={jaar:[2022,2024,2026,2028,2030],
 "2L ZOAB toplaag met gemodificeerd bitumen":1.80,"2L ZOAB onderlaag":1.80,"2L ZOAB onderlaag, minimaal 30% PR":1.80}
 };
 
-/* === Tabel met eisen tonen === */
+/* === Tabel renderen === */
 const tbl=$("#eisen-table");
-const hdr=el("tr",{class:"bg-gray-100"},[el("th",{class:"px-3 py-2 text-left"},"Asfaltsoort"),...MKI_EISEN.jaar.map(y=>el("th",{class:"px-3 py-2 text-left"},"Plafond "+y)),el("th",{class:"px-3 py-2 text-left"},"A4–C4")]);
+const hdr=el("tr",{class:"bg-gray-100"},[
+ el("th",{class:"px-3 py-2 text-left"},"Asfaltsoort"),
+ ...MKI_EISEN.jaar.map(y=>el("th",{class:"px-3 py-2 text-left jaarcol","data-jaar":y},"Plafond "+y)),
+ el("th",{class:"px-3 py-2 text-left"},"A4–C4")]);
 tbl.appendChild(hdr);
-Object.keys(MKI_EISEN.plafonds).forEach(m=>{
+for(const m in MKI_EISEN.plafonds){
  const r=el("tr",{},[el("td",{class:"border-t px-3 py-1"},m)]);
- MKI_EISEN.plafonds[m].forEach(v=>r.appendChild(el("td",{class:"border-t px-3 py-1"},fmtNL(v))));
+ MKI_EISEN.plafonds[m].forEach((v,i)=>r.appendChild(el("td",{class:"border-t px-3 py-1 jaarcol","data-jaar":MKI_EISEN.jaar[i]},fmtNL(v))));
  r.appendChild(el("td",{class:"border-t px-3 py-1"},fmtNL(MKI_EISEN.a4c4[m])));
  tbl.appendChild(r);
-});
+}
+$("#year-target").addEventListener("change",()=>highlightCol());
+function highlightCol(){
+ const jaar=$("#year-target").value;
+ document.querySelectorAll(".jaarcol").forEach(td=>td.classList.remove("highlight-col"));
+ document.querySelectorAll(`.jaarcol[data-jaar='${jaar}']`).forEach(td=>td.classList.add("highlight-col"));
+}
+highlightCol();
 
-/* === Supabase === */
-const sb=window.supabase.createClient("https://fblenxtccwpsjwrkirtc.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI");
+/* ===== Vanaf hier volgt Deel 2 (JS-logica) ===== */
+/* ===== Supabase setup ===== */
+const sb = window.supabase.createClient(
+  "https://fblenxtccwpsjwrkirtc.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI"
+);
+const BUCKET="epd-uploads";
 
-/* === PDF lezen === */
+/* ===== PDF-helpers ===== */
 async function waitPdf(){while(!window.pdfjsLib){await new Promise(r=>setTimeout(r,100));}}
-async function pdfToText(f){await waitPdf();const b=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:b}).promise;let t='';for(let i=1;i<=Math.min(pdf.numPages,3);i++){const p=await pdf.getPage(i);const c=await p.getTextContent();t+='\n'+c.items.map(it=>it.str).join(' ');}return t;}
-function parseNumEU(s){if(!s)return NaN;return Number(String(s).replace(/\./g,'').replace(',','.').replace(/[^\d\.\-]/g,''));}
-async function parseEpd(f){const txt=await pdfToText(f);const prod=(txt.match(/Product:\s*([^\n]+)/i)||[])[1]||f.name;const pcr=(txt.match(/PCR[:\s]+([^\n]+)/i)||[])[1]||"NL-PCR Asfalt 2.0";const pub=(txt.match(/Datum\s+van\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i)||[])[1]||'';let a1=(txt.match(/\bA1-?A3\b[^0-9]*([\d\.,]+)/i)||[])[1];let d=(txt.match(/\bD\b[^0-9]*([\d\.,]+)/i)||[])[1];return{product:prod,pcr,pubDate:pub,mkiA1A3:parseNumEU(a1),mkiD:parseNumEU(d)};}
-
-/* === App === */
-document.addEventListener("DOMContentLoaded",()=>{
- const st={epds:[],runId:null,clientSession:crypto.randomUUID()};
- const epdIn=$("#epd-files"),list=$("#epd-list"),btn=$("#run-checks"),csv=$("#export-csv"),res=$("#results"),jaarSel=$("#year-target");
- ["dragenter","dragover"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.add("bg-green-50");}));
- ["dragleave","drop","dragend"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.remove("bg-green-50");}));
- epdIn.addEventListener("change",()=>{const f=[...epdIn.files];if(f.length)handleFiles(f);epdIn.value='';});
- $("#epd-drop").addEventListener("drop",e=>{const f=[...(e.dataTransfer?.files||[])].filter(x=>/\.pdf$/i.test(x.name));if(f.length)handleFiles(f);});
-
- async function handleFiles(fs){
-  if(!st.runId){const{data}=await sb.from("epd_runs").insert({client_session:st.clientSession,pcr_target:"NL-PCR Asfalt 2.0",year_target:jaarSel.value}).select("id").single();st.runId=data.id;}
-  for(const f of fs)await addCard(f);
- }
-
- async function addCard(f){
-  const card=el("div",{class:"border rounded-xl p-4 bg-white"});
-  const head=el("div",{class:"flex justify-between items-center mb-2"},[el("div",{class:"font-medium"},f.name),el("div",{class:"badge badge-info"},"lezen…")]);
-  const meta=el("div",{class:"text-sm text-gray-700 mb-2"},'—');const mixSel=el("select",{class:"w-full border rounded-xl px-3 py-2 mb-2"},[el("option",{value:""},'— kies asfaltsoort —'),...Object.keys(MKI_EISEN.plafonds).map(m=>el("option",{value:m},m))]);
-  card.append(head,meta,mixSel);list.appendChild(card);
-  try{await waitPdf();const p=await parseEpd(f);meta.textContent=`PCR: ${p.pcr} · MKI A1–A3 ${fmtNL(p.mkiA1A3)} · MKI D ${fmtNL(p.mkiD)}`;head.lastChild.textContent='opgeslagen';head.lastChild.className='badge badge-pass';const{data}=await sb.from("epd_files").insert({run_id:st.runId,file_name:f.name,file_path:"local",product:p.product,pcr_epd:p.pcr,pub_date:p.pubDate}).select("id").single();st.epds.push({file:f,fileId:data.id,parsed:p,get mix(){return mixSel.value;}});}catch(e){meta.textContent="Fout bij lezen PDF";head.lastChild.className="badge badge-fail";}
-  btn.disabled=false;
- }
-
- btn.addEventListener("click",async()=>{
-  const jaar=parseInt(jaarSel.value,10);const jIdx=MKI_EISEN.jaar.indexOf(jaar);
-  res.innerHTML='';const rows=[];
-  for(const e of st.epds){
-   const p=e.parsed,mix=e.mix;if(!mix)continue;
-   const a4=MKI_EISEN.a4c4[mix]||NaN,pl=MKI_EISEN.plafonds[mix]?.[jIdx];
-   const tot=(p.mkiA1A3||0)+(a4||0)+(p.mkiD||0);const pass=!isNaN(tot)&&!isNaN(pl)&&tot<=pl;
-   const card=el("div",{class:`border rounded-xl p-4 mb-4 ${pass?'bg-green-50':'bg-red-50'}`},[
-    el("div",{class:"flex justify-between"},[el("div",{class:"font-medium"},e.file.name),el("div",{class:`badge ${pass?'badge-pass':'badge-fail'}`},pass?'PASS':'FAIL')]),
-    el("table",{class:"mt-2 text-sm mono"},[
-     el("tr",{},[el("td",{class:"pr-4"},'Asfaltsoort'),el("td",{},mix)]),
-     el("tr",{},[el("td",{class:"pr-4"},'Jaar'),el("td",{},jaar)]),
-     el("tr",{},[el("td",{class:"pr-4"},'MKI A1–A3'),el("td",{},fmtNL(p.mkiA1A3))]),
-     el("tr",{},[el("td",{class:"pr-4"},'MKI A4–C4'),el("td",{},fmtNL(a4))]),
-     el("tr",{},[el("td",{class:"pr-4"},'MKI D'),el("td",{},fmtNL(p.mkiD))]),
-     el("tr",{},[el("td",{class:"pr-4 font-semibold"},'MKI A–D totaal'),el("td",{class:"font-semibold"},fmtNL(tot))]),
-     el("tr",{},[el("td",{class:"pr-4"},'Plafondwaarde'),el("td",{},fmtNL(pl))]),
-     el("tr",{},[el("td",{class:"pr-4"},'Marginale ruimte'),el("td",{},fmtNL(pl-tot))])
-    ])
-   ]);
-   res.appendChild(card);
-   rows.push({Bestand:e.file.name,Asfaltsoort:mix,Jaar:jaar,"MKI A1–A3":fmtNL(p.mkiA1A3),"MKI A4–C4":fmtNL(a4),"MKI D":fmtNL(p.mkiD),"MKI A–D totaal":fmtNL(tot),Plafondwaarde:fmtNL(pl),"Marginale ruimte":fmtNL(pl-tot),"Voldoet aan eis":pass?"Ja":"Nee"});
-   await sb.from("epd_results").insert({run_id:st.runId,file_id:e.fileId,mix:mix,year:jaar,mki_a1a3:p.mkiA1A3,mki_a4c4:a4,mki_d:p.mkiD,mki_total_ad:tot,plafond:pl,pass:pass});
+async function pdfToText(file){
+  await waitPdf();
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let full='';
+  for(let p=1;p<=Math.min(4,pdf.numPages);p++){
+    const page=await pdf.getPage(p);
+    const c=await page.getTextContent();
+    full+='\n'+c.items.map(it=>it.str).join(' ');
   }
-  if(rows.length){const headers=Object.keys(rows[0]);const csv=[headers.join(";")].concat(rows.map(r=>headers.map(h=>r[h]).join(";"))).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);csv.disabled=false;csv.onclick=()=>{const a=document.createElement("a");a.href=url;a.download="mki-resultaten.csv";a.click();};}
-  toast("Controle uitgevoerd",true);
- });
+  return full;
+}
+function parseNumEU(s){if(!s)return NaN;return Number(String(s).replace(/\./g,'').replace(',','.').replace(/[^\d\.\-]/g,''));}
+
+/* ===== MKI-parser voor EPD ===== */
+async function parseEpd(file){
+  const text=await pdfToText(file);
+  const product=(text.match(/Product:\s*([^\n]+)/i)||[])[1]||file.name;
+  const pcr=(text.match(/PCR[:\s]+([^\n]+)/i)||[])[1]||"NL-PCR Asfalt 2.0";
+  const pub=(text.match(/Datum\s+van\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i)||[])[1]||'';
+  // herken MKI’s via meerdere patronen
+  const mA1=(text.match(/\bA1-?A3\b[^0-9]*([\d\.,]+)/i)||[])[1];
+  const mD=(text.match(/\bD\b[^0-9]*([\d\.,]+)/i)||[])[1];
+  // fallback via tabel "Environmental Cost Indicator"
+  const block=text.match(/Environmental\s+Costs?\s+Indicator[\s\S]{0,600}/i);
+  let a1=parseNumEU(mA1), d=parseNumEU(mD);
+  if(block && (isNaN(a1)||isNaN(d))){
+    const b=block[0];
+    const sub=b.match(/A1-?A3[^0-9]*([\d\.,]+)/i);if(sub)a1=parseNumEU(sub[1]);
+    const db=b.match(/\bD[^0-9]*([\d\.,]+)/i);if(db)d=parseNumEU(db[1]);
+  }
+  return {product,pcr,pubDate:pub,mkiA1A3:a1,mkiD:d,text};
+}
+
+/* ===== Hoofd-app ===== */
+document.addEventListener("DOMContentLoaded",()=>{
+  const st={epds:[],runId:null,clientSession:crypto.randomUUID()};
+  const epdIn=$("#epd-files"),list=$("#epd-list"),btn=$("#run-checks"),csvBtn=$("#export-csv"),res=$("#results"),jaarSel=$("#year-target");
+
+  // drag-and-drop styling
+  ["dragenter","dragover"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.add("bg-green-50");}));
+  ["dragleave","drop","dragend"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.remove("bg-green-50");}));
+
+  epdIn.addEventListener("change",()=>{const f=[...epdIn.files];if(f.length)handleFiles(f);epdIn.value='';});
+  $("#epd-drop").addEventListener("drop",e=>{const f=[...(e.dataTransfer?.files||[])].filter(x=>/\.pdf$/i.test(x.name));if(f.length)handleFiles(f);});
+
+  async function handleFiles(fs){
+    if(!st.runId){
+      const {data}=await sb.from("epd_runs").insert({client_session:st.clientSession,pcr_target:"NL-PCR Asfalt 2.0",year_target:jaarSel.value}).select("id").single();
+      st.runId=data.id;
+    }
+    for(const f of fs)await addCard(f);
+  }
+
+  async function addCard(f){
+    const card=el("div",{class:"border rounded-xl p-4 bg-white"});
+    const head=el("div",{class:"flex justify-between items-center mb-2"},[el("div",{class:"font-medium"},f.name),el("div",{class:"badge badge-info"},"lezen…")]);
+    const meta=el("div",{class:"text-sm text-gray-700 mb-2"},'—');
+    const mixSel=el("select",{class:"w-full border rounded-xl px-3 py-2 mb-2"},
+      [el("option",{value:""},'— kies asfaltsoort —'),
+       ...Object.keys(MKI_EISEN.plafonds).map(m=>el("option",{value:m},m))]);
+    const rowInputs=el("div",{class:"grid grid-cols-2 gap-3 mb-2"},[
+      el("div",{},[el("label",{class:"text-sm"},"MKI A1–A3"),el("input",{type:"number",step:"0.001",class:"border rounded-xl px-3 py-2 w-full",id:"a13"})]),
+      el("div",{},[el("label",{class:"text-sm"},"MKI D"),el("input",{type:"number",step:"0.001",class:"border rounded-xl px-3 py-2 w-full",id:"mkiD"})])
+    ]);
+    card.append(head,meta,mixSel,rowInputs);
+    list.appendChild(card);
+
+    try{
+      await waitPdf();
+      const p=await parseEpd(f);
+      meta.textContent=`PCR: ${p.pcr} · Publicatie: ${p.pubDate||'onbekend'}`;
+      // invulwaarden + suggestie
+      rowInputs.querySelector("#a13").value=isNaN(p.mkiA1A3)?'':p.mkiA1A3;
+      rowInputs.querySelector("#mkiD").value=isNaN(p.mkiD)?'':p.mkiD;
+      const hint=Object.keys(MKI_EISEN.plafonds).find(m=>p.text.toLowerCase().includes(m.split(' ')[0].toLowerCase()));
+      if(hint)mixSel.value=hint;
+      head.lastChild.textContent='gereed';head.lastChild.className='badge badge-pass';
+      const {data}=await sb.from("epd_files").insert({run_id:st.runId,file_name:f.name,file_path:"local",product:p.product,pcr_epd:p.pcr,pub_date:p.pubDate}).select("id").single();
+      st.epds.push({file:f,fileId:data.id,parsed:p,get mix(){return mixSel.value;},get a13(){return parseFloat(rowInputs.querySelector("#a13").value)||NaN;},get d(){return parseFloat(rowInputs.querySelector("#mkiD").value)||NaN;}});
+    }catch(err){
+      meta.textContent="Fout bij lezen PDF";head.lastChild.className="badge badge-fail";
+    }
+    btn.disabled=false;
+  }
+
+  btn.addEventListener("click",async()=>{
+    const jaar=parseInt(jaarSel.value,10);const jIdx=MKI_EISEN.jaar.indexOf(jaar);
+    res.innerHTML='';const rows=[];
+    for(const e of st.epds){
+      const mix=e.mix;if(!mix)continue;
+      const a1=e.a13,a4=MKI_EISEN.a4c4[mix]||NaN,d=e.d,pl=MKI_EISEN.plafonds[mix]?.[jIdx];
+      const tot=(a1||0)+(a4||0)+(d||0);
+      const pass=!isNaN(tot)&&!isNaN(pl)&&tot<=pl;
+      const card=el("div",{class:`border rounded-xl p-4 mb-4 ${pass?'bg-green-50':'bg-red-50'}`},[
+        el("div",{class:"flex justify-between"},[el("div",{class:"font-medium"},e.file.name),el("div",{class:`badge ${pass?'badge-pass':'badge-fail'}`},pass?'PASS':'FAIL')]),
+        el("table",{class:"mt-2 text-sm mono"},[
+          el("tr",{},[el("td",{class:"pr-4"},'Asfaltsoort'),el("td",{},mix)]),
+          el("tr",{},[el("td",{class:"pr-4"},'Jaar'),el("td",{},jaar)]),
+          el("tr",{},[el("td",{class:"pr-4"},'MKI A1–A3'),el("td",{},fmtNL(a1))]),
+          el("tr",{},[el("td",{class:"pr-4"},'MKI A4–C4'),el("td",{},fmtNL(a4))]),
+          el("tr",{},[el("td",{class:"pr-4"},'MKI D'),el("td",{},fmtNL(d))]),
+          el("tr",{},[el("td",{class:"pr-4 font-semibold"},'MKI A–D totaal'),el("td",{class:"font-semibold"},fmtNL(tot))]),
+          el("tr",{},[el("td",{class:"pr-4"},'Plafondwaarde'),el("td",{},fmtNL(pl))]),
+          el("tr",{},[el("td",{class:"pr-4"},'Marginale ruimte'),el("td",{},fmtNL(pl-tot))])
+        ])
+      ]);
+      res.appendChild(card);
+      rows.push({Bestand:e.file.name,Asfaltsoort:mix,Jaar:jaar,"MKI A1–A3":fmtNL(a1),"MKI A4–C4":fmtNL(a4),"MKI D":fmtNL(d),"MKI A–D totaal":fmtNL(tot),Plafondwaarde:fmtNL(pl),"Marginale ruimte":fmtNL(pl-tot),"Voldoet aan eis":pass?"Ja":"Nee"});
+      await sb.from("epd_results").insert({run_id:st.runId,file_id:e.fileId,mix:mix,year:jaar,mki_a1a3:a1,mki_a4c4:a4,mki_d:d,mki_total_ad:tot,plafond:pl,pass:pass});
+    }
+    if(rows.length){
+      const headers=Object.keys(rows[0]);
+      const csv=[headers.join(";")].concat(rows.map(r=>headers.map(h=>r[h]).join(";"))).join("\n");
+      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      csvBtn.disabled=false;
+      csvBtn.onclick=()=>{const a=document.createElement("a");a.href=url;a.download="mki-resultaten.csv";a.click();};
+    }
+    toast("Controle uitgevoerd",true);
+  });
 });
 </script>
 
