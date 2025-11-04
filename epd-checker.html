@@ -1,64 +1,108 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.10 – InfraImpact)</title>
-<meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
-<style>
-  :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
-  body{
-    background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
-    background-size: 400% 400%; animation: bgMove 60s ease infinite;
-    color: var(--ink);
-    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  }
-  @keyframes bgMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-  .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer;transition:.2s}
-  .dropzone:hover{border-color:#9ca3af;background:#f9fafb}
-  .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
-  .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
-  .badge-pass{background:#ecfdf5;color:#065f46}
-  .badge-fail{background:#fef2f2;color:#991b1b}
-  .badge-info{background:#eff6ff;color:#1e40af}
-  .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-  .hint{font-size:.8rem;color:#6b7280}
-  .highlight-col{background:#dcfce7!important}
-  .btn-danger{background:#fee2e2;color:#991b1b}
-  .btn-danger:hover{background:#fecaca}
-  nav{position:sticky;top:0;background-color:#ffffffcc;backdrop-filter:blur(6px);
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);z-index:50}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MKI-toetsing asfalt check (v2.6.10-HF)</title>
+  <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0) en exporteer de resultaten.">
+
+  <!-- Tailwind & Supabase -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
+
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+
+    body {
+      background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
+      background-size: 400% 400%;
+      animation: bgMove 60s ease infinite;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* NAV identiek aan index */
+    nav {
+      position: sticky; top: 0;
+      background-color: #ffffffcc; backdrop-filter: blur(6px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 50;
+    }
+    .scroll-down { transform: translateY(-100%); }
+    .scroll-up { transform: translateY(0); }
+
+    :focus-visible { outline:3px solid var(--brand-green); outline-offset:3px }
+    html { scroll-behavior: smooth; }
+
+    /* Tool UI styles (zoals eerdere versies) */
+    .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer;transition:.2s}
+    .dropzone:hover{border-color:#9ca3af;background:#f9fafb}
+    .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
+    .badge-pass{background:#ecfdf5;color:#065f46}
+    .badge-fail{background:#fef2f2;color:#991b1b}
+    .badge-info{background:#eff6ff;color:#1e40af}
+    .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .hint{font-size:.8rem;color:#6b7280}
+    .highlight-col{background:#dcfce7!important}
+    .btn-danger{background:#fee2e2;color:#991b1b}
+    .btn-danger:hover{background:#fecaca}
+  </style>
 </head>
 
-<body>
-  <!-- Topbar -->
-  <nav>
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
-        <img src="assets/logo_full.webp" alt="InfraImpact" class="h-8 w-auto" />
-        <span class="hidden sm:inline text-sm text-gray-700">InfraImpact</span>
+<body class="bg-transparent text-gray-700">
+  <!-- NAV (identiek aan index) -->
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="index.html#top" class="flex items-center">
+        <img src="assets/logo_full.webp" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition" />
       </a>
-      <div class="flex items-center gap-3">
-        <a href="index.html#wat" class="text-sm text-gray-700 hover:text-green-700">Wat we doen</a>
-        <a href="index.html#contact" class="text-sm text-gray-700 hover:text-green-700">Contact</a>
-        <a href="index.html" class="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-500 text-sm">Terug naar home</a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="over.html" class="hover:text-green-700">Over ons</a>
+        <a href="index.html#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="epd-checker.html" class="text-green-700 font-semibold">MKI-toetsing asfalt</a>
+        <a href="index.html#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="over.html" class="hover:text-green-700">Over ons</a>
+        <a href="index.html#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="index.html#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="epd-checker.html" class="text-green-700 font-semibold">MKI-toetsing asfalt</a>
+        <a href="index.html#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
     </div>
   </nav>
 
-  <header class="bg-transparent">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-      <h1 class="text-2xl md:text-3xl font-bold text-gradient">MKI-toetsing asfalt</h1>
-      <p class="text-gray-700 mt-2">Toets EPD’s aan de uniforme MKI-plafondwaarden 2025 (PCR 2.0) en exporteer de resultaten.</p>
-    </div>
+  <!-- HERO/Intro -->
+  <header class="relative bg-transparent">
+    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 py-10 md:py-12">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">MKI-toetsing asfalt</h1>
+      <p class="text-gray-700 mt-2">
+        Upload EPD’s en toets ze direct aan de uniforme MKI-plafondwaarden 2025 (PCR 2.0). Compact, duidelijk en exporteerbaar.
+      </p>
+    </section>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+  <!-- TOOL -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pb-12 space-y-8">
     <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
 
     <!-- EISEN + JAAR -->
@@ -88,6 +132,7 @@
     <!-- UPLOAD -->
     <section class="bg-white rounded-2xl shadow p-6 space-y-4">
       <h2 class="text-xl font-semibold">Upload EPD’s (PDF)</h2>
+
       <div id="epd-drop" class="dropzone p-6 bg-gray-50">
         <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="drop-input" />
         <div class="pointer-events-none flex items-center justify-between gap-4">
@@ -102,7 +147,7 @@
       <div id="epd-list" class="space-y-4"></div>
 
       <div class="flex items-center gap-4">
-        <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer & opslaan</button>
+        <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer &amp; opslaan</button>
         <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
       </div>
 
@@ -110,8 +155,66 @@
     </section>
   </main>
 
-  <!-- ======= HIERONDER: ongewijzigde JS-LOGICA uit v2.6.10 (functioneel identiek) ======= -->
+  <!-- FOOTER (identiek aan index) -->
+  <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-16 pb-10">
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
+      <p class="text-gray-700 mb-8">Benieuwd hoe jouw organisatie voordeel haalt uit MKI &amp; LCA? We denken graag mee en reageren dezelfde werkdag.</p>
+      <div class="space-y-2 text-gray-600">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div class="mt-8">
+        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-500 text-sm mt-12">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ========= APP LOGICA (functioneel gelijk aan v2.6.10) ========= -->
   <script>
+  // Nav gedrag identiek aan index
+  (function(){
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu) {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a => {
+        a.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        });
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
+    let lastY = window.scrollY; const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y > lastY && y > 80) nav.classList.add('scroll-down'), nav.classList.remove('scroll-up');
+      else nav.classList.add('scroll-up'), nav.classList.remove('scroll-down');
+      lastY = y;
+    }, { passive: true });
+
+    // Jaar in footer
+    const yEl = document.getElementById('year'); if (yEl) yEl.textContent = new Date().getFullYear();
+  })();
+
+  /* ====== Helpers ====== */
   const $=s=>document.querySelector(s);
   function el(t,a={},c=[]){const n=document.createElement(t);
    for(const[k,v]of Object.entries(a)){if(k==="class")n.className=v; else if(k==="html")n.innerHTML=v; else n.setAttribute(k,v);}
@@ -124,79 +227,85 @@
     if(typeof value==='string'){const raw=value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ');const s=raw.replace(',', '.');const num=Number(s);if(!isFinite(num))return'';return roundTo3(num);}
     if(typeof value!=='number'||!isFinite(value))return'';return roundTo3(value);
   }
+
+  /* ====== Eisen set (hard-coded) ====== */
   const MKI_EISEN={jaar:[2022,2024,2026,2028,2030],
     plafonds:{
-  "AC surf":[9.9,9.1,8.2,7.5,6.7],
-  "AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
-  "AC surf met gemodificeerd bitumen":[11.6,10.6,9.5,8.7,7.9],
-  "AC surf, minimaal 30% PR met gemodificeerd bitumen":[9.9,7.4,7.1,6.7,6.4],
-  "AC surf rood":[22.1,17.7,17.0,16.4,15.8],
-  "AC bin/base, minimaal 50% PR":[4.9,4.5,4.1,3.6,3.1],
-  "AC bin/base, minimaal 50% PR met gemodificeerd bitumen":[5.5,5.1,4.6,4.1,3.6],
-  "AC bin/base minimaal 60% PR":[NaN,3.9,3.5,3.2,2.9],
-  "SMA 8-11":[10.8,8.7,7.9,7.3,6.7],
-  "SMA 8-11 met gemodificeerd bitumen":[12.8,11.8,10.7,10.0,9.2],
-  "SMA 8-11 minimaal 30% PR":[NaN,7.2,6.5,5.9,5.4],
-  "SMA 5":[12.0,11.9,11.7,10.7,9.8],
-  "SMA geluidsreducerende deklaag (op basis van 8G+)":[13.2,13.1,12.9,11.8,10.8],
-  "SMA rood":[NaN,18.5,18.2,17.5,16.8],
-  "ZOAB regulier":[9.8,8.8,7.7,6.3,4.9],
-  "ZOAB regulier+ / DZOAB":[10.5,9.5,8.4,7.0,5.6],
-  "DZOAB, minimaal 30% PR":[8.8,8.8,7.8,6.5,5.2],
-  "2L ZOAB toplaag met gemodificeerd bitumen":[12.7,12.6,12.4,10.6,8.7],
-  "2L ZOAB onderlaag":[10.3,9.3,8.3,7.1,5.8],
-  "2L ZOAB onderlaag, minimaal 30% PR":[8.7,8.4,7.8,6.7,5.5]
-  },
+"AC surf":[9.9,9.1,8.2,7.5,6.7],
+"AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
+"AC surf met gemodificeerd bitumen":[11.6,10.6,9.5,8.7,7.9],
+"AC surf, minimaal 30% PR met gemodificeerd bitumen":[9.9,7.4,7.1,6.7,6.4],
+"AC surf rood":[22.1,17.7,17.0,16.4,15.8],
+"AC bin/base, minimaal 50% PR":[4.9,4.5,4.1,3.6,3.1],
+"AC bin/base, minimaal 50% PR met gemodificeerd bitumen":[5.5,5.1,4.6,4.1,3.6],
+"AC bin/base minimaal 60% PR":[NaN,3.9,3.5,3.2,2.9],
+"SMA 8-11":[10.8,8.7,7.9,7.3,6.7],
+"SMA 8-11 met gemodificeerd bitumen":[12.8,11.8,10.7,10.0,9.2],
+"SMA 8-11 minimaal 30% PR":[NaN,7.2,6.5,5.9,5.4],
+"SMA 5":[12.0,11.9,11.7,10.7,9.8],
+"SMA geluidsreducerende deklaag (op basis van 8G+)":[13.2,13.1,12.9,11.8,10.8],
+"SMA rood":[NaN,18.5,18.2,17.5,16.8],
+"ZOAB regulier":[9.8,8.8,7.7,6.3,4.9],
+"ZOAB regulier+ / DZOAB":[10.5,9.5,8.4,7.0,5.6],
+"DZOAB, minimaal 30% PR":[8.8,8.8,7.8,6.5,5.2],
+"2L ZOAB toplaag met gemodificeerd bitumen":[12.7,12.6,12.4,10.6,8.7],
+"2L ZOAB onderlaag":[10.3,9.3,8.3,7.1,5.8],
+"2L ZOAB onderlaag, minimaal 30% PR":[8.7,8.4,7.8,6.7,5.5]
+},
     a4c4:{
-  "AC surf":1.34,
-  "AC surf, minimaal 30% PR":1.34,
-  "AC surf met gemodificeerd bitumen":1.34,
-  "AC surf, minimaal 30% PR met gemodificeerd bitumen":1.34,
-  "AC surf rood":1.38,
-  "AC surf rood (met penbitumen)":1.38,
-  "AC bin/base, minimaal 50% PR":1.32,
-  "AC bin/base, minimaal 50% PR met gemodificeerd bitumen":1.32,
-  "AC bin/base minimaal 60% PR":1.32,
-  "SMA 8-11":1.38,
-  "SMA 8-11 met gemodificeerd bitumen":1.38,
-  "SMA 8-11 minimaal 30% PR":1.38,
-  "SMA 5":1.40,
-  "SMA geluidsreducerende deklaag (op basis van 8G+)":1.40,
-  "SMA rood":1.38,
-  "ZOAB regulier":1.96,
-  "ZOAB regulier+ / DZOAB":1.80,
-  "DZOAB, minimaal 30% PR":1.80,
-  "2L ZOAB toplaag met gemodificeerd bitumen":1.80,
-  "2L ZOAB onderlaag":1.80,
-  "2L ZOAB onderlaag, minimaal 30% PR":1.80
-  }
+"AC surf":1.34,
+"AC surf, minimaal 30% PR":1.34,
+"AC surf met gemodificeerd bitumen":1.34,
+"AC surf, minimaal 30% PR met gemodificeerd bitumen":1.34,
+"AC surf rood":1.38,
+"AC surf rood (met penbitumen)":1.38,
+"AC bin/base, minimaal 50% PR":1.32,
+"AC bin/base, minimaal 50% PR met gemodificeerd bitumen":1.32,
+"AC bin/base minimaal 60% PR":1.32,
+"SMA 8-11":1.38,
+"SMA 8-11 met gemodificeerd bitumen":1.38,
+"SMA 8-11 minimaal 30% PR":1.38,
+"SMA 5":1.40,
+"SMA geluidsreducerende deklaag (op basis van 8G+)":1.40,
+"SMA rood":1.38,
+"ZOAB regulier":1.96,
+"ZOAB regulier+ / DZOAB":1.80,
+"DZOAB, minimaal 30% PR":1.80,
+"2L ZOAB toplaag met gemodificeerd bitumen":1.80,
+"2L ZOAB onderlaag":1.80,
+"2L ZOAB onderlaag, minimaal 30% PR":1.80
+}
   };
+
+  // Eisentabel
   const tbl=$("#eisen-table");
   const hdr=el("tr",{class:"bg-gray-100"},[
-   el("th",{class:"px-3 py-2 text-left"},"Asfaltsoort"),
-   ...MKI_EISEN.jaar.map(y=>el("th",{class:"px-3 py-2 text-left jaarcol","data-jaar":y},"Plafond "+y)),
-   el("th",{class:"px-3 py-2 text-left"},"A4-C4")
+    el("th",{class:"px-3 py-2 text-left"},"Asfaltsoort"),
+    ...MKI_EISEN.jaar.map(y=>el("th",{class:"px-3 py-2 text-left jaarcol","data-jaar":y},"Plafond "+y)),
+    el("th",{class:"px-3 py-2 text-left"},"A4-C4")
   ]);
   tbl.appendChild(hdr);
   for(const m in MKI_EISEN.plafonds){
-   const r=el("tr",{},[el("td",{class:"border-t px-3 py-1"},m)]);
-   MKI_EISEN.plafonds[m].forEach((v,i)=>r.appendChild(el("td",{class:"border-t px-3 py-1 jaarcol","data-jaar":MKI_EISEN.jaar[i]},fmtNL(v))));
-   r.appendChild(el("td",{class:"border-t px-3 py-1"},fmtNL(MKI_EISEN.a4c4[m])));
-   tbl.appendChild(r);
+    const r=el("tr",{},[el("td",{class:"border-t px-3 py-1"},m)]);
+    MKI_EISEN.plafonds[m].forEach((v,i)=>r.appendChild(el("td",{class:"border-t px-3 py-1 jaarcol","data-jaar":MKI_EISEN.jaar[i]},fmtNL(v))));
+    r.appendChild(el("td",{class:"border-t px-3 py-1"},fmtNL(MKI_EISEN.a4c4[m])));
+    tbl.appendChild(r);
   }
   $("#year-target").addEventListener("change",highlightCol);
   function highlightCol(){
-   const jaar=$("#year-target").value;
-   document.querySelectorAll(".jaarcol").forEach(td=>td.classList.remove("highlight-col"));
-   document.querySelectorAll(`.jaarcol[data-jaar='${jaar}']`).forEach(td=>td.classList.add("highlight-col"));
+    const jaar=$("#year-target").value;
+    document.querySelectorAll(".jaarcol").forEach(td=>td.classList.remove("highlight-col"));
+    document.querySelectorAll(`.jaarcol[data-jaar='${jaar}']`).forEach(td=>td.classList.add("highlight-col"));
   }
   highlightCol();
 
+  /* ====== Supabase ====== */
   const sb=window.supabase.createClient(
     "https://fblenxtccwpsjwrkirtc.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI"
   );
 
+  /* ====== PDF parsing helpers ====== */
   function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; }
   function parseNumEUexp(s){
     if(!s) return NaN;
@@ -231,6 +340,7 @@
   }
   function pick(re,txt){const m=txt.match(re);return m?m[1].trim():'';}
 
+  // Extracties (zoals eerdere v2.6.x)
   function extractECITable(txt){
     const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
     const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
@@ -302,6 +412,7 @@
     return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, a1a3Raw:a13Raw, dRaw, text };
   }
 
+  /* ====== Suggestie asfaltsoort (v2.6.x) ====== */
   function detectPRorKA(t){
     const w = t.replace(/\u00A0/g,' ');
     const any = (p)=>new RegExp(p,'i').test(w);
@@ -312,12 +423,13 @@
   }
   function detectGemod(t){ return /gemod|pmb|sfb|sbs|polymeer|polymer/i.test(t); }
   function isRood(t){ return /\brood\b|clobred\b|penbitumen/i.test(t); }
-  function isSma8GPlus(t){
-    return /\b8\s*G\s*\+?\b/i.test(t) || /8g\+?/i.test(t) || /geluidsreducer/i.test(t);
-  }
+  function isSma8GPlus(t){ return /\b8\s*G\s*\+?\b/i.test(t) || /8g\+?/i.test(t) || /geluidsreducer/i.test(t); }
+
   function decideMixFromString(src){
     if(!src) return "";
     const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
+
+    // 2L ZOAB
     const mentions2L = /\b2\s*l\b/.test(all);
     const mentionsZOAB = /\bzoab\b/.test(all);
     const mentionsUnder = /\bonder\s*laag\b|\bonderlaag\b/.test(all);
@@ -329,13 +441,19 @@
       }
       return "2L ZOAB toplaag met gemodificeerd bitumen";
     }
+
+    // ZOAB / DZOAB
     if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)){
       const pr=detectPRorKA(all);
       if(pr>=30) return "DZOAB, minimaal 30% PR";
       return "ZOAB regulier+ / DZOAB";
     }
     if(/\bzoab\b/.test(all)) return "ZOAB regulier";
+
+    // SMA 8G+ vóór generiek SMA
     if (isSma8GPlus(all)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
+
+    // SMA generiek
     if(/\bsma\b/.test(all)){
       if(isRood(all)) return "SMA rood";
       if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
@@ -345,11 +463,14 @@
       if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
       return "SMA 8-11";
     }
+
+    // AC
     const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
     const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
     const isAC     = /\bac\b|asfaltbeton/.test(all);
     const pr = detectPRorKA(all);
     const gm = detectGemod(all);
+
     if(isAC){
       if(isSurf){
         if(isRood(all)) return "AC surf rood";
@@ -381,6 +502,8 @@
     mix = decideMixFromString(fileName || "");
     return mix || "";
   }
+
+  // Precisie voor inputs
   function parseInputPrecise(el){
     let s = (el.value ?? "").trim();
     if(!s) return NaN;
@@ -393,6 +516,7 @@
     return Number.isFinite(n)?n:NaN;
   }
 
+  // App
   document.addEventListener("DOMContentLoaded", ()=>{
     const state={ epds:[], runId:null, clientSession:crypto.randomUUID() };
     const epdIn=$("#epd-files"), list=$("#epd-list"), runBtn=$("#run-checks"), csvBtn=$("#export-csv"), results=$("#results"), yearSel=$("#year-target");
@@ -419,7 +543,7 @@
     }
 
     function makeCard(file, uid){
-      const card=el("div",{class:"border rounded-xl p-4 bg-white", "data-uid":uid});
+      const card=el("div",{class:"border rounded-2xl p-4 bg-white", "data-uid":uid});
       const headLeft=el("div",{class:"font-medium truncate pr-2", title:file.name},file.name);
       const status=el("div",{class:"badge badge-info"},"lezen…");
       const delBtn=el("button",{class:"btn-danger px-3 py-1 rounded-lg", type:"button", title:"Verwijderen"}, "Verwijderen");
@@ -528,7 +652,7 @@
         const mix = epd.mix;
 
         if(!mix){
-          const card=el("div",{class:`border rounded-xl p-4 mb-4 bg-red-50`},[
+          const card=el("div",{class:`border rounded-2xl p-4 mb-4 bg-red-50`},[
             el("div",{class:"flex justify-between"},[
               el("div",{class:"font-medium"},epd.file.name),
               el("div",{class:`badge badge-fail`}, 'FAIL')
@@ -568,7 +692,7 @@
         const tot=(a1||0)+(a4||0)+(d||0);
         const pass = (!isNaN(tot) && !isNaN(plaf) && tot<=plaf);
 
-        const card=el("div",{class:`border rounded-xl p-4 mb-4 ${pass?'bg-green-50':'bg-red-50'}`},[
+        const card=el("div",{class:`border rounded-2xl p-4 mb-4 ${pass?'bg-green-50':'bg-red-50'}`},[
           el("div",{class:"flex justify-between"},[
             el("div",{class:"font-medium"},epd.file.name),
             el("div",{class:`badge ${pass?'badge-pass':'badge-fail'}`}, pass?'PASS':'FAIL')
@@ -619,6 +743,7 @@
         }catch{}
       }
 
+      // CSV export
       if(rows.length){
         const headers=Object.keys(rows[0]);
         const csvLines=[headers.join(";")].concat(
@@ -643,9 +768,9 @@
 
   <!-- pdf.js loader (ESM) -->
   <script type="module">
-  import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
-  pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
-  window.pdfjsLib=pdfjsLib;
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
+    window.pdfjsLib=pdfjsLib;
   </script>
 </body>
 </html>
