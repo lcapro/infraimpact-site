@@ -86,11 +86,7 @@
     }
 
     /* voorkom afsnijden van staarten (g, j, y, ij) in grote koppen */
-h1, h2 {
-  line-height: 1.25;
-  overflow: visible;
-}
-
+    h1, h2 { line-height: 1.25; overflow: visible; }
   </style>
 </head>
 
@@ -107,7 +103,8 @@ h1, h2 {
         <a href="over.html" class="hover:text-green-700">Over ons</a>
         <a href="#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="#inzicht" class="hover:text-green-700">Inzichten</a>
-       <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>
+        <!-- NIEUW: tool-link in de header -->
+        <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -120,7 +117,8 @@ h1, h2 {
         <a href="over.html" class="hover:text-green-700">Over ons</a>
         <a href="#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>
+        <!-- NIEUW: tool-link in het mobiele menu -->
+        <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Plan kennismaking</a>
       </div>
@@ -144,8 +142,8 @@ h1, h2 {
           <a href="mailto:info@infraimpact.nl" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium">
             Plan een kennismaking
           </a>
-          <a href="#wat" class="px-6 py-3 rounded-xl bg-white text-gray-700 border border-gray-300 hover:bg-green-50 hover:border-green-400 transition font-medium shadow-sm">
-            Bekijk onze aanpak
+          <a href="epd-checker.html" class="px-6 py-3 rounded-xl bg-white text-gray-700 border border-gray-300 hover:bg-green-50 hover:border-green-400 transition font-medium shadow-sm">
+            MKI-toetsing asfalt
           </a>
         </div>
       </div>
@@ -171,29 +169,31 @@ h1, h2 {
           </p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6" data-animate>
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+        <div class="grid md:grid-cols-3 gap-6" data-animate>
+          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
             <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
             <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen.
                Van volledige LCA’s tot MKI-berekeningen voor aanbestedingen en ontwerpoptimalisaties.</p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
             <h3 class="text-xl font-semibold mb-2">Aanbesteding & projectadvies</h3>
             <p>Voor aannemers leggen we <strong>kosten en MKI naast elkaar</strong> om het optimale resultaat te behalen in aanbestedingen.
                Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
-            <h3 class="text-xl font-semibold mb-2">Beleid, sturing & inzicht</h3>
-            <p>Voor opdrachtgevers vertalen we beleidsdoelstellingen naar <strong>meetbare indicatoren</strong>.
-               We bieden inzicht met actuele cijfers, zodat er gestuurd kan worden op duurzaamheidsambities door de hele projectcyclus heen.</p>
+          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
+            <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
+            <p>Praktijkgerichte cursussen en incompany trainingen. Van basis MKI tot verdieping in regelgeving en LCA-methodiek.</p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
-            <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
-            <p>We delen kennis via <strong>praktijkgerichte cursussen en incompany trainingen</strong>.
-               Van basisvaardigheden in MKI tot verdieping in regelgeving en LCA-methodiek, zo versterken we teams en borgen we kennis in jouw organisatie.</p>
+          <!-- NIEUW: CTA-kaart naar de checker -->
+          <div class="p-6 bg-white rounded-2xl shadow ring-1 ring-green-100 md:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold mb-1">Tool: MKI-toetsing asfalt</h3>
+              <p class="text-gray-700">Upload EPD’s en toets ze direct aan de uniforme MKI-plafondwaarden (PCR 2.0). Compact, duidelijk en exporteerbaar.</p>
+            </div>
+            <a href="epd-checker.html" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500">Start de check</a>
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@ h1, h2 {
           </p>
           <ul class="space-y-3 text-gray-700">
             <li>• Inzicht in MKI en CO₂ per projectfase</li>
-            <li>• Scenario’s en optimalisaties voor ontwerpkeuzes</li>
+            <li>• Scenario’s en optimalisaties</li>
             <li>• Onderbouwingen voor aanbestedingen en audits</li>
             <li>• Strategisch advies en beleidsondersteuning</li>
           </ul>
@@ -233,70 +233,17 @@ h1, h2 {
       <div class="max-w-3xl mx-auto text-center px-6 sm:px-8" data-animate>
         <blockquote class="text-xl italic text-gray-700 leading-relaxed">
           <strong>“Wij kennen beide kanten van de tafel.”</strong><br>
-          Jarenlange ervaring bij zowel aannemers als opdrachtgevers zorgt dat we begrijpen wat werkt in de praktijk.
-          We weten hoe je eisen vertaalt naar haalbare oplossingen en hoe je in aanbestedingen het maximale haalt
-          uit duurzaamheid binnen tijd en budget.
+          Ervaring bij zowel aannemers als opdrachtgevers zorgt dat we begrijpen wat werkt in de praktijk.
         </blockquote>
       </div>
     </section>
   </main>
 
-<div hidden>
-  <!-- PROJECTEN TEASER -->
-<section class="py-20 md:py-24 bg-white border-t">
-  <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
-    <div class="flex items-end justify-between gap-4 mb-8">
-      <div>
-        <h2 class="text-3xl md:text-4xl font-bold text-gradient">Projecten & samenwerkingen</h2>
-        <p class="text-gray-700 mt-2">Een selectie van recente cases in de GWW, zelfstandig of met partners.</p>
-      </div>
-      <a href="projecten.html" class="hidden md:inline-flex px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Bekijk alle projecten</a>
-    </div>
-
-    <div id="projectsTeaser" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
-
-    <div class="mt-8 md:hidden">
-      <a href="projecten.html" class="inline-flex px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500">Bekijk alle projecten</a>
-    </div>
-  </div>
-</section>
-
-<script>
-  // Lichtgewicht teaser: pakt eerste 3 projecten uit assets/projects.json
-  ;(function(){
-    const el = document.getElementById('projectsTeaser');
-    if (!el) return;
-    fetch('/assets/projects.json', {cache:'no-store'})
-      .then(r=>r.json())
-      .then(list=>{
-        const three = list.slice(0,3);
-        el.innerHTML = three.map(p => `
-          <article class="bg-white rounded-2xl border shadow-sm hover:shadow-md transition hover:-translate-y-1">
-            <a href="${p.url || 'projecten.html'}">
-              <img src="${p.hero || '/assets/case-placeholder.webp'}" alt="${p.title}" class="w-full h-40 object-cover rounded-t-2xl" loading="lazy" decoding="async">
-            </a>
-            <div class="p-5">
-              <div class="flex gap-2 mb-3">
-                <span class="inline-block text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">${p.type}</span>
-                <span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">${p.collaboration || 'Zelfstandig'}</span>
-              </div>
-              <h3 class="text-lg font-semibold"><a class="hover:underline" href="${p.url || 'projecten.html'}">${p.title}</a></h3>
-              <p class="text-sm text-gray-500">${p.client || ''}</p>
-              <p class="mt-3 text-gray-700 text-sm">${p.summary}</p>
-            </div>
-          </article>
-        `).join('');
-      });
-  })();
-</script>
-</div>
   <!-- FOOTER / CONTACT -->
   <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-16 pb-10">
     <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center" data-animate>
       <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
-      <p class="text-gray-700 mb-8">
-        Benieuwd hoe jouw organisatie voordeel haalt uit MKI & LCA in aanbestedingen, projecten of beleid? We denken graag mee en reageren dezelfde werkdag.
-      </p>
+      <p class="text-gray-700 mb-8">Benieuwd hoe jouw organisatie voordeel haalt uit MKI & LCA? We denken graag mee en reageren dezelfde werkdag.</p>
       <div class="space-y-2 text-gray-600">
         <p><strong>InfraImpact B.V.</strong></p>
         <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
