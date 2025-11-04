@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InfraImpact – EPD MKI‑check (asfalt)</title>
+  <meta name="description" content="Upload EPD's (PDF) en toets of de MKI voldoet aan plafondwaarden per asfaltsoort en jaar. Werkt volledig client‑side; optioneel met Supabase‑opslag.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer}
+    .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
+    .badge-pass{background:#ecfdf5;color:#065f46}
+    .badge-fail{background:#fef2f2;color:#991b1b}
+    .badge-info{background:#eff6ff;color:#1e40af}
+    .mono{font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .hint{font-size:.8rem;color:#6b7280}
+  </style>
+
+  <!-- pdf.js loader: robuuste ESM->UMD fallback. Pinned versie (4.10.38). -->
+  <script type="module">
+    window.__PDFJS_READY__ = false;
+    window.__PDFJS_MODE__ = null; // 'esm' of 'umd'
+
+    async function loadPdfjsESM(){
+      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.mjs');
+      // Voor ESM gebruikt pdf.js de .mjs worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.mjs';
+      window.pdfjsLib = pdfjsLib;
+      window.__PDFJS_MODE__ = 'esm';
+      window.__PDFJS_READY__ = true;
+    }
+    async function loadPdfjsUMD(){
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.js';
+        s.defer = true; s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+      });
+      if(!window.pdfjsLib) throw new Error('UMD pdf.js kon niet geladen worden');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.js';
+      window.__PDFJS_MODE__ = 'umd';
+      window.__PDFJS_READY__ = true;
+    }
+    (async () => { try{ await loadPdfjsESM(); } catch(e){ console.warn('[PDFJS] ESM mislukte, fallback UMD:', e); try{ await loadPdfjsUMD(); } catch(e2){ console.error('[PDFJS] UMD ook mislukt:', e2); } } })();
+  </script>
+
+  <!-- Supabase (optioneel). Laat leeg om local‑only te draaien.  -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<header class="bg-white border-b">
+  <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+    <h1 class="text-2xl md:text-3xl font-bold">EPD MKI‑check (asfalt)</h1>
+    <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+  <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
+
+  <!-- Stap 0: voorkeuren -->
+  <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <h2 class="text-xl font-semibold">0) Toetsingskader</h2>
+    <div class="grid sm:grid-cols-3 gap-4 items-end">
+      <div>
+        <label class="block text-sm font-medium mb-1">PCR waarop je wilt toetsen</label>
+        <select id="pcr-target" class="w-full border rounded-xl px-3 py-2">
+          <option value="NL-PCR Asfalt 2.0">NL-PCR Asfalt 2.0</option>
+          <option value="NL-PCR Asfalt 2025/2026" selected>NL-PCR Asfalt 2025/2026</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Jaar van de eis</label>
+        <select id="year-target" class="w-full border rounded-xl px-3 py-2"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Eenheid</label>
+        <input class="w-full border rounded-xl px-3 py-2 bg-gray-50" value="MKI [€] per ton, A–D" disabled />
+      </div>
+    </div>
+    <p class="hint">De uploadpagina probeert uit EPD’s zelf te herkennen aan welke PCR ze voldoen en welke publicatiedatum geldt. Jij kiest hier waartegen je wilt toetsen en welk jaar in de eisen hoort.</p>
+  </section>
+
+  <!-- Stap 1: eisen -->
+  <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <h2 class="text-xl font-semibold">1) Upload bijlage met eisen (PDF)</h2>
+    <p class="hint">Gebruik de PDF met uniforme MKI‑plafondwaarden (A–D, per ton) en de A4–C4‑tabel. We herkennen jaren, mengselnamen en waarden automatisch.</p>
+
+    <div id="req-drop" class="dropzone p-6 bg-gray-50" title="Klik of sleep PDF hierheen" aria-label="Upload eisen PDF">
+      <input id="req-file" type="file" accept="application/pdf,.pdf" class="drop-input" />
+      <div class="pointer-events-none flex items-center justify-between gap-4">
+        <div>
+          <p class="font-medium">Sleep hier je eisen‑PDF heen of klik</p>
+          <p class="text-sm text-gray-500">Bijv. “Uniforme MKI plafondwaarden asfalt”.</p>
+        </div>
+        <span class="px-4 py-2 rounded-xl bg-gray-900 text-white">Kies PDF…</span>
+      </div>
+    </div>
+
+    <div id="req-card" class="hidden border rounded-xl p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-medium" id="req-fn"></div>
+        <div class="badge badge-info" id="req-store-badge">niet opgeslagen (client‑side)</div>
+      </div>
+      <div class="text-sm text-gray-700 mt-1" id="req-status">—</div>
+      <div class="text-sm text-gray-700 mt-2" id="req-scan">—</div>
+    </div>
+  </section>
+
+  <!-- Stap 2: EPD’s -->
+  <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <h2 class="text-xl font-semibold">2) Upload één of meer EPD’s (PDF)</h2>
+
+    <div id="epd-drop" class="dropzone p-6 bg-gray-50" title="Klik of sleep PDF's hierheen" aria-label="Upload EPD's">
+      <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="drop-input" />
+      <div class="pointer-events-none flex items-center justify-between gap-4">
+        <div>
+          <p class="font-medium">Sleep hier je EPD‑PDF’s heen of klik</p>
+          <p class="text-sm text-gray-500">Meerdere tegelijk toegestaan. Nieuw én oud format worden ondersteund.</p>
+        </div>
+        <span class="px-4 py-2 rounded-xl bg-gray-900 text-white">Kies PDF’s…</span>
+      </div>
+    </div>
+
+    <div id="epd-list" class="space-y-4"></div>
+
+    <div class="flex items-center gap-4">
+      <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer</button>
+      <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
+    </div>
+
+    <div id="results" class="mt-4"></div>
+  </section>
+</main>
+
+<script>
+/******************** Utility ********************/
+const $ = s => document.querySelector(s);
+const el = (tag, attrs={}, children=[]) => { const n=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>k==="class"?n.className=v:k==="html"?n.innerHTML=v:n.setAttribute(k,v)); (Array.isArray(children)?children:[children]).forEach(c=>c&&n.appendChild(c)); return n; };
+const toastEl = $('#toast');
+function toast(msg, ok=true){ try{ toastEl.textContent=msg; toastEl.classList.remove('hidden'); toastEl.style.background=ok?'#111827':'#991b1b'; setTimeout(()=>toastEl.classList.add('hidden'), 2600);}catch{} }
+function fmtBytes(b){ if(!b&&b!==0) return ''; const u=['B','KB','MB','GB']; let i=0; while(b>=1024&&i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
+
+async function waitForPdfjs(timeoutMs=20000){
+  const start=Date.now();
+  while(!window.__PDFJS_READY__ || !window.pdfjsLib){ await new Promise(r=>setTimeout(r,80)); if(Date.now()-start>timeoutMs){ throw new Error('pdf.js is niet beschikbaar (timeout).'); } }
+  return window.pdfjsLib;
+}
+
+function parseNumberEU(str){
+  if(!str) return NaN; let s=String(str).trim().replace(/\u202F/g,'').replace(/\s/g,'');
+  if(/[Ee][\+\-]?\d+/.test(s)) s=s.replace(',', '.');
+  else if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',', '.');
+  else if(s.includes(',')) s=s.replace(',', '.');
+  s=s.replace(/[^0-9Ee\+\-\.]/g,'');
+  const n=Number(s); return isFinite(n)?n:NaN;
+}
+
+async function pdfToText(file){
+  const pdfjsLib = await waitForPdfjs();
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  let full='';
+  for(let p=1;p<=pdf.numPages;p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent({ disableCombineTextItems: false });
+    const txt = content.items.map(it=>it.str).join(' ');
+    full += '\n' + txt;
+  }
+  return full;
+}
+
+/******************** Eisen‑parser ********************/
+function normaliseText(t){
+  return t.replace(/\r/g,'\n').replace(/[ \u00A0]/g,' ').replace(/\s+\/\s+/g,'/').replace(/\s{2,}/g,' ').replace(/(\S)[–—](\S)/g,'$1 - $2');
+}
+function pickSection(text, startLabel, endLabel){
+  const a = text.indexOf(startLabel);
+  if(a<0) return '';
+  const b = endLabel ? text.indexOf(endLabel, a+startLabel.length) : -1;
+  return text.slice(a + startLabel.length, b>0?b:undefined);
+}
+function extractA4C4(text){
+  const block = pickSection(text, 'Bijlage MKI waarden A4 – C4', '');
+  const lines = block.split(/\n/).map(s=>s.trim()).filter(Boolean);
+  const a4c4 = {}; const mixes = [];
+  for(const ln of lines){
+    const m = ln.match(/^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\-]?\d[\d\.,]*)$/);
+    if(m){ const name=m[1].replace(/\s+/g,' ').trim(); const val=parseNumberEU(m[2]); if(!isNaN(val)){ a4c4[name]=val; mixes.push(name); } }
+  }
+  return { a4c4, mixes };
+}
+function detectYears(text){
+  const sec = pickSection(text, 'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)', 'Werkwijze en uitgangspunten');
+  const core = [...sec.matchAll(/\b(2022|2024|2026|2028|2030)\b/g)].map(m=>m[1]);
+  const uniq = [...new Set(core)];
+  if(uniq.length>=3) return ['2022','2024','2026','2028','2030'];
+  const all = [...sec.matchAll(/\b(20[1-3]\d)\b/g)].map(m=>parseInt(m[1],10));
+  const sorted = [...new Set(all)].sort((a,b)=>a-b);
+  for(let i=0;i+4<sorted.length;i++){ const w=sorted.slice(i,i+5); if(w[4]-w[0] <= 10) return w.map(String); }
+  return ['2022','2024','2026','2028','2030'];
+}
+function extractPlafond(text, mixes, years){
+  const sec = pickSection(text, 'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)', 'Werkwijze en uitgangspunten');
+  const plafond = {};
+  for(const mix of mixes){
+    const safe = mix.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');
+    const re = new RegExp(safe + '[^\n]{0,220}', 'i');
+    const m = sec.match(re);
+    if(m){
+      const tail = m[0];
+      const tokens = [...tail.matchAll(/(?:[xX]|n\.b\.|[\-]?\d[\d\.,]*)/g)].map(t=>t[0]).filter(Boolean);
+      const vals=[];
+      for(const t of tokens){
+        if(/^x|X|n\.b\.$/i.test(t)) vals.push(NaN); else { const n=parseNumberEU(t); if(!isNaN(n)) vals.push(n); }
+        if(vals.length>=years.length) break;
+      }
+      if(vals.length){ plafond[mix] = {}; years.forEach((y,i)=>{ plafond[mix][y] = (typeof vals[i] === 'number') ? vals[i] : NaN; }); }
+    }
+  }
+  return plafond;
+}
+async function parseRequirementsPDF(file){
+  const raw = await pdfToText(file);
+  const text = normaliseText(raw);
+  const { a4c4, mixes } = extractA4C4(text);
+  const years = detectYears(text);
+  const mixList = mixes.length ? mixes : [];
+  const plafond = extractPlafond(text, mixList, years);
+  if ((!years || years.length<1) || (!mixList || mixList.length<1)){
+    throw new Error('Geen jaar‑kolommen of mengsels gevonden in eisen‑PDF.');
+  }
+  return { years, mixes: mixList, a4c4, plafond, rawText: raw };
+}
+
+/******************** EPD‑parser ********************/
+function first(re, text){ const m=text.match(re); return m?m[1].trim():''; }
+function looksLikeNewFormat(text){
+  return /pcr[-_ ]?asfalt[-_ ]?2025/i.test(text) || /NL-?PCR\s+Asfalt\s+2025/i.test(text);
+}
+async function parseEpdPDF(file){
+  const text = await pdfToText(file);
+  // Product/mengselnaam – probeer verschillende headings
+  let product = first(/Product:\s*([^\n]+?)\s+(?:Eenheid|Unit):/i, text) || first(/Product\s*\n\s*([^\n]+)/i, text) || file.name.replace(/\.pdf$/i,'');
+  // PCR string
+  let pcr = first(/PCR[:\s]+([^\n]+?Asfalt[^\n]*)/i, text) || (text.match(/NL-?PCR\s+Asfalt\s+[0-9][^\n]*/i)?.[0] || '');
+  const pub = first(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || first(/Publication\s+date[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text);
+
+  // MKI‑waarden zoeken – robuuste heuristiek, nieuw en oud format
+  let mkiA1A3 = NaN, mkiD = NaN;
+  // 1) Tabelregel met zowel A1‑A3 als D dicht bij elkaar
+  let m = text.match(/MKI[^\n]{0,600}?\bA1-?A3\b[^\n]{0,200}?\bD\b[^\n]{0,240}?([\-]?\d[\d\.,Ee\+\-]*)[^\n]{0,80}?([\-]?\d[\d\.,Ee\+\-]*)/i);
+  if(m){ mkiA1A3=parseNumberEU(m[1]); mkiD=parseNumberEU(m[2]); }
+  // 2) Nieuwe layout – blok “Environmental Costs Indicator”
+  if(isNaN(mkiA1A3)||isNaN(mkiD)){
+    const block = text.match(/Environmental\s+Costs\s+Indicator[\s\S]{0,1200}/i);
+    if(block){
+      const b = block[0];
+      const m1 = b.match(/\bA1-?A3\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i);
+      const m2 = b.match(/\bD\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i);
+      if(m1) mkiA1A3=parseNumberEU(m1[1]); if(m2) mkiD=parseNumberEU(m2[1]);
+    }
+  }
+  // 3) Oud format – SBK set 1 blok
+  if(isNaN(mkiA1A3)||isNaN(mkiD)){
+    const eco = text.match(/(Milieu[- ]?impact)\s+SBK\s+set\s+1[\s\S]{0,1500}/i);
+    if(eco){
+      const e = eco[0];
+      const a = e.match(/\bA1-?A3\b\s+([\-]?\d[\d\.,Ee\+\-]*)/i);
+      const d = e.match(/\bD\b\s+([\-]?\d[\d\.,Ee\+\-]*)/i);
+      if(a) mkiA1A3=parseNumberEU(a[1]); if(d) mkiD=parseNumberEU(d[1]);
+    }
+  }
+  // 4) Laatste redmiddel – losse hits
+  if(isNaN(mkiA1A3)){ const a = text.match(/\bA1-?A3\b[^\n]{0,40}?([\-]?\d[\d\.,Ee\+\-]*)/i); if(a) mkiA1A3=parseNumberEU(a[1]); }
+  if(isNaN(mkiD)){ const d = text.match(/\bD\b[^\n]{0,24}?([\-]?\d[\d\.,Ee\+\-]*)/i); if(d) mkiD=parseNumberEU(d[1]); }
+
+  // Hint voor mengselkeuze
+  const mixHint = product;
+  const newFormat = looksLikeNewFormat(text);
+  return { text, product, pcr, pubDate: pub, mkiA1A3, mkiD, mixHint, newFormat };
+}
+
+/******************** (Optioneel) Supabase opslag ********************/
+const ENABLE_STORAGE = false; // zet op true om opslag te activeren
+const SUPABASE_URL = "";    // bv. https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = ""; // public anon key
+const BUCKET = "epd-uploads"; // maak deze bucket aan
+const hasSB = ENABLE_STORAGE && !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+const sb = hasSB ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+/******************** App ********************/
+document.addEventListener('DOMContentLoaded', () => {
+  const state = { req:null, epds:[], results:[], runId:null, clientSession:crypto.randomUUID() };
+
+  const reqDrop=$('#req-drop'), reqInput=$('#req-file');
+  const reqCard=$('#req-card'), reqFn=$('#req-fn'), reqStatus=$('#req-status'), reqScan=$('#req-scan'), reqStoreBadge=$('#req-store-badge');
+  const yearSel=$('#year-target'), pcrSel=$('#pcr-target');
+  const epdDrop=$('#epd-drop'), epdInput=$('#epd-files'), epdList=$('#epd-list');
+  const runBtn=$('#run-checks'), csvBtn=$('#export-csv'), resultsBox=$('#results');
+
+  // Drag hover styling
+  ;['dragenter','dragover'].forEach(ev=>[reqDrop,epdDrop].forEach(box=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.add('bg-green-50');})));
+  ;['dragleave','dragend','drop'].forEach(ev=>[reqDrop,epdDrop].forEach(box=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.remove('bg-green-50');})));
+
+  // Handlers
+  reqInput.addEventListener('change', async ()=>{ const file=reqInput.files&&reqInput.files[0]; if(file) await handleReqFile(file); reqInput.value=''; });
+  epdInput.addEventListener('change', async ()=>{ const files=epdInput.files?Array.from(epdInput.files):[]; if(files.length) await handleEpdFiles(files); epdInput.value=''; });
+
+  function enableRunIfReady(){ const okReq=!!state.req, okEpd=state.epds.length>0; runBtn.disabled=!(okReq&&okEpd); csvBtn.disabled=true; resultsBox.innerHTML=''; }
+
+  async function sbUpload(path, file){ if(!hasSB) return null; const { data, error } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false }); if(error) throw error; return data?.path||path; }
+  async function createRun(reqPath){ if(!hasSB){ state.runId='local-'+crypto.randomUUID(); return state.runId; } const { data, error } = await sb.from('epd_runs').insert({ client_session:state.clientSession, pcr_target:pcrSel.value, year_target:yearSel.value, req_pdf_path:reqPath }).select('id').single(); if(error) throw error; state.runId=data.id; return data.id; }
+  async function insertFile(runId, meta){ if(!hasSB) return 'local-file-'+crypto.randomUUID(); const { data, error } = await sb.from('epd_files').insert({ run_id:runId, ...meta }).select('id').single(); if(error) throw error; return data.id; }
+  async function insertResult(runId, fileId, r){ if(!hasSB) return; const payload={ run_id:runId, file_id:fileId, mix:r.mix, year:r.year, mki_a1a3:r.mkiA1A3, mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond, pass:r.pass, notes:r.notes.join(' | ') }; const { error } = await sb.from('epd_results').insert(payload); if(error) throw error; }
+
+  /********* Eisen *********/
+  async function handleReqFile(file){
+    reqCard.classList.remove('hidden');
+    reqFn.textContent = `${file.name} (${fmtBytes(file.size)})`;
+    reqStatus.textContent = 'Lezen & parsen…';
+    reqScan.textContent = '—';
+    reqStoreBadge.textContent = hasSB ? 'opslaan…' : 'niet opgeslagen (client‑side)';
+    reqStoreBadge.className = 'badge badge-info';
+    try{
+      await waitForPdfjs();
+      const parsed = await parseRequirementsPDF(file);
+      state.req = parsed;
+
+      const years = parsed.years?.length ? parsed.years.slice(0,5) : ['2024','2026'];
+      yearSel.innerHTML = years.map(v=>`<option value="${v}">${v}</option>`).join('');
+
+      let storePath=null;
+      try{
+        if(hasSB){ const path=`requirements/${new Date().toISOString().slice(0,10)}_${crypto.randomUUID()}_${file.name}`; storePath=await sbUpload(path,file); reqStoreBadge.textContent='opgeslagen'; reqStoreBadge.className='badge badge-pass'; }
+        else { reqStoreBadge.textContent='niet opgeslagen (client‑side)'; reqStoreBadge.className='badge badge-info'; }
+      }catch(storeErr){ console.error(storeErr); reqStoreBadge.textContent='opslaan mislukt (client‑side verder)'; reqStoreBadge.className='badge badge-fail'; }
+
+      if(!state.runId){ await createRun(storePath); }
+
+      reqStatus.innerHTML = `✅ Gelezen. Gevonden mengsels: <strong>${parsed.mixes.length}</strong>. Jaren: <strong>${years.join(', ')}</strong>.`;
+      const preview = parsed.mixes.slice(0,6).map(m=>{ const p=parsed.plafond[m]||{}; const yv=years.map(y=>isNaN(p[y])?'—':p[y]).join(' | '); const a4=(parsed.a4c4[m]!=null && !isNaN(parsed.a4c4[m]))?parsed.a4c4[m]:'—'; return `• ${m} → A4–C4: ${a4} | plafonds: ${yv}`; }).join('<br>');
+      reqScan.innerHTML = preview || '—';
+
+      enableRunIfReady();
+      toast('Eisen‑PDF verwerkt', true);
+    }catch(err){ console.error(err); reqStatus.innerHTML = `❌ Fout: ${err.message || 'Kon de bijlage niet parsen.'}`; toast('Kon de eisen‑PDF niet parsen', false); }
+  }
+
+  /********* EPD’s *********/
+  async function handleEpdFiles(files){
+    for(const file of files){
+      const card=el('div',{class:'border rounded-xl p-4'});
+      const head=el('div',{class:'flex items-center justify-between'});
+      const title=el('div',{class:'font-medium'},`${file.name} (${fmtBytes(file.size)})`);
+      const badge=el('div',{class:'badge badge-info'}, hasSB?'uploaden…':'niet opgeslagen');
+      head.appendChild(title); head.appendChild(badge); card.appendChild(head);
+      const meta=el('div',{class:'text-sm text-gray-700 mt-1'},'Lezen…'); card.appendChild(meta);
+      const row=el('div',{class:'mt-3 grid sm:grid-cols-2 gap-3 items-end'});
+      const mixWrap=el('div'); mixWrap.appendChild(el('label',{class:'block text-sm font-medium mb-1'},'Asfaltsoort'));
+      const mixSel=el('select',{class:'w-full border rounded-xl px-3 py-2'}); mixWrap.appendChild(mixSel);
+      const info=el('div',{class:'text-sm text-gray-700 space-y-1'}); row.appendChild(mixWrap); row.appendChild(info);
+      card.appendChild(row); $('#epd-list').appendChild(card);
+
+      let storedPath=null, fileId=null;
+      try{
+        if(hasSB){ if(!state.runId){ await createRun(null); } const path=`epds/${state.runId}/${crypto.randomUUID()}_${file.name}`; storedPath=await sbUpload(path,file); badge.textContent='opgeslagen'; badge.className='badge badge-pass'; } else { badge.textContent='niet opgeslagen (client‑side)'; badge.className='badge badge-info'; }
+      }catch(upErr){ console.error(upErr); badge.textContent='opslaan mislukt (client‑side verder)'; badge.className='badge badge-fail'; }
+
+      try{
+        await waitForPdfjs();
+        const parsed=await parseEpdPDF(file);
+        const mixes=(state.req?.mixes?.length)?state.req.mixes:[];
+        mixSel.innerHTML = '<option value="">— kies asfaltsoort —</option>' + mixes.map(m=>`<option>${m}</option>`).join('') + '<option value="__other">Andere (vrije invoer)</option>';
+        if(parsed.mixHint&&mixes.length){ const cand=mixes.find(m=>parsed.mixHint.toLowerCase().includes(m.toLowerCase().split(' ')[0])); if(cand) mixSel.value=cand; }
+        let otherInput=null; mixSel.addEventListener('change',()=>{ if(mixSel.value==='__other'){ if(!otherInput){ otherInput=el('input',{class:'w-full border rounded-xl px-3 py-2 mt-2',placeholder:'Typ mengselnaam exact zoals in eisen‑PDF'}); mixWrap.appendChild(otherInput);} } else if(otherInput){ otherInput.remove(); otherInput=null; } });
+
+        const pcrBadge = parsed.pcr?'<span class="badge badge-pass">'+parsed.pcr+'</span>':'<span class="badge badge-fail">PCR niet gevonden</span>';
+        const pubBadge = '<span class="badge bg-gray-100">Publicatie: '+(parsed.pubDate||'onbekend')+'</span>';
+        const fmt = v => isNaN(v)?'—':Number(v).toFixed(3);
+        meta.innerHTML = pcrBadge + ' ' + pubBadge;
+        info.innerHTML = `<div>MKI A1–A3: <span class="mono">${fmt(parsed.mkiA1A3)}</span></div><div>MKI D: <span class="mono">${fmt(parsed.mkiD)}</span></div>`;
+
+        if(hasSB){ try{ if(!state.runId){ await createRun(null);} fileId=await insertFile(state.runId,{ file_name:file.name, file_path:storedPath, product:parsed.product, pcr_epd:parsed.pcr, pub_date:parsed.pubDate }); }catch(dbErr){ console.error(dbErr); } }
+
+        state.epds.push({ file, fileId, parsed, get mix(){ if(mixSel.value==='__other'){ const v=mixWrap.querySelector('input')?.value?.trim(); return v||''; } return mixSel.value||''; } });
+        enableRunIfReady();
+      }catch(err){ console.error(err); meta.innerHTML = `<span class="badge badge-fail">Kon EPD niet parsen (${err.message||'onbekend'})</span>`; }
+    }
+  }
+
+  function compute(epd, req, year, pcrTarget){
+    const { parsed } = epd;
+    const res = { fileId:epd.fileId||null, file:epd.file?.name||'', product:parsed.product, pcr:parsed.pcr||'', pubDate:parsed.pubDate||'', mix:epd.mix||'', year,
+      mkiA1A3:parsed.mkiA1A3, mkiD:parsed.mkiD, mkiA4C4:NaN, mkiTotalAD:NaN, plafond:NaN, pass:false, notes:[] };
+    if(!res.mix){ res.notes.push('Geen asfaltsoort gekozen.'); return res; }
+    if(!parsed.pcr){ res.notes.push('PCR niet aangetroffen in EPD.'); }
+    else if(pcrTarget && !parsed.pcr.toLowerCase().includes(pcrTarget.toLowerCase().replace(/\s+/g,' '))){ res.notes.push(`EPD PCR (“${parsed.pcr}”) ≠ doel (“${pcrTarget}”).`); }
+
+    const plafObj = req.plafond[res.mix]; const a4c4Val = req.a4c4[res.mix];
+    if(typeof a4c4Val==='number') res.mkiA4C4=a4c4Val; else res.notes.push('A4–C4 niet gevonden (eisen‑PDF).');
+    if(plafObj && typeof plafObj[year]==='number' && !isNaN(plafObj[year])) res.plafond=plafObj[year]; else res.notes.push(`Geen plafondwaarde voor “${res.mix}” in ${year}.`);
+
+    if(!isNaN(res.mkiA1A3)&&!isNaN(res.mkiD)&&!isNaN(res.mkiA4C4)){
+      res.mkiTotalAD = res.mkiA1A3 + res.mkiA4C4 + res.mkiD;
+      if(!isNaN(res.plafond)) res.pass = res.mkiTotalAD <= res.plafond;
+    } else {
+      res.notes.push('Onvoldoende data om A–D totaal te berekenen.');
+    }
+    return res;
+  }
+
+  runBtn.addEventListener('click', async ()=>{
+    const year = yearSel.value, pcrTarget = pcrSel.value;
+    if(!state.req){ toast('Upload eerst de eisen‑PDF.', false); return; }
+    if(!state.runId){ await createRun(null); }
+    state.results=[]; resultsBox.innerHTML=''; const rows=[];
+
+    for(const epd of state.epds){
+      const r = compute(epd, state.req, year, pcrTarget); state.results.push(r);
+      const card=el('div',{class:'border rounded-2xl p-4 bg-white'});
+      card.appendChild(el('div',{class:'flex justify-between items-start gap-4'},[
+        el('div',{class:'font-semibold'},r.product||r.file),
+        el('div',{class:'badge '+(r.pass?'badge-pass':'badge-fail')}, r.pass?'PASS':'FAIL')
+      ]));
+      const fmt = v => isNaN(v)?'—':Number(v).toFixed(3);
+      const tbl=el('div',{class:'overflow-x-auto mt-3'}, el('table',{class:'min-w-full text-sm'},[
+        el('thead',{}, el('tr',{}, ['Bestand','Asfaltsoort','Jaar','PCR (EPD)','A1–A3','A4–C4','D','A–D totaal','Plafond','Marge'].map(h=>el('th',{class:'text-left py-2 pr-4 text-gray-600'},h)))) ,
+        el('tbody',{}, el('tr',{}, [ r.file, r.mix||'—', r.year, r.pcr||'—', fmt(r.mkiA1A3), fmt(r.mkiA4C4), fmt(r.mkiD), fmt(r.mkiTotalAD), fmt(r.plafond), (!isNaN(r.mkiTotalAD)&&!isNaN(r.plafond))?fmt(r.plafond-r.mkiTotalAD):'—' ].map(v=>el('td',{class:'py-2 pr-4 mono'},v))))
+      ]));
+      if(r.notes.length){ card.appendChild(el('div',{class:'mt-2 text-xs text-gray-600'},'Opmerkingen: '+r.notes.join(' · '))); }
+      resultsBox.appendChild(card);
+
+      rows.push({ file:r.file, product:r.product, mix:r.mix, year:r.year, pcr_epd:r.pcr, mki_a1a3:r.mkiA1A3, mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond, margin:(!isNaN(r.mkiTotalAD)&&!isNaN(r.plafond))?(r.plafond-r.mkiTotalAD):'', pass:r.pass?'PASS':'FAIL', notes:r.notes.join(' | ') });
+      try{ await insertResult(state.runId, epd.fileId||null, r); }catch(e){ console.error(e); }
+    }
+
+    if(rows.length){
+      const headers=Object.keys(rows[0]);
+      const csv=[headers.join(',')].concat(rows.map(r=>headers.map(h=>{ const v=r[h]; const s=(v===undefined||v===null)?'':String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }).join(','))).join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
+      csvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=url; a.download='epd-mki-checks.csv'; a.click(); };
+      csvBtn.disabled=false;
+    }
+    toast('Controle uitgevoerd'+(hasSB?' en opgeslagen':''), true);
+  });
+});
+</script>
+</body>
+</html>
