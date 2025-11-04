@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6)</title>
+<title>MKI-toetsing asfalt check (v2.6.1)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -19,13 +19,18 @@
   .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
   .hint{font-size:.8rem;color:#6b7280}
   .highlight-col{background:#dcfce7!important}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;border-radius:.75rem;padding:.45rem .8rem;font-size:.875rem}
+  .btn-gray{background:#f3f4f6;color:#111827}
+  .btn-gray:hover{background:#e5e7eb}
+  .btn-danger{background:#fee2e2;color:#991b1b}
+  .btn-danger:hover{background:#fecaca}
 </style>
 </head>
 
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.1)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -218,15 +223,13 @@ async function parseEpd(file){
   return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, text };
 }
 
-/* ===== Asfaltsoort-suggestie (eerst type, dan PR/gemod) ===== */
+/* ===== Asfaltsoort-suggestie: EPD-tekst leidend, filename fallback ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
-
-// PR-detectie: vangt '60PR', 'PR 60', 'PR-60', '60 PR' (maar niet '4060')
+// PR-detectie zonder "4060" false positives
 function detectPR(t){
   if(/(?:^|[\s_\-])(?:60\s*pr|pr\s*60|60pr)(?:$|[\s_\-])/i.test(t)) return 60;
   if(/(?:^|[\s_\-])(?:50\s*pr|pr\s*50|50pr)(?:$|[\s_\-])/i.test(t)) return 50;
   if(/(?:^|[\s_\-])(?:30\s*pr|pr\s*30|30pr)(?:$|[\s_\-])/i.test(t)) return 30;
-  // ook "minimaal 30% PR" in lopende tekst
   if(/\bminimaal\s*30\s*%?\s*pr\b/i.test(t)) return 30;
   if(/\bminimaal\s*50\s*%?\s*pr\b/i.test(t)) return 50;
   if(/\bminimaal\s*60\s*%?\s*pr\b/i.test(t)) return 60;
@@ -234,34 +237,34 @@ function detectPR(t){
 }
 function detectGemod(t){ return /gemod|pmb|polymeer/i.test(t); }
 
-function suggestMixFromText(txt, fileName=""){
-  // combineer bestandsnaam + tekst; normaliseer scheidingstekens
-  const all = ((fileName || "") + " " + (txt || "")).replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
+function decideMixFromString(src){
+  if(!src) return "";
+  const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
 
-  // 0) SMA geluidsreducerend (8G+) heeft hoogste prioriteit
-  if(has(all, /8g\+?/, /geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
-  // 1) SMA-familie
-  if(/sma\b/.test(all)){
+  // SMA geluidsreducerend (8G+) hoogste prioriteit
+  if(has(all,/8g\+?/,/geluidsreducer/)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
+  // SMA
+  if(/\bsma\b/.test(all)){
     if(/rood|clobred|red/.test(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
     if(/gemod|pmb|polymeer/.test(all)) return "SMA 8-11 met gemodificeerd bitumen";
-    if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
     const pr=detectPR(all);
     if(pr===30) return "SMA 8-11 minimaal 30% PR";
+    if(/sma[-\s_]?nl\s*8b|sma\s*8[-\s]?11|sma\s*8b/.test(all)) return "SMA 8-11";
     return "SMA 8-11";
   }
-  // 2) 2L ZOAB / ZOAB / DZOAB
+
+  // ZOAB / DZOAB / 2L ZOAB
   if(/2l.*zoab.*top/.test(all)) return "2L ZOAB toplaag met gemodificeerd bitumen";
   if(/2l.*zoab.*onderlaag.*30/.test(all)) return "2L ZOAB onderlaag, minimaal 30% PR";
   if(/2l.*zoab.*onderlaag/.test(all)) return "2L ZOAB onderlaag";
   if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)) return "ZOAB regulier+ / DZOAB";
   if(/\bzoab\b/.test(all)) return "ZOAB regulier";
 
-  // === 3) AC-wereld: eerst type bepalen ===
+  // AC-wereld: eerst type
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
   const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
   const isAC     = /\bac\b|asfaltbeton/.test(all);
-
   const pr = detectPR(all);
   const gm = detectGemod(all);
   const rood = /rood|clobred|red/.test(all);
@@ -269,8 +272,8 @@ function suggestMixFromText(txt, fileName=""){
   if(isAC){
     if(isSurf){
       if(rood) return "AC surf rood";
-      if(gm && (pr===30 || pr===50 || pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-      if(pr===30 || pr===50 || pr===60) return "AC surf, minimaal 30% PR";
+      if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+      if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
       if(gm) return "AC surf met gemodificeerd bitumen";
       return "AC surf";
     }
@@ -281,18 +284,24 @@ function suggestMixFromText(txt, fileName=""){
       if(gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       return "AC bin/base, minimaal 50% PR";
     }
-    // Geen expliciet surf/binbase: probeer via PR/gemod/rood
+    // Geen expliciet surf/binbase: heuristiek
     if(rood) return "AC surf rood";
-    if(gm && (pr===30 || pr===50 || pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
-    if(pr===30 || pr===50 || pr===60) return "AC surf, minimaal 30% PR";
+    if(gm && (pr===30||pr===50||pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
+    if(pr===30||pr===50||pr===60) return "AC surf, minimaal 30% PR";
     if(gm) return "AC surf met gemodificeerd bitumen";
     return "AC surf";
   }
 
-  // los rood
   if(rood) return "AC surf rood";
-
   return "";
+}
+
+/* EPD-tekst leidend; bestandsnaam fallback */
+function suggestMixFromText(epdText, fileName=""){
+  let mix = decideMixFromString(epdText || "");
+  if(mix) return mix;
+  mix = decideMixFromString(fileName || "");
+  return mix || "";
 }
 
 /* ===== Precisie: invoer normaliseren (komma/punt) ===== */
@@ -334,12 +343,17 @@ document.addEventListener("DOMContentLoaded", ()=>{
     for(const f of files){ await addEpdCard(f); }
   }
 
-  function makeCard(file){
-    const card=el("div",{class:"border rounded-xl p-4 bg-white"});
-    const head=el("div",{class:"flex justify-between items-center mb-2"},[
-      el("div",{class:"font-medium"},file.name),
-      el("div",{class:"badge badge-info"},"lezen…")
+  function makeCard(file, uid){
+    const card=el("div",{class:"border rounded-xl p-4 bg-white", "data-uid":uid});
+    const headLeft=el("div",{class:"font-medium truncate pr-2", title:file.name},file.name);
+    const status=el("div",{class:"badge badge-info"},"lezen…");
+    const delBtn=el("button",{class:"btn btn-danger", type:"button", title:"Verwijderen"}, "Verwijderen");
+
+    const head=el("div",{class:"flex justify-between items-center mb-2 gap-2"},[
+      headLeft,
+      el("div",{class:"flex items-center gap-2"},[status, delBtn])
     ]);
+
     const meta=el("div",{class:"text-sm text-gray-700 mb-2"},'—');
 
     const mixSel=el("select",{class:"w-full border rounded-xl px-3 py-2 mb-2"},
@@ -364,11 +378,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
     card.append(head,meta,mixSel,inputs);
     list.appendChild(card);
-    return {card,head,meta,mixSel,a13Input,dInput};
+
+    return {card,meta,mixSel,a13Input,dInput,status,delBtn};
   }
 
   async function addEpdCard(file){
-    const ui=makeCard(file);
+    const uid=crypto.randomUUID();
+    const ui=makeCard(file, uid);
 
     // 1) Parse PDF
     let parsed=null;
@@ -379,17 +395,20 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(!isNaN(parsed.mkiA1A3)) ui.a13Input.value = parsed.mkiA1A3;
       if(!isNaN(parsed.mkiD))    ui.dInput.value  = parsed.mkiD;
 
+      // EPD-tekst leidend, filename fallback
       const hint = suggestMixFromText(parsed.text, file.name);
       if(hint) ui.mixSel.value = hint;
 
-      ui.head.lastChild.textContent='gereed';
-      ui.head.lastChild.className='badge badge-pass';
+      ui.status.textContent='gereed';
+      ui.status.className='badge badge-pass';
     }catch(err){
       ui.meta.textContent = "Fout bij lezen PDF";
-      ui.head.lastChild.className = 'badge badge-fail';
+      ui.status.className = 'badge badge-fail';
+      ui.status.textContent = 'fout';
     }
 
-    // 2) DB-log (apart)
+    // 2) DB-log (apart) en state push
+    let fileId=null;
     try{
       if(state.runId){
         const { data, error } = await sb.from("epd_files").insert({
@@ -397,41 +416,54 @@ document.addEventListener("DOMContentLoaded", ()=>{
           product: parsed?.product||file.name, pcr_epd: parsed?.pcr||"", pub_date: parsed?.pubDate||""
         }).select("id").single();
         if(error) throw error;
-        state.epds.push({
-          file, fileId:data.id, parsed,
-          get mix(){ return ui.mixSel.value; },
-          get a13(){ return parseInputPrecise(ui.a13Input); },
-          get d(){ return parseInputPrecise(ui.dInput); }
-        });
-      }else{
-        state.epds.push({
-          file, fileId:null, parsed,
-          get mix(){ return ui.mixSel.value; },
-          get a13(){ return parseInputPrecise(ui.a13Input); },
-          get d(){ return parseInputPrecise(ui.dInput); }
-        });
+        fileId=data.id;
       }
     }catch(err){
       toast("Opslaan in database mislukt; resultaten worden wel berekend.", false);
-      state.epds.push({
-        file, fileId:null, parsed,
-        get mix(){ return ui.mixSel.value; },
-        get a13(){ return parseInputPrecise(ui.a13Input); },
-        get d(){ return parseInputPrecise(ui.dInput); }
-      });
     }
 
-    runBtn.disabled=true;
-    if(state.epds.length) runBtn.disabled=false;
+    const rec={
+      uid, file, fileId, parsed,
+      get mix(){ return ui.mixSel.value; },
+      get a13(){ return parseInputPrecise(ui.a13Input); },
+      get d(){ return parseInputPrecise(ui.dInput); },
+      removeCard: ()=> ui.card.remove()
+    };
+    state.epds.push(rec);
+
+    // 3) Verwijderen
+    ui.delBtn.addEventListener('click', async ()=>{
+      // UI verwijderen
+      rec.removeCard();
+      // State verwijderen
+      const idx = state.epds.findIndex(e=>e.uid===uid);
+      if(idx>-1) state.epds.splice(idx,1);
+      // DB verwijderen (cascade pakt epd_results)
+      if(rec.fileId){
+        try{
+          await sb.from("epd_files").delete().eq("id", rec.fileId);
+        }catch(e){
+          toast("Kon item niet uit database verwijderen.", false);
+        }
+      }
+      // Knoppen (de)activeren
+      document.querySelectorAll("#epd-list > div").length===0
+        ? (runBtn.disabled=true,csvBtn.disabled=true)
+        : (runBtn.disabled=false);
+      toast("EPD verwijderd", true);
+    });
+
+    // Buttons activeren
+    runBtn.disabled=false;
   }
 
   runBtn.addEventListener("click", async ()=>{
     const jaar=parseInt(yearSel.value,10), jIdx=MKI_EISEN.jaar.indexOf(jaar);
-    results.innerHTML=''; const rows=[];
+    const results=$("#results"); results.innerHTML=''; const rows=[];
 
     for(const epd of state.epds){
       const mix = epd.mix;
-      if(!mix){ continue; }
+      if(!mix) continue;
 
       const a1=epd.a13, a4=MKI_EISEN.a4c4[mix] ?? NaN, d=epd.d, plaf=MKI_EISEN.plafonds[mix]?.[jIdx];
       const tot=(a1||0)+(a4||0)+(d||0);
@@ -483,6 +515,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 
     // CSV export (UTF-8 BOM + ;)
+    const csvBtn=$("#export-csv");
     if(rows.length){
       const headers=Object.keys(rows[0]);
       const csvLines=[headers.join(";")].concat(
