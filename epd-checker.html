@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.9)</title>
+<title>MKI-toetsing asfalt check (v2.6.10)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.9)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.10)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -94,24 +94,18 @@ function el(t,a={},c=[]){const n=document.createElement(t);
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
 function fmtNL(n){return (typeof n!=="number"||isNaN(n))?"—":n.toFixed(2).replace(".",",");}
 
-/* === CSV number formatter: maximaal 3 decimalen, nl-decimaal, geen exponent.
-     - Voor strings (ruwe EPD): we parsen, ronden op 3, en geven terug met komma.
-     - Voor nummers: idem. Geen trailing nullen, geen exponent. === */
+/* CSV: maximaal 3 decimalen, nl-decimaal, geen exponent; behoud bronprecisie ≤3 */
 function toCsvNumberMax3(value){
   function roundTo3(num){
-    // Ronden naar 3, daarna trailing nullen weg en punt -> komma
-    let s = Number(num).toFixed(3);                 // bv "12.340"
-    s = s.replace(/0+$/,'').replace(/\.$/,'');      // "12.34"
-    return s.replace('.',',');                      // "12,34"
+    let s = Number(num).toFixed(3);
+    s = s.replace(/0+$/,'').replace(/\.$/,'');
+    return s.replace('.',',');
   }
-  // Als het al een string is, normaliseer en parse
   if (typeof value === 'string') {
     const raw = value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ');
-    // haal alleen getaltekens eruit (incl. min en exp), maar verwacht geen units hier
-    let s = raw.replace(',', '.');
-    // Als het iets van exponent bevat, parse als Number; anders ook parse
+    const s = raw.replace(',', '.');
     const num = Number(s);
-    if (!isFinite(num)) return '';                  // onbruikbaar -> leeg
+    if (!isFinite(num)) return '';
     return roundTo3(num);
   }
   if (typeof value !== 'number' || !isFinite(value)) return '';
@@ -310,8 +304,6 @@ async function parseEpd(file){
 
 /* ===== Asfaltsoort-suggestie ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
-
-/* PR/KA-detectie — “xx% PR/KA”, “minimaal xx% PR/KA” */
 function detectPRorKA(t){
   const w = t.replace(/\u00A0/g,' ');
   const any = (p)=>new RegExp(p,'i').test(w);
@@ -569,7 +561,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
         rows.push({
           "Bestand": epd.file.name,
           "Asfaltsoort": "",
-          "Jaar": jaar,
           "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
           "MKI A1-A3": toCsvNumberMax3(a1Raw),
           "MKI A4-C4": "",
@@ -614,7 +605,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ]);
       results.appendChild(card);
 
-      // CSV: max 3 decimalen, nl (komma), geen exponent
+      // CSV: zonder "Jaar" kolom; met "Eis-jaar"
       const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(a1)?a1.toString():"");
       const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(d) ?d.toString() :"");
       const a4Raw = Number.isFinite(a4) ? a4.toString() : "";
@@ -625,7 +616,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       rows.push({
         "Bestand": epd.file.name,
         "Asfaltsoort": mix,
-        "Jaar": jaar,
         "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
         "MKI A1-A3": toCsvNumberMax3(a1Raw || a1),
         "MKI A4-C4": toCsvNumberMax3(a4Raw || a4),
