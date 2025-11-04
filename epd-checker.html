@@ -286,7 +286,7 @@ function suggestMixFromText(txt, fileName=""){
     if(gm && (pr===30 || pr===50 || pr===60)) return "AC surf, minimaal 30% PR met gemodificeerd bitumen";
     if(pr===30 || pr===50 || pr===60) return "AC surf, minimaal 30% PR";
     if(gm) return "AC surf met gemodificeerd bitumen";
-    return "AC surf"; // veilige default voor AC
+    return "AC surf";
   }
 
   // los rood
@@ -379,7 +379,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(!isNaN(parsed.mkiA1A3)) ui.a13Input.value = parsed.mkiA1A3;
       if(!isNaN(parsed.mkiD))    ui.dInput.value  = parsed.mkiD;
 
-      // Suggestie: eerst type → dan PR/gemod
       const hint = suggestMixFromText(parsed.text, file.name);
       if(hint) ui.mixSel.value = hint;
 
