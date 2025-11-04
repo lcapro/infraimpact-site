@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.5)</title>
+<title>MKI-toetsing asfalt check (v2.6.6)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -30,7 +30,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.5)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.6)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -91,7 +91,7 @@
 /* ===== Helpers ===== */
 const $=s=>document.querySelector(s);
 function el(t,a={},c=[]){const n=document.createElement(t);
- for(const[k,v]of Object.entries(a)){k==="class"?n.className=v:k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
+ for(const[k,v]of Object.entries(a)){if(k==="class")n.className=v; else if(k==="html")n.innerHTML=v; else n.setAttribute(k,v);}
  (Array.isArray(c)?c:[c]).forEach(x=>{if(x==null)return;if(typeof x==="string"||typeof x==="number")n.appendChild(document.createTextNode(String(x)));else n.appendChild(x);});
  return n;}
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
@@ -100,29 +100,52 @@ function fmtNL(n){return (typeof n!=="number"||isNaN(n))?"—":n.toFixed(2).repl
 /* ===== Dataset (Uniforme MKI-plafondwaarden 2025 PCR 2.0) ===== */
 const MKI_EISEN={jaar:[2022,2024,2026,2028,2030],
   plafonds:{
-"AC surf":[9.9,9.1,8.2,7.5,6.7],"AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
+"AC surf":[9.9,9.1,8.2,7.5,6.7],
+"AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
 "AC surf met gemodificeerd bitumen":[11.6,10.6,9.5,8.7,7.9],
 "AC surf, minimaal 30% PR met gemodificeerd bitumen":[9.9,7.4,7.1,6.7,6.4],
 "AC surf rood":[22.1,17.7,17.0,16.4,15.8],
 "AC bin/base, minimaal 50% PR":[4.9,4.5,4.1,3.6,3.1],
 "AC bin/base, minimaal 50% PR met gemodificeerd bitumen":[5.5,5.1,4.6,4.1,3.6],
 "AC bin/base minimaal 60% PR":[NaN,3.9,3.5,3.2,2.9],
-"SMA 8-11":[10.8,8.7,7.9,7.3,6.7],"SMA 8-11 met gemodificeerd bitumen":[12.8,11.8,10.7,10.0,9.2],
-"SMA 8-11 minimaal 30% PR":[NaN,7.2,6.5,5.9,5.4],"SMA 5":[12.0,11.9,11.7,10.7,9.8],
+"SMA 8-11":[10.8,8.7,7.9,7.3,6.7],
+"SMA 8-11 met gemodificeerd bitumen":[12.8,11.8,10.7,10.0,9.2],
+"SMA 8-11 minimaal 30% PR":[NaN,7.2,6.5,5.9,5.4],
+"SMA 5":[12.0,11.9,11.7,10.7,9.8],
 "SMA geluidsreducerende deklaag (op basis van 8G+)":[13.2,13.1,12.9,11.8,10.8],
-"SMA rood":[18.5,18.2,17.5,16.8,NaN],"ZOAB regulier":[9.8,8.8,7.7,6.3,4.9],
-"ZOAB regulier+ / DZOAB":[10.5,9.5,8.4,7.0,5.6],"DZOAB, minimaal 30% PR":[8.8,8.8,7.8,6.5,5.2],
+/* aangepast: SMA rood -> 2022 = NaN, 2024..2030 gevuld */
+"SMA rood":[NaN,18.5,18.2,17.5,16.8],
+"ZOAB regulier":[9.8,8.8,7.7,6.3,4.9],
+"ZOAB regulier+ / DZOAB":[10.5,9.5,8.4,7.0,5.6],
+"DZOAB, minimaal 30% PR":[8.8,8.8,7.8,6.5,5.2],
 "2L ZOAB toplaag met gemodificeerd bitumen":[12.7,12.6,12.4,10.6,8.7],
 "2L ZOAB onderlaag":[10.3,9.3,8.3,7.1,5.8],
-"2L ZOAB onderlaag, minimaal 30% PR":[8.7,8.4,7.8,6.7,5.5]},
+"2L ZOAB onderlaag, minimaal 30% PR":[8.7,8.4,7.8,6.7,5.5]
+},
   a4c4:{
-"AC surf":1.34,"AC surf, minimaal 30% PR":1.34,"AC surf met gemodificeerd bitumen":1.34,
-"AC surf, minimaal 30% PR met gemodificeerd bitumen":1.34,"AC surf rood (met penbitumen)":1.38,
-"AC bin/base, minimaal 50% PR":1.32,"AC bin/base, minimaal 50% PR met gemodificeerd bitumen":1.32,
-"AC bin/base minimaal 60% PR":1.32,"SMA 8-11":1.38,"SMA 8-11 met gemodificeerd bitumen":1.38,
-"SMA 8-11 minimaal 30% PR":1.38,"SMA 5":1.40,"SMA geluidsreducerende deklaag (op basis van 8G+)":1.40,
-"SMA rood":1.38,"ZOAB regulier":1.96,"ZOAB regulier+ / DZOAB":1.80,"DZOAB, minimaal 30% PR":1.80,
-"2L ZOAB toplaag met gemodificeerd bitumen":1.80,"2L ZOAB onderlaag":1.80,"2L ZOAB onderlaag, minimaal 30% PR":1.80}
+"AC surf":1.34,
+"AC surf, minimaal 30% PR":1.34,
+"AC surf met gemodificeerd bitumen":1.34,
+"AC surf, minimaal 30% PR met gemodificeerd bitumen":1.34,
+/* toegevoegd: AC surf rood → 1,38 */
+"AC surf rood":1.38,
+"AC surf rood (met penbitumen)":1.38,
+"AC bin/base, minimaal 50% PR":1.32,
+"AC bin/base, minimaal 50% PR met gemodificeerd bitumen":1.32,
+"AC bin/base minimaal 60% PR":1.32,
+"SMA 8-11":1.38,
+"SMA 8-11 met gemodificeerd bitumen":1.38,
+"SMA 8-11 minimaal 30% PR":1.38,
+"SMA 5":1.40,
+"SMA geluidsreducerende deklaag (op basis van 8G+)":1.40,
+"SMA rood":1.38,
+"ZOAB regulier":1.96,
+"ZOAB regulier+ / DZOAB":1.80,
+"DZOAB, minimaal 30% PR":1.80,
+"2L ZOAB toplaag met gemodificeerd bitumen":1.80,
+"2L ZOAB onderlaag":1.80,
+"2L ZOAB onderlaag, minimaal 30% PR":1.80
+}
 };
 
 /* === Eisentabel renderen + highlight === */
@@ -154,7 +177,7 @@ const sb=window.supabase.createClient(
 );
 
 /* ===== PDF helpers & parser ===== */
-function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; } // Unicode minus → '-'
+function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; } // unicode minus → '-'
 function parseNumEUexp(s){
   if(!s) return NaN;
   let str=normalizeMinus(String(s)).trim().replace(/\u202F/g,'').replace(/\s+/g,' ');
@@ -165,13 +188,12 @@ function parseNumEUexp(s){
   const n=Number(str);
   return Number.isFinite(n)?n:NaN;
 }
-// Is dit een “echte” numerieke token (voorkom lone '1' van checkmarks)?
 function looksNumericToken(raw){
   if(!raw) return false;
   const s = normalizeMinus(String(raw)).trim();
-  if(/[Ee][+\-]?\d+/.test(s)) return true;     // exponent
-  if(/[\,\.]/.test(s)) return true;            // komma/punt aanwezig
-  if(/^\-?\d{2,}$/.test(s)) return true;       // >= 2 cijfers (bijv 12)
+  if(/[Ee][+\-]?\d+/.test(s)) return true;     // exponent notatie
+  if(/[\,\.]/.test(s)) return true;            // komma/punt
+  if(/^\-?\d{2,}$/.test(s)) return true;       // ≥ 2 cijfers
   return false;
 }
 async function waitPdf(){while(!window.pdfjsLib){await new Promise(r=>setTimeout(r,100));}}
@@ -189,7 +211,23 @@ async function pdfToText(file){
 }
 function pick(re,txt){const m=txt.match(re);return m?m[1].trim():'';}
 
-/* Primair: label-based extractie voor A1–A3 & D (stevig voor APE) */
+/* Nieuw: specifieke ECI-regel uitlezen (SBK set 1) */
+function extractECITable(txt){
+  const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
+  // Zoek rij die start met "ECI" (of "MKI") + "euro" gevolgd door 6 waarden: A1, A2, A3, A1-A3, D, Total
+  const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+  const m = t.match(re);
+  if(!m) return null;
+  const a1 = m[2], a2 = m[3], a3 = m[4], a13 = m[5], d = m[6]; // Total = m[7]
+  if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
+  return {
+    a13Raw: a13, dRaw: d,
+    a13: parseNumEUexp(a13),
+    d: parseNumEUexp(d)
+  };
+}
+
+/* Primair: label-based extractie voor A1–A3 & D */
 function extractLabeledValues(txt){
   const t = txt.replace(/\s+/g,' ');
   const dash = '[\\-–—~]';
@@ -205,58 +243,57 @@ function extractLabeledValues(txt){
   return null;
 }
 
-/* Back-up: “Resultaten … MKI Euro” blok */
+/* Back-up: “Resultaten … MKI/ECI Euro” blok (algemeen) */
 function extractFromMKIResults(txt){
-  const mm = txt.match(/Resultaten[\s\S]{0,400}MKI\s+Euro([\s\S]{0,260})/i);
+  const mm = txt.match(/Resultaten[\s\S]{0,400}(?:MKI|ECI)\s+Euro([\s\S]{0,260})/i);
   if(!mm) return null;
   const after=mm[1].replace(/\s+/g,' ').trim();
-  const nums=[...after.matchAll(/([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/g)].map(m=>m[1]);
-  // Zoek doelbewust “A1–A3” en “D” tokens in de buurt als mogelijk:
   const a13m = after.match(/A1\s*[–—\-~]\s*A3[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
   const dm   = after.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
   let a13Raw = a13m?.[1] || '';
   let dRaw   = dm?.[1]   || '';
   if(!looksNumericToken(a13Raw)) a13Raw='';
-  if(!looksNumericToken(dRaw)) dRaw='';
-  // Als niet gevonden, val terug op index-heuristiek (met token-validatie)
-  if(!a13Raw && nums.length){ const cand = nums.find(s=>looksNumericToken(s)); if(cand) a13Raw=cand; }
-  if(!dRaw && nums.length>1){ const cand = [...nums].reverse().find(s=>looksNumericToken(s)); if(cand) dRaw=cand; }
+  if(!looksNumericToken(dRaw))   dRaw='';
   const a13 = a13Raw?parseNumEUexp(a13Raw):NaN;
   const d   = dRaw  ?parseNumEUexp(dRaw)  :NaN;
   if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
   return null;
 }
+
 function cleanPCR(txt){
   if(/NL-?PCR\s*Asfalt\s*2\.0/i.test(txt)) return "NL-PCR Asfalt 2.0";
   if(/PCR[^0-9]*2\.0/i.test(txt)) return "PCR 2.0";
   return "NL-PCR Asfalt 2.0";
 }
+
 async function parseEpd(file){
   const text = await pdfToText(file);
-  const product = pick(/Product:\s*([^\n]+?)\s+(?:Eenheid|Producer|Producent)/i, text) || file.name.replace(/\.pdf$/i,'');
+  const product = pick(/Product:\s*([^\n]+?)\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\.pdf$/i,'');
   const pcrRaw  = pick(/PCR[:\s]+([^\n]+)$/im, text) || "";
   const pcr     = cleanPCR(pcrRaw || text);
-  const pubDate = pick(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
+  const pubDate = pick(/(Datum(?:\s+van)?\s+publicatie|Issue date)[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
 
-  // 1) label-based (primair)
+  // 0) Specifieke ECI-regel (APE/ECI SBK set 1)
   let a13, d, a13Raw="", dRaw="";
-  const lab = extractLabeledValues(text);
-  if(lab){ a13=lab.a13; d=lab.d; a13Raw=lab.a13Raw; dRaw=lab.dRaw; }
+  const eci = extractECITable(text);
+  if(eci){ a13=eci.a13; d=eci.d; a13Raw=eci.a13Raw; dRaw=eci.dRaw; }
 
-  // 2) back-up blokmethode
-  if((isNaN(a13) && isNaN(d)) || (!looksNumericToken(a13Raw) && !looksNumericToken(dRaw))){
+  // 1) Label-based
+  if(isNaN(a13) || isNaN(d)){
+    const lab = extractLabeledValues(text);
+    if(lab){
+      if(isNaN(a13)){ a13=lab.a13; a13Raw=lab.a13Raw||a13Raw; }
+      if(isNaN(d)){ d=lab.d; dRaw=lab.dRaw||dRaw; }
+    }
+  }
+
+  // 2) Back-up blokmethode
+  if((isNaN(a13) && isNaN(d)) || (!looksNumericToken(a13Raw)&&!looksNumericToken(dRaw))){
     const res = extractFromMKIResults(text);
-    if(res){ a13=res.a13; d=res.d; a13Raw=res.a13Raw; dRaw=res.dRaw; }
-  }
-
-  // 3) aanvullende fallback search
-  if(isNaN(a13)){
-    const m = text.match(/\bA1\s*[–—\-~]\s*A3\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-    if(m && looksNumericToken(m[1])){ a13Raw = m[1]; a13 = parseNumEUexp(a13Raw); }
-  }
-  if(isNaN(d)){
-    const m = text.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-    if(m && looksNumericToken(m[1])){ dRaw = m[1]; d = parseNumEUexp(dRaw); }
+    if(res){
+      if(isNaN(a13)){ a13=res.a13; a13Raw=res.a13Raw; }
+      if(isNaN(d)){ d=res.d; dRaw=res.dRaw; }
+    }
   }
 
   return { product, pcr, pubDate, mkiA1A3:a13, mkiD:d, a1a3Raw:a13Raw, dRaw, text };
@@ -276,8 +313,7 @@ function detectPR(t){
 }
 /* GEMOD detectie: gemod, PMB, SFB, SBS, polymeer/polymer */
 function detectGemod(t){ return /gemod|pmb|sfb|sbs|polymeer|polymer/i.test(t); }
-
-/* striktere 'rood'-detectie */
+/* striktere 'rood' */
 function isRood(t){ return /\brood\b|clobred\b|penbitumen/i.test(t); }
 
 function decideMixFromString(src){
@@ -295,7 +331,7 @@ function decideMixFromString(src){
       if(pr===30) return "2L ZOAB onderlaag, minimaal 30% PR";
       return "2L ZOAB onderlaag";
     }
-    return "2L ZOAB toplaag met gemodificeerd bitumen"; // default
+    return "2L ZOAB toplaag met gemodificeerd bitumen";
   }
 
   /* ---- ZOAB / DZOAB (niet-2L) ---- */
@@ -326,7 +362,6 @@ function decideMixFromString(src){
   if(isAC){
     if(isSurf){
       if(isRood(all)) return "AC surf rood";
-      // alle PR ≥30 → “minimaal 30% PR” (optioneel met gemod)
       if(pr===30 || pr===50 || pr===60){
         return gm ? "AC surf, minimaal 30% PR met gemodificeerd bitumen" : "AC surf, minimaal 30% PR";
       }
@@ -340,7 +375,6 @@ function decideMixFromString(src){
       if(gm) return "AC bin/base, minimaal 50% PR met gemodificeerd bitumen";
       return "AC bin/base, minimaal 50% PR";
     }
-    // Heuristiek zonder subtype
     if(isRood(all)) return "AC surf rood";
     if(pr===30 || pr===50 || pr===60){
       return gm ? "AC surf, minimaal 30% PR met gemodificeerd bitumen" : "AC surf, minimaal 30% PR";
@@ -356,7 +390,6 @@ function suggestMixFromText(epdText, fileName=""){
   let mix = decideMixFromString(epdText || "");
   if(mix) return mix;
   mix = decideMixFromString(fileName || "");
-  // Als ook filename niets relevants heeft → leeg laten zodat gebruiker kiest
   return mix || "";
 }
 
@@ -442,7 +475,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const uid=crypto.randomUUID();
     const ui=makeCard(file, uid);
 
-    // 1) Parse PDF
     let parsed=null;
     try{
       await waitPdf();
@@ -451,7 +483,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(!isNaN(parsed.mkiA1A3)) ui.a13Input.value = parsed.mkiA1A3;
       if(!isNaN(parsed.mkiD))    ui.dInput.value  = parsed.mkiD;
 
-      // EPD-tekst leidend, filename fallback (laat leeg als niets zekers)
+      // EPD-tekst leidend, filename fallback (leeg laten als niets zekers)
       const hint = suggestMixFromText(parsed.text, file.name);
       if(hint) ui.mixSel.value = hint;
 
@@ -463,7 +495,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ui.status.textContent = 'fout';
     }
 
-    // 2) DB-log (apart) en state push
     let fileId=null;
     try{
       if(state.runId){
@@ -487,7 +518,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     };
     state.epds.push(rec);
 
-    // 3) Verwijderen
     ui.delBtn.addEventListener('click', async ()=>{
       rec.removeCard();
       const idx = state.epds.findIndex(e=>e.uid===uid);
