@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Over InfraImpact – MKI & LCA-advies dat duurzaamheid beslisbaar maakt in de GWW</title>
-  <meta name="description" content="InfraImpact B.V. vertaalt MKI & LCA-data naar praktisch advies voor opdrachtgevers, aannemers en leveranciers in de GWW-sector. Tastbaar, toetsbaar en toepasbaar.">
+  <meta name="description" content="InfraImpact B.V. vertaalt MKI & LCA-data naar praktisch advies voor opdrachtgevers, aannemers en leveranciers in de GWW. Tastbaar, toetsbaar en toepasbaar.">
 
   <!-- Favicons & App Icons -->
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
@@ -15,15 +15,15 @@
   <meta name="theme-color" content="#2F6F65">
   
   <!-- Canonical + Hreflang -->
-  <link rel="canonical" href="https://infraimpact.nl/over.html"/>
+  <link rel="canonical" href="https://infraimpact.nl/over.html">
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/over.html">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <!-- Preload veelgebruikte images op deze pagina -->
-  <link rel="preload" as="image" href="assets/logo_full.png" type="image/png" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/jim_profile.jpeg" type="image/jpeg">
+  <!-- Preload veelgebruikte images -->
+  <link rel="preload" as="image" href="assets/logo_full.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/jim_profile.webp" type="image/webp">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:title" content="Over InfraImpact – Wij maken duurzaamheid beslisbaar in de GWW">
@@ -32,7 +32,6 @@
   <meta property="og:url" content="https://infraimpact.nl/over.html">
   <meta property="og:site_name" content="InfraImpact">
   <meta property="og:image" content="/assets/og-infraimpact.webp">
-  <meta property="og:image" content="/assets/og-infraimpact.jpg">
   <meta property="og:image:alt" content="InfraImpact – MKI & LCA-advies in de GWW">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -46,12 +45,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 
   <style>
-    :root{
-      --brand-green:#2F6F65;
-      --brand-blue:#2B536D;
-      --ink:#374151;
-    }
-
+    :root{ --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
     body{
       background:linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
       background-size:400% 400%;
@@ -59,50 +53,21 @@
       color:var(--ink);
       font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     }
-    @keyframes bgMove{
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
-
-    .text-gradient{
-      background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-
-    /* Reveal on scroll */
+    @keyframes bgMove{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient{ background:linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     [data-animate]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
     [data-animate].visible{opacity:1;transform:translateY(0)}
-
-    /* Sticky nav */
-    nav{
-      position:sticky;top:0;z-index:50;
-      background-color:#ffffffcc;backdrop-filter:blur(6px);
-      box-shadow:0 2px 8px rgba(0,0,0,.05);
-      transition:transform .3s ease,box-shadow .3s ease;
-    }
-    .scroll-down{transform:translateY(-100%)}
-    .scroll-up{transform:translateY(0)}
-
-    /* Section helpers */
-    .section-brand{background-color:#E5EFED}
-    .section-white{background:#ffffff}
-
-    /* Accessibility & scrolling */
-    :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
-    html{scroll-behavior:smooth}
-    [id]{scroll-margin-top:96px}
-
+    nav{ position:sticky; top:0; z-index:50; background-color:#ffffffcc; backdrop-filter:blur(6px); box-shadow:0 2px 8px rgba(0,0,0,.05); transition:transform .3s ease, box-shadow .3s ease; }
+    .scroll-down{transform:translateY(-100%)} .scroll-up{transform:translateY(0)}
+    .section-brand{background-color:#E5EFED} .section-white{background:#ffffff}
+    :focus-visible{outline:3px solid var(--brand-green); outline-offset:3px}
+    html{scroll-behavior:smooth} [id]{scroll-margin-top:96px}
     a.button, a.px-6, a.px-8{transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease}
     a.button:hover, a.px-6:hover, a.px-8:hover{transform:translateY(-1px)}
-
-    @media (prefers-reduced-motion:reduce){
-      *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition:none !important}
-    }
+    @media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition:none !important} }
   </style>
 
-  <!-- Structured data (Organization) -->
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -112,8 +77,29 @@
     "logo":"https://infraimpact.nl/assets/logo_full.png",
     "email":"mailto:info@infraimpact.nl",
     "telephone":"+31621350805",
-    "address":{"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"},
-    "sameAs":[]
+    "address":{"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"}
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"Jim van der Kooij",
+    "jobTitle":"LCA- & MKI-specialist",
+    "worksFor":{"@type":"Organization","name":"InfraImpact B.V."},
+    "email":"mailto:jim.vanderkooij@infraimpact.nl",
+    "url":"https://infraimpact.nl/over.html",
+    "image":"https://infraimpact.nl/assets/jim_profile.webp"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"},
+      {"@type":"ListItem","position":2,"name":"Over ons","item":"https://infraimpact.nl/over.html"}
+    ]
   }
   </script>
 
@@ -123,13 +109,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-9578ZQ8GWD', {
-      anonymize_ip: true,
-      cookie_flags: 'SameSite=None;Secure'
-    });
+    gtag('config', 'G-9578ZQ8GWD', { anonymize_ip: true, cookie_flags: 'SameSite=None;Secure' });
   </script>
-  <!-- /Google Analytics 4 -->
-
 </head>
 
 <body class="bg-transparent text-gray-700">
@@ -139,19 +120,18 @@
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="/" class="flex items-center">
-        <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
+        <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">
       </a>
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
         <a href="/" class="hover:text-green-700">Home</a>
         <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>  
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
         <a href="epd-checker.html" class="hover:text-green-700">MKI-toetsing asfalt</a>
-        <a href="over.html" class="hover:text-green-700">Over ons</a>
+        <a href="over.html" aria-current="page" class="hover:text-green-700">Over ons</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
-      <!-- Mobile menu button -->
       <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
@@ -161,9 +141,9 @@
         <a href="/" class="block py-2">Home</a>
         <a href="/#wat" class="block py-2">Wat we doen</a>
         <a href="/#inzicht" class="block py-2">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
         <a href="epd-checker.html" class="block py-2">MKI-toetsing asfalt</a>
-        <a href="over.html" class="block py-2">Over</a>
+        <a href="over.html" class="block py-2" aria-current="page">Over</a>
         <a href="#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
@@ -191,7 +171,7 @@
       </section>
     </header>
 
-    <!-- PROPOSITIE / BELOFTE -->
+    <!-- PROPOSITIE -->
     <section class="section-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-20 md:py-24">
         <div class="max-w-4xl mx-auto text-center space-y-6" data-animate>
@@ -204,11 +184,11 @@
           <div class="grid sm:grid-cols-3 gap-6 text-left">
             <div class="p-6 bg-gray-50 rounded-2xl shadow-sm">
               <p class="font-semibold mb-1">Tastbaar</p>
-              <p class="text-gray-600 text-sm">MKI per fase, per product en per scenario, visueel en begrijpelijk.</p>
+              <p class="text-gray-600 text-sm">MKI per fase, per product en per scenario – visueel en begrijpelijk.</p>
             </div>
             <div class="p-6 bg-gray-50 rounded-2xl shadow-sm">
               <p class="font-semibold mb-1">Toetsbaar</p>
-              <p class="text-gray-600 text-sm">Conform LCA/ISO-logica, NMD-werkwijzen en toetsings-eisen. Geen gedoe achteraf.</p>
+              <p class="text-gray-600 text-sm">Conform LCA/ISO-logica, NMD-werkwijzen en toetsingseisen. Geen gedoe achteraf.</p>
             </div>
             <div class="p-6 bg-gray-50 rounded-2xl shadow-sm">
               <p class="font-semibold mb-1">Toepasbaar</p>
@@ -224,25 +204,22 @@
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-20 md:py-24">
         <h2 class="text-3xl md:text-4xl font-bold text-gradient text-center mb-12" data-animate>Voor wie we het verschil maken</h2>
         <div class="grid md:grid-cols-3 gap-8" data-animate>
-          <!-- Opdrachtgevers -->
           <div class="p-7 bg-white rounded-2xl shadow-sm space-y-3">
             <p class="font-semibold text-lg">Publieke opdrachtgevers</p>
             <ul class="space-y-2 text-gray-700 text-sm">
               <li>• Sturende MKI in beleid</li>
-              <li>• Eenduidige meetlat &amp; dashboards voor sturen op beleidsdoelen</li>
+              <li>• Eenduidige meetlat &amp; dashboards voor beleidsdoelen</li>
               <li>• Onderbouwing richting bestuur en behouden controle</li>
             </ul>
           </div>
-          <!-- Aannemers -->
           <div class="p-7 bg-white rounded-2xl shadow-sm space-y-3">
             <p class="font-semibold text-lg">Aannemers &amp; combinaties</p>
             <ul class="space-y-2 text-gray-700 text-sm">
               <li>• Winnende aanbiedingen: MKI × kosten, risico’s en planning</li>
-              <li>• Ontwerpoptimalisaties,  materiaalalternatieven en contractoptimalisaties</li>
+              <li>• Ontwerpoptimalisaties, materiaalalternatieven en contractoptimalisaties</li>
               <li>• Toetsingsklare onderbouwingen en lessons learned</li>
             </ul>
           </div>
-          <!-- Leveranciers -->
           <div class="p-7 bg-white rounded-2xl shadow-sm space-y-3">
             <p class="font-semibold text-lg">Leveranciers &amp; producenten</p>
             <ul class="space-y-2 text-gray-700 text-sm">
@@ -283,7 +260,7 @@
       </div>
     </section>
 
-    <!-- BEWIJS / CREDIBILITY -->
+    <!-- BEWIJS -->
     <section class="section-brand">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-20 md:py-24">
         <h2 class="text-3xl md:text-4xl font-bold text-gradient text-center mb-12" data-animate>Wat je van ons mag verwachten</h2>
@@ -308,9 +285,12 @@
     <section class="section-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-20 md:py-24 grid md:grid-cols-3 gap-12 items-start">
         <div class="md:col-span-1" data-animate>
-          <img src="assets/jim_profile.jpeg" alt="Jim van der Kooij" width="208" height="208"
-               loading="lazy" decoding="async"
-               class="w-40 h-40 md:w-52 md:h-52 rounded-full object-cover shadow-xl ring-4 ring-white/80 mx-auto md:mx-0"/>
+          <picture>
+            <source srcset="assets/jim_profile.webp" type="image/webp">
+            <img src="assets/jim_profile.jpeg" alt="Jim van der Kooij" width="208" height="208"
+                 loading="lazy" decoding="async"
+                 class="w-40 h-40 md:w-52 md:h-52 rounded-full object-cover shadow-xl ring-4 ring-white/80 mx-auto md:mx-0">
+          </picture>
         </div>
         <div class="md:col-span-2 space-y-6" data-animate>
           <h2 class="text-3xl font-bold text-gradient">Jim van der Kooij</h2>
@@ -318,6 +298,11 @@
             LCA- &amp; MKI-specialist met ervaring aan aannemers-, ingenieurs- en opdrachtgeverszijde. Ik vertaal methodiek naar
             beslisinformatie die scoort in aanbestedingen, versnelt in projecten en verkoopt in de markt.
           </p>
+          <ul class="text-sm text-gray-700 list-disc pl-5">
+            <li>Focus: product-EPD’s, MKI-strategieën, aanbestedingsadvies</li>
+            <li>Tools: Ecochain, NMD-invoer, eigen MKI-checker voor asfalt (PCR 2.0)</li>
+            <li>Samenwerking: zelfstandig of in kernteam met partners</li>
+          </ul>
           <div>
             <a href="mailto:jim.vanderkooij@infraimpact.nl" class="px-6 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 transition font-medium cta">Mail Jim</a>
           </div>
@@ -398,9 +383,7 @@
     },{passive:true});
   </script>
 
-  <noscript>
-    <style>[data-animate]{opacity:1;transform:none}</style>
-  </noscript>
+  <noscript><style>[data-animate]{opacity:1;transform:none}</style></noscript>
 
   <!-- GA4 event tracking -->
   <script>
@@ -408,11 +391,9 @@
       if (typeof gtag === 'function') gtag('event', eventName, params || {});
     }
     document.addEventListener('click', function(e){
-      const a = e.target.closest('a');
-      if (!a) return;
+      const a = e.target.closest('a'); if (!a) return;
       const href = (a.getAttribute('href') || '').toLowerCase();
 
-      // Mailto & telefoon
       if (href.startsWith('mailto:')){
         track('generate_lead', {method: 'mailto', email: href.replace('mailto:', '')});
       }
@@ -420,14 +401,11 @@
         track('generate_lead', {method: 'tel', phone: href.replace('tel:', '')});
       }
 
-      // CTA-knoppen
       const text = (a.textContent || '').trim();
       if (a.classList.contains('cta') || /plan kennismaking|start de check|neem contact/i.test(text)){
         track('select_content', {content_type:'cta', link_text:text, url:location.pathname});
       }
     });
   </script>
-  <!-- /GA4 event tracking -->
-
 </body>
 </html>
