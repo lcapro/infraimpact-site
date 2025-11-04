@@ -103,14 +103,30 @@
   }
   </script>
 
-  <!-- Google Analytics 4 -->
+  <!-- =========================
+       CONSENT MODE v2 + GA4
+       ========================= -->
+  <script>
+    // Defaults: alles 'denied' tot de bezoeker kiest
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('consent','default',{
+      ad_storage:'denied',
+      analytics_storage:'denied',
+      ad_user_data:'denied',
+      ad_personalization:'denied'
+    });
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9578ZQ8GWD"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-9578ZQ8GWD', { anonymize_ip: true, cookie_flags: 'SameSite=None;Secure' });
+    // GA pas activeren nadat Statistiek is geaccepteerd
+    function enableAnalytics(){
+      gtag('consent','update',{ analytics_storage:'granted' });
+      gtag('config','G-9578ZQ8GWD',{ anonymize_ip:true, cookie_flags:'SameSite=None;Secure' });
+    }
   </script>
+  <!-- /Consent Mode + GA4 -->
 </head>
 
 <body class="bg-transparent text-gray-700">
@@ -329,6 +345,15 @@
           Plan een kennismaking
         </a>
       </div>
+
+      <!-- Juridisch identiek aan home -->
+      <p class="text-gray-500 text-sm">
+        <a href="/privacy.html" class="underline">Privacy</a> ·
+        <a href="/cookies.html" class="underline">Cookiebeleid</a> ·
+        <a href="/algemene-voorwaarden.html" class="underline">Algemene voorwaarden</a> ·
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+
       <p class="text-gray-500 text-sm">
         © <span id="year"></span> InfraImpact - Making sustainability count.
       </p>
@@ -407,5 +432,95 @@
       }
     });
   </script>
+
+  <!-- =========================
+       COOKIEBANNER + MODAL (zoals home)
+       ========================= -->
+  <div id="ci-banner" class="fixed inset-x-0 bottom-0 z-50 bg-white border-t shadow-lg hidden">
+    <div class="max-w-screen-lg mx-auto p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4" role="region" aria-label="Cookiemelding">
+      <div class="text-sm text-gray-800">
+        <strong>Cookies bij InfraImpact</strong> – We gebruiken noodzakelijke cookies om de site goed te laten werken.
+        Met jouw toestemming zetten we ook <em>analytische</em> cookies aan om het gebruik van de site te verbeteren.
+        <a href="/cookies.html" class="underline">Meer info</a>
+      </div>
+      <div class="flex gap-2 ml-auto">
+        <button id="ci-decline" class="px-3 py-2 rounded-lg border">Weigeren</button>
+        <button id="ci-preferences" class="px-3 py-2 rounded-lg border">Kies voorkeuren</button>
+        <button id="ci-accept" class="px-3 py-2 rounded-lg bg-green-600 text-white">Accepteren</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ci-modal" class="fixed inset-0 z-50 bg-black bg-opacity-40 hidden" aria-hidden="true">
+    <div class="bg-white max-w-lg mx-auto mt-24 rounded-xl shadow-xl overflow-hidden">
+      <div class="p-5 border-b">
+        <h2 class="text-lg font-semibold">Cookie-instellingen</h2>
+      </div>
+      <div class="p-5 space-y-4 text-sm">
+        <label class="flex items-start gap-3">
+          <input type="checkbox" checked disabled>
+          <span><strong>Noodzakelijk</strong> – altijd actief voor werking en beveiliging.</span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input id="ci-stat" type="checkbox">
+          <span><strong>Statistiek</strong> – Google Analytics, helpt ons de site te verbeteren.</span>
+        </label>
+        <label class="flex items-start gap-3 opacity-60">
+          <input type="checkbox" disabled>
+          <span><strong>Marketing</strong> – momenteel niet actief.</span>
+        </label>
+      </div>
+      <div class="p-5 border-t flex justify-end gap-2">
+        <button id="ci-cancel" class="px-3 py-2 rounded-lg border">Annuleren</button>
+        <button id="ci-save" class="px-3 py-2 rounded-lg bg-green-600 text-white">Opslaan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const KEY='cookie_consent';
+    const $banner=document.getElementById('ci-banner');
+    const $modal=document.getElementById('ci-modal');
+    const $stat=document.getElementById('ci-stat');
+    const btn=(id)=>document.getElementById(id);
+
+    function read(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return{}} }
+    function save(v){ localStorage.setItem(KEY, JSON.stringify(v)); }
+    function hideBanner(){ $banner.classList.add('hidden'); }
+    function showBanner(){ $banner.classList.remove('hidden'); }
+    function openModal(){ $modal.classList.remove('hidden'); $modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ $modal.classList.add('hidden'); $modal.setAttribute('aria-hidden','true'); }
+
+    // Externe open-trigger (footer-link)
+    window.addEventListener('infraimpact:openCookieSettings', openModal);
+    document.getElementById('cookieSettingsLink')?.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+
+    function apply(consent){
+      const stat = !!consent.statistics;
+      if (stat && typeof enableAnalytics === 'function') enableAnalytics();
+      if (typeof gtag === 'function') gtag('consent','update',{ analytics_storage: stat?'granted':'denied' });
+    }
+
+    btn('ci-accept').addEventListener('click', ()=>{
+      const consent={ necessary:true, statistics:true, ts:Date.now() };
+      save(consent); apply(consent); hideBanner();
+    });
+    btn('ci-decline').addEventListener('click', ()=>{
+      const consent={ necessary:true, statistics:false, ts:Date.now() };
+      save(consent); apply(consent); hideBanner();
+    });
+    btn('ci-preferences').addEventListener('click', openModal);
+    btn('ci-cancel').addEventListener('click', closeModal);
+    btn('ci-save').addEventListener('click', ()=>{
+      const consent={ necessary:true, statistics:$stat.checked, ts:Date.now() };
+      save(consent); apply(consent); closeModal(); hideBanner();
+    });
+
+    const existing = read();
+    if (!('statistics' in existing)) showBanner(); else apply(existing);
+  })();
+  </script>
+  <!-- /COOKIEBANNER -->
 </body>
 </html>
