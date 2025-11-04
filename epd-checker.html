@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MKI-toetsing asfalt check (v2.6.8)</title>
+<title>MKI-toetsing asfalt check (v2.6.9)</title>
 <meta name="description" content="Controleer asfalt-EPD’s tegen uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <body class="bg-gray-50 text-gray-900">
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.8)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check (v2.6.9)</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -94,16 +94,28 @@ function el(t,a={},c=[]){const n=document.createElement(t);
 function toast(m,ok=true){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
 function fmtNL(n){return (typeof n!=="number"||isNaN(n))?"—":n.toFixed(2).replace(".",",");}
 
-/* CSV: komma-decimaal, geen exponent, volledige precisie */
-function toCsvNumber(value){
+/* === CSV number formatter: maximaal 3 decimalen, nl-decimaal, geen exponent.
+     - Voor strings (ruwe EPD): we parsen, ronden op 3, en geven terug met komma.
+     - Voor nummers: idem. Geen trailing nullen, geen exponent. === */
+function toCsvNumberMax3(value){
+  function roundTo3(num){
+    // Ronden naar 3, daarna trailing nullen weg en punt -> komma
+    let s = Number(num).toFixed(3);                 // bv "12.340"
+    s = s.replace(/0+$/,'').replace(/\.$/,'');      // "12.34"
+    return s.replace('.',',');                      // "12,34"
+  }
+  // Als het al een string is, normaliseer en parse
   if (typeof value === 'string') {
-    return value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ').replace(/\./g, ',');
+    const raw = value.trim().replace(/\u00A0/g,' ').replace(/\s+/g,' ');
+    // haal alleen getaltekens eruit (incl. min en exp), maar verwacht geen units hier
+    let s = raw.replace(',', '.');
+    // Als het iets van exponent bevat, parse als Number; anders ook parse
+    const num = Number(s);
+    if (!isFinite(num)) return '';                  // onbruikbaar -> leeg
+    return roundTo3(num);
   }
   if (typeof value !== 'number' || !isFinite(value)) return '';
-  let s = value.toLocaleString('nl-NL',{useGrouping:false, maximumFractionDigits:20});
-  if (/e\+|e\-|E\+|E\-/.test(s)) { s = Number(value).toFixed(20); }
-  s = s.replace(/\./g, ',').replace(/0+$/,'').replace(/,$/,'');
-  return s;
+  return roundTo3(value);
 }
 
 /* ===== Dataset (Uniforme MKI-plafondwaarden 2025 PCR 2.0) ===== */
@@ -299,7 +311,7 @@ async function parseEpd(file){
 /* ===== Asfaltsoort-suggestie ===== */
 function has(t, ...patterns){return patterns.some(p=>p.test(t));}
 
-/* PR/KA-detectie — “30% PR/KA”, “minimaal 30% PR/KA”, etc. */
+/* PR/KA-detectie — “xx% PR/KA”, “minimaal xx% PR/KA” */
 function detectPRorKA(t){
   const w = t.replace(/\u00A0/g,' ');
   const any = (p)=>new RegExp(p,'i').test(w);
@@ -308,11 +320,8 @@ function detectPRorKA(t){
   if ( any('(?:^|[^\\w])(?:30\\s*%?\\s*(?:pr|ka)|(?:pr|ka)\\s*%?\\s*30)(?!\\w)') || /\bminimaal\s*30\s*%?\s*(?:pr|ka)\b/i.test(w) ) return 30;
   return null;
 }
-/* GEMOD detectie */
 function detectGemod(t){ return /gemod|pmb|sfb|sbs|polymeer|polymer/i.test(t); }
 function isRood(t){ return /\brood\b|clobred\b|penbitumen/i.test(t); }
-
-/* BELANGRIJK: 8G+ vóór generieke SMA check (voorrang) */
 function isSma8GPlus(t){
   return /\b8\s*G\s*\+?\b/i.test(t) || /8g\+?/i.test(t) || /geluidsreducer/i.test(t);
 }
@@ -321,11 +330,10 @@ function decideMixFromString(src){
   if(!src) return "";
   const all = src.replace(/[\.\-]/g,' ').replace(/_/g,' ').toLowerCase();
 
-  /* ---- 2L ZOAB (voorrang) ---- */
+  // 2L ZOAB
   const mentions2L = /\b2\s*l\b/.test(all);
   const mentionsZOAB = /\bzoab\b/.test(all);
   const mentionsUnder = /\bonder\s*laag\b|\bonderlaag\b/.test(all);
-
   if( (mentions2L && mentionsZOAB) || /\b2\s*l[^a-z0-9]*zoab\b/.test(all) || /\bpa\s*\d*\s*2\s*l[^a-z0-9]*zoab\b/.test(all) ){
     const pr=detectPRorKA(all);
     if(mentionsUnder){
@@ -335,7 +343,7 @@ function decideMixFromString(src){
     return "2L ZOAB toplaag met gemodificeerd bitumen";
   }
 
-  /* ---- ZOAB / DZOAB (niet-2L) ---- */
+  // ZOAB / DZOAB
   if(/dzoab|regulier\+|zoab\s*regulier\+/.test(all)){
     const pr=detectPRorKA(all);
     if(pr>=30) return "DZOAB, minimaal 30% PR";
@@ -343,12 +351,10 @@ function decideMixFromString(src){
   }
   if(/\bzoab\b/.test(all)) return "ZOAB regulier";
 
-  /* ---- SMA 8G+ vóór generiek SMA ---- */
-  if (isSma8GPlus(all)) {
-    return "SMA geluidsreducerende deklaag (op basis van 8G+)";
-  }
+  // SMA 8G+ vóór generiek SMA
+  if (isSma8GPlus(all)) return "SMA geluidsreducerende deklaag (op basis van 8G+)";
 
-  /* ---- SMA generiek ---- */
+  // SMA generiek
   if(/\bsma\b/.test(all)){
     if(isRood(all)) return "SMA rood";
     if(/sma\s*[-\s]?5\b/.test(all)) return "SMA 5";
@@ -359,7 +365,7 @@ function decideMixFromString(src){
     return "SMA 8-11";
   }
 
-  /* ---- AC ---- */
+  // AC
   const isSurf   = /\bsurf\b/.test(all) || /\bac\s*\d*\s*surf\b/.test(all);
   const isBinBase= /\b(bin|base|binbase)\b/.test(all) || /\bac\s*\d*\s*(bin|base)\b/.test(all);
   const isAC     = /\bac\b|asfaltbeton/.test(all);
@@ -565,9 +571,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
           "Asfaltsoort": "",
           "Jaar": jaar,
           "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
-          "MKI A1-A3": a1Raw,
+          "MKI A1-A3": toCsvNumberMax3(a1Raw),
           "MKI A4-C4": "",
-          "MKI D": dRaw,
+          "MKI D": toCsvNumberMax3(dRaw),
           "MKI A-D totaal": "",
           "Plafondwaarde": "",
           "Marginale ruimte": "",
@@ -608,7 +614,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       ]);
       results.appendChild(card);
 
-      // CSV (ruwe EPD-strings waar mogelijk; berekeningen volledig/komma)
+      // CSV: max 3 decimalen, nl (komma), geen exponent
       const a1Raw = epd.parsed?.a1a3Raw ?? (Number.isFinite(a1)?a1.toString():"");
       const dRaw  = epd.parsed?.dRaw    ?? (Number.isFinite(d) ?d.toString() :"");
       const a4Raw = Number.isFinite(a4) ? a4.toString() : "";
@@ -621,12 +627,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
         "Asfaltsoort": mix,
         "Jaar": jaar,
         "PCR (EPD)": (epd.parsed?.pcr || "NL-PCR Asfalt 2.0"),
-        "MKI A1-A3": toCsvNumber(a1Raw || a1),
-        "MKI A4-C4": toCsvNumber(a4Raw || a4),
-        "MKI D": toCsvNumber(dRaw || d),
-        "MKI A-D totaal": toCsvNumber(totRaw || tot),
-        "Plafondwaarde": toCsvNumber(plRaw || plaf),
-        "Marginale ruimte": toCsvNumber(marRaw || (plaf - tot)),
+        "MKI A1-A3": toCsvNumberMax3(a1Raw || a1),
+        "MKI A4-C4": toCsvNumberMax3(a4Raw || a4),
+        "MKI D": toCsvNumberMax3(dRaw || d),
+        "MKI A-D totaal": toCsvNumberMax3(totRaw || tot),
+        "Plafondwaarde": toCsvNumberMax3(plRaw || plaf),
+        "Marginale ruimte": toCsvNumberMax3(marRaw || (plaf - tot)),
         "Voldoet aan eis": pass ? "Ja" : "Nee",
         "Eisenset": "Uniforme MKI-plafondwaarden 2025 (PCR 2.0)",
         "Eis-jaar": jaar
