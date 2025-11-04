@@ -1,0 +1,4 @@
+Team: InfraImpact B.V.
+Contact: info@infraimpact.nl
+Site built by: Jim van der Kooij & GPT-5
+Location: Rotterdam, The Netherlands
