@@ -1,51 +1,28 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>InfraImpact – EPD MKI-check (asfalt)</title>
-  <meta name="description" content="Upload EPD's (PDF) en toets of de MKI voldoet aan plafondwaarden per asfaltsoort en jaar. Werkt client-side; met opslag (Supabase).">
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- pdf.js loader: ESM + ESM worker (fallback UMD) -->
-  <script type="module">
-    window.__PDFJS_READY__ = false;
-    async function loadPdfjsESM() {
-      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs?v=5');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs?v=5';
-      window.pdfjsLib = pdfjsLib;
-      window.__PDFJS_READY__ = true;
-    }
-    async function loadPdfjsUMD() {
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js?v=5';
-        s.defer = true; s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
-      });
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js?v=5';
-      window.__PDFJS_READY__ = true;
-    }
-    (async () => { try { await loadPdfjsESM(); } catch { await loadPdfjsUMD(); } })();
-  </script>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
-
-  <style>
-    .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer}
-    .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
-    .badge-pass{background:#ecfdf5;color:#065f46}
-    .badge-fail{background:#fef2f2;color:#991b1b}
-    .badge-info{background:#eff6ff;color:#1e40af}
-    .mono{font-variant-numeric: tabular-nums; font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;}
-    .hint{font-size:.8rem;color:#6b7280}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MKI-toetsing asfalt check</title>
+<meta name="description" content="Controleer eenvoudig of asfalt-EPD’s voldoen aan de uniforme MKI-plafondwaarden 2025 (PCR 2.0).">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
+<style>
+  .dropzone{position:relative;border:2px dashed #e5e7eb;border-radius:1rem;cursor:pointer}
+  .drop-input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:.7rem;font-size:.75rem}
+  .badge-pass{background:#ecfdf5;color:#065f46}
+  .badge-fail{background:#fef2f2;color:#991b1b}
+  .badge-info{background:#eff6ff;color:#1e40af}
+  .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  .hint{font-size:.8rem;color:#6b7280}
+</style>
 </head>
 <body class="bg-gray-50 text-gray-900">
+
 <header class="bg-white border-b">
   <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl md:text-3xl font-bold">EPD MKI-check (asfalt)</h1>
+    <h1 class="text-2xl md:text-3xl font-bold">MKI-toetsing asfalt check</h1>
     <a href="/" class="text-sm text-gray-600 hover:text-gray-900">← Terug naar home</a>
   </div>
 </header>
@@ -53,55 +30,30 @@
 <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
   <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
 
-  <!-- Stap 1: eisen -->
+  <!-- Info / instellingen -->
   <section class="bg-white rounded-2xl shadow p-6 space-y-4">
-    <h2 class="text-xl font-semibold">1) Upload bijlage met eisen (PDF)</h2>
-    <p class="hint">Gebruik de PDF met uniforme MKI-plafondwaarden en A4–C4-tabel. We herkennen jaren, mengselnamen en A4–C4 automatisch.</p>
-
-    <div id="req-drop" class="dropzone p-6 bg-gray-50" aria-label="Upload eisen PDF">
-      <input id="req-file" type="file" accept="application/pdf,.pdf" class="drop-input" />
-      <div class="pointer-events-none flex items-center justify-between gap-4">
-        <div>
-          <p class="font-medium">Sleep hier je eisen-PDF heen of klik</p>
-          <p class="text-sm text-gray-500">Bijv. “Uniforme MKI plafondwaarden asfalt”.</p>
-        </div>
-        <span class="px-4 py-2 rounded-xl bg-gray-900 text-white">Kies PDF…</span>
-      </div>
-    </div>
-
-    <div id="req-card" class="hidden border rounded-xl p-4">
-      <div class="flex items-center justify-between">
-        <div class="font-medium" id="req-fn"></div>
-        <div class="badge badge-info" id="req-store-badge">niet opgeslagen (client-side)</div>
-      </div>
-      <div class="text-sm text-gray-700 mt-1" id="req-status">—</div>
-      <div class="text-sm text-gray-700 mt-2" id="req-scan">—</div>
-    </div>
-
-    <div class="grid sm:grid-cols-3 gap-4 items-end mt-2">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
       <div>
-        <label class="block text-sm font-medium mb-1">PCR waarop je wilt toetsen</label>
-        <select id="pcr-target" class="w-full border rounded-xl px-3 py-2">
-          <option value="NL-PCR Asfalt 2.0" selected>NL-PCR Asfalt 2.0</option>
-          <option value="NL-PCR Asfalt 2025/2026">NL-PCR Asfalt 2025/2026</option>
+        <h2 class="text-xl font-semibold">Uniforme MKI-plafondwaarden 2025 (PCR 2.0)</h2>
+        <p class="hint">Huidige toetsingsdataset (Automatisch geladen)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Kies jaar van de eis</label>
+        <select id="year-target" class="border rounded-xl px-3 py-2">
+          <option>2022</option>
+          <option>2024</option>
+          <option selected>2026</option>
+          <option>2028</option>
+          <option>2030</option>
         </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-1">Jaar van de eis</label>
-        <select id="year-target" class="w-full border rounded-xl px-3 py-2"></select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-1">Eenheid</label>
-        <input class="w-full border rounded-xl px-3 py-2 bg-gray-50" value="MKI [€] per ton, A–D" disabled />
       </div>
     </div>
   </section>
 
-  <!-- Stap 2: EPD’s -->
+  <!-- EPD upload -->
   <section class="bg-white rounded-2xl shadow p-6 space-y-4">
-    <h2 class="text-xl font-semibold">2) Upload één of meer EPD’s (PDF)</h2>
-
-    <div id="epd-drop" class="dropzone p-6 bg-gray-50" aria-label="Upload EPD's">
+    <h2 class="text-xl font-semibold">Upload één of meer EPD’s (PDF)</h2>
+    <div id="epd-drop" class="dropzone p-6 bg-gray-50">
       <input id="epd-files" type="file" accept="application/pdf,.pdf" multiple class="drop-input" />
       <div class="pointer-events-none flex items-center justify-between gap-4">
         <div>
@@ -115,8 +67,14 @@
     <div id="epd-list" class="space-y-4"></div>
 
     <div class="flex items-center gap-4">
-      <button id="run-checks" type="button" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>Controleer & opslaan</button>
-      <button id="export-csv" type="button" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>Exporteer CSV</button>
+      <button id="run-checks" type="button"
+        class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 disabled:opacity-50" disabled>
+        Controleer & opslaan
+      </button>
+      <button id="export-csv" type="button"
+        class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50" disabled>
+        Exporteer CSV
+      </button>
     </div>
 
     <div id="results" class="mt-4"></div>
@@ -124,298 +82,167 @@
 </main>
 
 <script>
-/* ====== Helpers ====== */
-const $ = s => document.querySelector(s);
-// FIX: el() zet strings/nums om naar TextNodes zodat appendChild nooit crasht.
-function el(tag, attrs={}, children=[]){
+/* ---------- Helper functies ---------- */
+const $ = s=>document.querySelector(s);
+function el(tag,attrs={},children=[]){
   const n=document.createElement(tag);
-  for(const [k,v] of Object.entries(attrs)){
-    if(k==="class") n.className=v;
-    else if(k==="html") n.innerHTML=v;
-    else n.setAttribute(k,v);
-  }
-  const addChild = (c) => {
-    if(c===null || c===undefined) return;
-    if(Array.isArray(c)) { c.forEach(addChild); return; }
-    if(typeof c === 'string' || typeof c === 'number'){
-      n.appendChild(document.createTextNode(String(c)));
-    } else {
-      n.appendChild(c);
-    }
-  };
-  addChild(children);
+  for(const[k,v]of Object.entries(attrs)){k==="class"?n.className=v:k==="html"?n.innerHTML=v:n.setAttribute(k,v);}
+  (Array.isArray(children)?children:[children]).forEach(c=>{
+    if(c==null)return;
+    if(typeof c==="string"||typeof c==="number")n.appendChild(document.createTextNode(String(c)));
+    else n.appendChild(c);
+  });
   return n;
 }
-const toastEl = $('#toast');
-function toast(msg, ok=true){ try{ toastEl.textContent=msg; toastEl.classList.remove('hidden'); toastEl.style.background=ok?'#111827':'#991b1b'; setTimeout(()=>toastEl.classList.add('hidden'), 2600);}catch{} }
-function fmtBytes(b){ if(!b&&b!==0) return ''; const u=['B','KB','MB','GB']; let i=0; while(b>=1024&&i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
-async function waitForPdfjs(timeoutMs=20000){
-  const start=Date.now();
-  while(!window.__PDFJS_READY__ || !window.pdfjsLib){ await new Promise(r=>setTimeout(r,80)); if(Date.now()-start>timeoutMs) throw new Error('pdf.js is niet beschikbaar (timeout).'); }
-  return window.pdfjsLib;
-}
-function parseNumberEU(str){
-  if(!str) return NaN; let s=String(str).trim().replace(/\u202F/g,'').replace(/\s/g,'');
-  if(/[Ee][\+\-]?\d+/.test(s)) s=s.replace(',', '.');
-  else if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',', '.');
-  else if(s.includes(',')) s=s.replace(',', '.');
-  s=s.replace(/[^0-9Ee\+\-\.]/g,''); const n=Number(s); return isFinite(n)?n:NaN;
-}
-async function pdfToText(file){
-  const pdfjsLib = await waitForPdfjs();
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
-  let full=''; for(let p=1;p<=pdf.numPages;p++){ const page=await pdf.getPage(p); const content=await page.getTextContent(); full+='\n'+content.items.map(it=>it.str).join(' '); }
-  return full;
-}
+function toast(msg,ok=true){const t=$("#toast");t.textContent=msg;t.classList.remove("hidden");t.style.background=ok?"#111827":"#991b1b";setTimeout(()=>t.classList.add("hidden"),2600);}
+function fmtNL(num){return typeof num!=="number"||isNaN(num)?"—":num.toFixed(2).replace(".",",");}
 
-/* ====== Eisen parser ====== */
-function normaliseTextForParsing(text){ return text.replace(/\r/g,'\n').replace(/[ \u00A0]/g,' ').replace(/\s+\/\s+/g,'/').replace(/\s{2,}/g,' ').replace(/(\S)[–—](\S)/g,'$1 - $2').replace(/\b(\d)\s+(\d)\b/g,'$1$2'); }
-function sliceBetween(text, startLabel, endLabel){ const a=text.indexOf(startLabel); if(a<0) return ''; const b=endLabel?text.indexOf(endLabel,a+startLabel.length):-1; return text.slice(a+startLabel.length, b>0?b:undefined); }
-function extractA4C4Block(text){ const block=sliceBetween(text,'Bijlage MKI waarden A4 – C4',''); const lines=block.split(/\n/).map(s=>s.trim()).filter(Boolean); const a4c4={}, mixes=[]; for(const ln of lines){ const m=ln.match(/^([A-Za-z0-9\u00C0-\u017F\-\+\s\/%&,\.()]+?)\s+([\-]?\d[\d\.,]*)$/); if(m){ const name=m[1].replace(/\s+/g,' ').trim(); const val=parseNumberEU(m[2]); if(!isNaN(val)){ a4c4[name]=val; mixes.push(name);} } } return {a4c4,mixes}; }
-function detectYearsInPlafondSection(text){ const sec=sliceBetween(text,'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)','Werkwijze en uitgangspunten'); const y=[...sec.matchAll(/\b(2022|2024|2026|2028|2030)\b/g)].map(m=>m[1]); const u=[...new Set(y)]; if(u.length>=3) return ['2022','2024','2026','2028','2030']; const all=[...sec.matchAll(/\b(20[1-3]\d)\b/g)].map(m=>parseInt(m[1],10)); const srt=[...new Set(all)].sort((a,b)=>a-b); for(let i=0;i+4<srt.length;i++){ const w=srt.slice(i,i+5); if(w[4]-w[0]<=10) return w.map(String);} return ['2022','2024','2026','2028','2030']; }
-function extractPlafondValues(text,mixes,years){ const sec=sliceBetween(text,'Uniforme MKI plafondwaarden (A t/m D, per ton asfalt)','Werkwijze en uitgangspunten'); const plafond={}; for(const mix of mixes){ const safeMix=mix.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&'); const re=new RegExp(safeMix+'[^\\n]{0,200}','i'); const m=sec.match(re); if(m){ const tokens=[...m[0].matchAll(/(?:[xX]|n\.b\.|[\-]?\d[\d\.,]*)/g)].map(t=>t[0]).filter(Boolean); const vals=[]; for(const t of tokens){ if(/^x|X|n\.b\.$/i.test(t)) vals.push(NaN); else { const n=parseNumberEU(t); if(!isNaN(n)) vals.push(n);} if(vals.length>=5) break;} if(vals.length>=2){ plafond[mix]={}; years.forEach((y,i)=>plafond[mix][y]=(typeof vals[i]==='number'?vals[i]:NaN)); } } } return plafond; }
-function parsePlafondAndA4C4(textRaw){ const text=normaliseTextForParsing(textRaw); const {a4c4,mixes}=extractA4C4Block(text); const years=detectYearsInPlafondSection(text); const plafond=extractPlafondValues(text,mixes,years); const finalMixes=mixes.length?mixes:Object.keys(plafond); return {years,plafond,a4c4,mixes:finalMixes}; }
-async function parseRequirementsPDF(file){ const text=await pdfToText(file); const out=parsePlafondAndA4C4(text); if((!out.years||out.years.length<1)||(!out.mixes||out.mixes.length<1)) throw new Error('Geen jaar-kolommen of mengsels gevonden in eisen-PDF.'); return {...out,rawText:text}; }
+/* ---------- Dataset: Uniforme MKI-plafondwaarden 2025 ---------- */
+const MKI_EISEN={
+  jaar:[2022,2024,2026,2028,2030],
+  plafonds:{
+    "AC surf":[9.9,9.1,8.2,7.5,6.7],
+    "AC surf, minimaal 30% PR":[8.6,6.9,6.2,5.6,5.1],
+    "AC surf met gemodificeerd bitumen":[11.6,10.6,9.5,8.7,7.9],
+    "AC surf, minimaal 30% PR met gemodificeerd bitumen":[9.9,7.4,7.1,6.7,6.4],
+    "AC surf rood":[22.1,17.7,17.0,16.4,15.8],
+    "AC bin/base, minimaal 50% PR":[4.9,4.5,4.1,3.6,3.1],
+    "AC bin/base, minimaal 50% PR met gemodificeerd bitumen":[5.5,5.1,4.6,4.1,3.6],
+    "AC bin/base minimaal 60% PR":[NaN,3.9,3.5,3.2,2.9],
+    "SMA 8-11":[10.8,8.7,7.9,7.3,6.7],
+    "SMA 8-11 met gemodificeerd bitumen":[12.8,11.8,10.7,10.0,9.2],
+    "SMA 8-11 minimaal 30% PR":[NaN,7.2,6.5,5.9,5.4],
+    "SMA 5":[12.0,11.9,11.7,10.7,9.8],
+    "SMA geluidsreducerende deklaag (op basis van 8G+)":[13.2,13.1,12.9,11.8,10.8],
+    "SMA rood":[18.5,18.2,17.5,16.8,NaN],
+    "ZOAB regulier":[9.8,8.8,7.7,6.3,4.9],
+    "ZOAB regulier+ / DZOAB":[10.5,9.5,8.4,7.0,5.6],
+    "DZOAB, minimaal 30% PR":[8.8,8.8,7.8,6.5,5.2],
+    "2L ZOAB toplaag met gemodificeerd bitumen":[12.7,12.6,12.4,10.6,8.7],
+    "2L ZOAB onderlaag":[10.3,9.3,8.3,7.1,5.8],
+    "2L ZOAB onderlaag, minimaal 30% PR":[8.7,8.4,7.8,6.7,5.5]
+  },
+  a4c4:{
+    "AC surf":1.34,"AC surf, minimaal 30% PR":1.34,"AC surf met gemodificeerd bitumen":1.34,
+    "AC surf, minimaal 30% PR met gemodificeerd bitumen":1.34,"AC surf rood (met penbitumen)":1.38,
+    "AC bin/base, minimaal 50% PR":1.32,"AC bin/base, minimaal 50% PR met gemodificeerd bitumen":1.32,
+    "AC bin/base minimaal 60% PR":1.32,"SMA 8-11":1.38,"SMA 8-11 met gemodificeerd bitumen":1.38,
+    "SMA 8-11 minimaal 30% PR":1.38,"SMA 5":1.40,"SMA geluidsreducerende deklaag (op basis van 8G+)":1.40,
+    "SMA rood":1.38,"ZOAB regulier":1.96,"ZOAB regulier+ / DZOAB":1.80,"DZOAB, minimaal 30% PR":1.80,
+    "2L ZOAB toplaag met gemodificeerd bitumen":1.80,"2L ZOAB onderlaag":1.80,"2L ZOAB onderlaag, minimaal 30% PR":1.80
+  }
+};
 
-/* ====== EPD parser ====== */
-function pickFirst(re,text){ const m=text.match(re); return m?m[1].trim():''; }
-async function parseEpdPDF(file){
-  const text=await pdfToText(file);
-  let product=pickFirst(/Product:\s*([^\n]+?)\s+Eenheid:/i,text)||pickFirst(/Product\s+([^\n]+)\s+Eenheid/i,text)||pickFirst(/Product\s*\n\s*([^\n]+)/i,text)||file.name.replace(/\.pdf$/i,'');
-  let pcr=pickFirst(/PCR[:\s]+([^\n]+?Asfalt[^\n]+)/i,text)||(text.match(/NL-?PCR\s+Asfalt\s+[^\n]+/i)?.[0]||'');
-  const pub=pickFirst(/Datum(?:\s+van)?\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i,text);
-  let mkiA1A3=NaN, mkiD=NaN;
-  let m=text.match(/MKI[^\n]{0,500}?\bA1-?A3\b[^\n]{0,200}?\bD\b[^\n]{0,200}?([\-]?\d[\d\.,Ee\+\-]*)[^\n]{0,80}?([\-]?\d[\d\.,Ee\+\-]*)/i);
-  if(m){ mkiA1A3=parseNumberEU(m[1]); mkiD=parseNumberEU(m[2]); }
-  if(isNaN(mkiA1A3)||isNaN(mkiD)){ const block=text.match(/Environmental\s+Costs\s+Indicator[\s\S]{0,800}/i); if(block){ const b=block[0]; const mm1=b.match(/\bSubtotaal\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i); const mm2=b.match(/\bD\b[^\n]*?([\-]?\d[\d\.,Ee\+\-]*)/i); if(mm1) mkiA1A3=parseNumberEU(mm1[1]); if(mm2) mkiD=parseNumberEU(mm2[1]); } }
-  if(isNaN(mkiA1A3)){ const a13=text.match(/\bA1-?A3\b[^\n]{0,40}?([\-]?\d[\d\.,Ee\+\-]*)/i); if(a13) mkiA1A3=parseNumberEU(a13[1]); }
-  if(isNaN(mkiD)){ const dd=text.match(/\bD\b[^\n]{0,24}?([\-]?\d[\d\.,Ee\+\-]*)/i); if(dd) mkiD=parseNumberEU(dd[1]); }
-  return { text, product, pcr, pubDate: pub, mkiA1A3, mkiD, mixHint: product };
-}
-
-/* ====== Supabase ====== */
-const SUPABASE_URL = "https://fblenxtccwpsjwrkirtc.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ---------- Supabase ---------- */
+const SUPABASE_URL="https://fblenxtccwpsjwrkirtc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZibGVueHRjY3dwc2p3cmtpcnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMDYzNDcsImV4cCI6MjA3Nzc4MjM0N30.gn7ytE27VNTsA2-AtJUAgyuhJnP2M9PzNvetRL-gbcI";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const BUCKET="epd-uploads";
 
-/* ====== App init ====== */
-document.addEventListener('DOMContentLoaded', () => {
-  const state={ req:null, epds:[], results:[], runId:null, clientSession:crypto.randomUUID() };
+/* ---------- PDF lezen ---------- */
+async function waitForPdfjs(timeoutMs=20000){
+  const start=Date.now();
+  while(!window.pdfjsLib){await new Promise(r=>setTimeout(r,100));if(Date.now()-start>timeoutMs)throw new Error("pdf.js niet geladen");}
+  return window.pdfjsLib;
+}
+async function pdfToText(file){
+  const pdfjsLib=await waitForPdfjs();const buf=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let full='';for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const content=await page.getTextContent();full+='\n'+content.items.map(it=>it.str).join(' ');}return full;
+}
+function parseNumberEU(str){if(!str)return NaN;let s=String(str).trim().replace(/\u202F/g,'').replace(/\s/g,'');if(/[Ee][\+\-]?\d+/.test(s))s=s.replace(',', '.');else if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',', '.');else if(s.includes(','))s=s.replace(',', '.');s=s.replace(/[^0-9Ee\+\-\.]/g,'');const n=Number(s);return isFinite(n)?n:NaN;}
+async function parseEpdPDF(file){
+  const text=await pdfToText(file);
+  const product=(text.match(/Product:\s*([^\n]+)/i)||[])[1]||file.name.replace(/\.pdf$/i,'');
+  const pcr=(text.match(/PCR[:\s]+([^\n]+)/i)||[])[1]||"NL-PCR Asfalt 2.0";
+  const pub=(text.match(/Datum\s+van\s+publicatie[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i)||[])[1]||'';
+  const mA1=(text.match(/\bA1-?A3\b[^0-9]*([0-9][\d\.,]*)/i)||[])[1];
+  const mD=(text.match(/\bD\b[^0-9]*([0-9][\d\.,]*)/i)||[])[1];
+  return {product,pcr,pubDate:pub,mkiA1A3:parseNumberEU(mA1),mkiD:parseNumberEU(mD)};
+}
 
-  const reqDrop=$('#req-drop'), reqInput=$('#req-file');
-  const reqCard=$('#req-card'), reqFn=$('#req-fn'), reqStatus=$('#req-status'), reqScan=$('#req-scan'), reqStoreBadge=$('#req-store-badge');
-  const yearSel=$('#year-target'), pcrSel=$('#pcr-target');
-  const epdDrop=$('#epd-drop'), epdInput=$('#epd-files'), epdList=$('#epd-list');
-  const runBtn=$('#run-checks'), csvBtn=$('#export-csv'), resultsBox=$('#results');
+/* ---------- UI / Logica ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  const state={epds:[],runId:null,clientSession:crypto.randomUUID()};
+  const epdInput=$("#epd-files"),epdList=$("#epd-list"),runBtn=$("#run-checks"),csvBtn=$("#export-csv"),resultsBox=$("#results"),yearSel=$("#year-target");
+  ["dragenter","dragover"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.add("bg-green-50");}));
+  ["dragleave","drop","dragend"].forEach(ev=>$("#epd-drop").addEventListener(ev,e=>{e.preventDefault();e.currentTarget.classList.remove("bg-green-50");}));
 
-  /* Visueel drag-state */
-  ;['dragenter','dragover'].forEach(ev=>[reqDrop,epdDrop].forEach(box=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.add('bg-green-50');})));
-  ;['dragleave','dragend','drop'].forEach(ev=>[reqDrop,epdDrop].forEach(box=>box.addEventListener(ev,(e)=>{e.preventDefault();box.classList.remove('bg-green-50');})));
-
-  /* --- EISEN --- */
-  reqInput.addEventListener('change', async ()=>{ const f=reqInput.files?.[0]; if(f) await handleReqFile(f); reqInput.value=''; });
-
-  async function handleReqFile(file){
-    reqCard.classList.remove('hidden');
-    reqFn.textContent = `${file.name} (${fmtBytes(file.size)})`;
-    reqStatus.textContent = 'Lezen & parsen…';
-    reqScan.textContent = '—';
-    reqStoreBadge.textContent = 'opslaan…'; reqStoreBadge.className='badge badge-info';
-    try{
-      await waitForPdfjs();
-      const parsed=await parseRequirementsPDF(file);
-      state.req=parsed;
-
-      const years=parsed.years?.length ? parsed.years.slice(0,5) : ['2024','2026'];
-      yearSel.innerHTML=years.map(v=>`<option value="${v}">${v}</option>`).join('');
-
-      try{
-        const path=`requirements/${new Date().toISOString().slice(0,10)}_${crypto.randomUUID()}_${file.name}`;
-        await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
-        reqStoreBadge.textContent='opgeslagen'; reqStoreBadge.className='badge badge-pass';
-        if(!state.runId){
-          const { data, error } = await sb.from('epd_runs').insert({ client_session:state.clientSession, pcr_target:pcrSel.value, year_target:yearSel.value, req_pdf_path:path }).select('id').single();
-          if(error) throw error; state.runId=data.id;
-        }
-      }catch{ reqStoreBadge.textContent='opslaan mislukt (client-side verder)'; reqStoreBadge.className='badge badge-fail'; }
-
-      reqStatus.innerHTML = `✅ Gelezen. Gevonden mengsels: <strong>${parsed.mixes.length}</strong>. Jaren: <strong>${years.join(', ')}</strong>.`;
-      const preview=parsed.mixes.slice(0,6).map(m=>{ const p=parsed.plafond[m]||{}; const yv=years.map(y=>isNaN(p[y])?'—':p[y]).join(' | '); const a4=(parsed.a4c4[m]!=null && !isNaN(parsed.a4c4[m]))?parsed.a4c4[m]:'—'; return `• ${m} → A4–C4: ${a4} | plafonds: ${yv}`; }).join('<br>');
-      reqScan.innerHTML = el('span',{html:`<span class="text-gray-600">Voorbeeld uit tabel:</span><br>${preview||'—'}`}).outerHTML;
-
-      enableRunIfReady();
-      toast('Eisen-PDF verwerkt', true);
-    }catch(err){
-      reqStatus.innerHTML = `❌ Fout: ${err.message||'Kon de bijlage niet parsen.'}`;
-      toast('Kon de eisen-PDF niet parsen', false);
-    }
-  }
-
-  /* --- EPD’s --- */
-  const onEpdInput = async () => {
-    const files = epdInput.files ? Array.from(epdInput.files) : [];
-    if(!files.length) return;
-    await handleEpdFiles(files);
-    epdInput.value='';
-  };
-  epdInput.addEventListener('change', onEpdInput);
-  epdInput.addEventListener('input', onEpdInput);
-
-  epdDrop.addEventListener('drop', async (e)=>{
-    e.preventDefault();
-    const files = [...(e.dataTransfer?.files||[])].filter(f=>/\.pdf$/i.test(f.name));
-    if(!files.length){ toast('Alleen PDF-bestanden zijn toegestaan', false); return; }
-    await handleEpdFiles(files);
-  });
-
-  function showEpdCard(file, statusText='Lezen…', badgeText='uploaden…', badgeClass='badge badge-info'){
-    const card=el('div',{class:'border rounded-xl p-4'});
-    const head=el('div',{class:'flex items-center justify-between'});
-    const title=el('div',{class:'font-medium'},`${file.name} (${fmtBytes(file.size)})`);
-    const badge=el('div',{class:badgeClass},badgeText);
-    head.appendChild(title); head.appendChild(badge); card.appendChild(head);
-    const meta=el('div',{class:'text-sm text-gray-700 mt-1'},statusText); card.appendChild(meta);
-    const row=el('div',{class:'mt-3 grid sm:grid-cols-2 gap-3 items-end'});
-    const mixWrap=el('div'); mixWrap.appendChild(el('label',{class:'block text-sm font-medium mb-1'},'Asfaltsoort'));
-    const mixSel=el('select',{class:'w-full border rounded-xl px-3 py-2'}); mixWrap.appendChild(mixSel);
-    const info=el('div',{class:'text-sm text-gray-700 space-y-1'}); row.appendChild(mixWrap); row.appendChild(info);
-    card.appendChild(row); epdList.appendChild(card);
-    return {card,meta,badge,mixSel,mixWrap,info};
-  }
+  epdInput.addEventListener('change',async()=>{const files=[...epdInput.files];if(files.length)await handleEpdFiles(files);epdInput.value='';});
+  $("#epd-drop").addEventListener('drop',async e=>{const files=[...(e.dataTransfer?.files||[])].filter(f=>/\.pdf$/i.test(f.name));if(files.length)await handleEpdFiles(files);});
 
   async function handleEpdFiles(files){
-    if(!files.length) return;
-    if(!state.runId){
-      const { data, error } = await sb.from('epd_runs').insert({ client_session:state.clientSession, pcr_target:pcrSel.value, year_target:yearSel.value, req_pdf_path:null }).select('id').single();
-      if(error) { toast('DB: run kon niet worden aangemaakt', false); return; }
-      state.runId=data.id;
-    }
-
-    for(const file of files){
-      const ui=showEpdCard(file);
-
-      let fileId=null, storedPath=null;
-      try{
-        storedPath = `epds/${state.runId}/${crypto.randomUUID()}_${file.name}`;
-        await sb.storage.from(BUCKET).upload(storedPath, file, { upsert:false });
-        ui.badge.textContent='opgeslagen'; ui.badge.className='badge badge-pass';
-      }catch{ ui.badge.textContent='opslaan mislukt (client-side)'; ui.badge.className='badge badge-fail'; }
-
-      try{
-        await waitForPdfjs();
-        const parsed = await parseEpdPDF(file);
-
-        const mixes = (state.req?.mixes?.length) ? state.req.mixes : [];
-        ui.mixSel.innerHTML = '<option value="">— kies asfaltsoort —</option>'
-          + mixes.map(m=>`<option>${m}</option>`).join('')
-          + '<option value="__other">Andere (vrije invoer)</option>';
-
-        if(parsed.mixHint && mixes.length){
-          const cand = mixes.find(m=>parsed.mixHint.toLowerCase().includes(m.toLowerCase().split(' ')[0]));
-          if(cand) ui.mixSel.value=cand;
-        }
-        let otherInput=null;
-        ui.mixSel.addEventListener('change',()=>{
-          if(ui.mixSel.value==='__other'){
-            if(!otherInput){ otherInput=el('input',{class:'w-full border rounded-xl px-3 py-2 mt-2',placeholder:'Typ mengselnaam exact zoals in eisen-PDF'}); ui.mixWrap.appendChild(otherInput); }
-          } else if(otherInput){ otherInput.remove(); otherInput=null; }
-        });
-
-        ui.meta.innerHTML = '';
-        ui.meta.appendChild(el('span',{class: parsed.pcr?'badge badge-pass':'badge badge-fail'}, parsed.pcr||'PCR niet gevonden'));
-        ui.meta.appendChild(el('span',{class:'badge',style:'background:#f3f4f6;color:#111827;margin-left:.4rem'}, `Publicatie: ${parsed.pubDate||'onbekend'}`));
-        ui.info.innerHTML = '';
-        ui.info.appendChild(el('div',{},['MKI A1–A3: ', el('span',{class:'mono'}, isNaN(parsed.mkiA1A3)?'—':parsed.mkiA1A3.toFixed(3))]));
-        ui.info.appendChild(el('div',{},['MKI D: ', el('span',{class:'mono'}, isNaN(parsed.mkiD)?'—':parsed.mkiD.toFixed(3))]));
-
-        try{
-          const { data, error } = await sb.from('epd_files').insert({
-            run_id: state.runId, file_name: file.name, file_path: storedPath,
-            product: parsed.product, pcr_epd: parsed.pcr, pub_date: parsed.pubDate
-          }).select('id').single();
-          if(!error) fileId = data.id;
-        }catch{}
-
-        state.epds.push({
-          file, fileId, parsed,
-          get mix(){ const val=ui.mixSel.value; if(val==='__other'){ const v=ui.mixWrap.querySelector('input')?.value?.trim(); return v||''; } return val||''; }
-        });
-
-        enableRunIfReady();
-      }catch(err){
-        ui.meta.innerHTML = '';
-        ui.meta.appendChild(el('span',{class:'badge badge-fail'}, `Kon EPD niet parsen (${err.message||'onbekend'})`));
-      }
-    }
+    if(!state.runId){const{data}=await sb.from('epd_runs').insert({client_session:state.clientSession,pcr_target:'NL-PCR Asfalt 2.0',year_target:yearSel.value,req_pdf_path:null}).select('id').single();state.runId=data.id;}
+    for(const file of files){await addEpdCard(file);}
   }
 
-  function computeFor(epd, req, year, pcrTarget){
-    const {parsed}=epd;
-    const res={ fileId:epd.fileId||null, file:epd.file?.name||'', product:parsed.product, pcr:parsed.pcr||'', pubDate:parsed.pubDate||'', mix:epd.mix||'', year,
-      mkiA1A3:parsed.mkiA1A3, mkiD:parsed.mkiD, mkiA4C4:NaN, mkiTotalAD:NaN, plafond:NaN, pass:false, notes:[] };
-    if(!res.mix){ res.notes.push('Geen asfaltsoort gekozen.'); return res; }
-    if(!parsed.pcr){ res.notes.push('PCR niet aangetroffen in EPD.'); }
-    else if(pcrTarget && !parsed.pcr.toLowerCase().includes(pcrTarget.toLowerCase().replace(/\s+/g,' '))){ res.notes.push(`EPD PCR (“${parsed.pcr}”) ≠ doel (“${pcrTarget}”).`); }
-    const plafObj=req.plafond[res.mix]; const a4c4Val=req.a4c4[res.mix];
-    if(typeof a4c4Val==='number') res.mkiA4C4=a4c4Val; else res.notes.push('A4–C4 niet gevonden (eisen-PDF).');
-    if(plafObj && typeof plafObj[year]==='number' && !isNaN(plafObj[year])) res.plafond=plafObj[year]; else res.notes.push(`Geen plafondwaarde voor “${res.mix}” in ${year}.`);
-    if(!isNaN(res.mkiA1A3)&&!isNaN(res.mkiD)&&!isNaN(res.mkiA4C4)){ res.mkiTotalAD=res.mkiA1A3+res.mkiA4C4+res.mkiD; if(!isNaN(res.plafond)) res.pass=res.mkiTotalAD<=res.plafond; } else { res.notes.push('Onvoldoende data om A–D totaal te berekenen.'); }
-    return res;
+  async function addEpdCard(file){
+    const card=el('div',{class:'border rounded-xl p-4 bg-white'});
+    const head=el('div',{class:'flex justify-between items-center mb-2'},[
+      el('div',{class:'font-medium'},`${file.name} (${(file.size/1024).toFixed(1)} KB)`),
+      el('div',{class:'badge badge-info'},'lezen…')
+    ]);
+    const meta=el('div',{class:'text-sm text-gray-700 mb-2'},'—');card.appendChild(head);card.appendChild(meta);
+    const mixSel=el('select',{class:'w-full border rounded-xl px-3 py-2 mb-2'},
+      [el('option',{value:''},'— kies asfaltsoort —')]
+      .concat(Object.keys(MKI_EISEN.plafonds).map(m=>el('option',{value:m},m)))
+    );
+    card.appendChild(mixSel);epdList.appendChild(card);
+
+    await waitForPdfjs();const parsed=await parseEpdPDF(file);
+    meta.innerHTML=`PCR: ${parsed.pcr} · Publicatie: ${parsed.pubDate||'onbekend'} · MKI A1-A3: ${fmtNL(parsed.mkiA1A3)} · MKI D: ${fmtNL(parsed.mkiD)}`;
+    head.lastChild.textContent='opgeslagen';head.lastChild.className='badge badge-pass';
+
+    const{data}=await sb.from('epd_files').insert({run_id:state.runId,file_name:file.name,file_path:'local',product:parsed.product,pcr_epd:parsed.pcr,pub_date:parsed.pubDate}).select('id').single();
+    state.epds.push({file,fileId:data.id,parsed,get mix(){return mixSel.value;}});
+    runBtn.disabled=false;
   }
 
-  function enableRunIfReady(){ const okReq=!!state.req, okEpd=state.epds.length>0; runBtn.disabled=!(okReq&&okEpd); csvBtn.disabled=true; resultsBox.innerHTML=''; }
-
-  runBtn.addEventListener('click', async ()=>{
-    if(!state.req || !state.epds.length) return;
-    const year=yearSel.value, pcrTarget=pcrSel.value;
-    state.results=[]; resultsBox.innerHTML=''; const rows=[];
+  runBtn.addEventListener('click',async()=>{
+    const jaar=parseInt(yearSel.value,10);const jaarIdx=MKI_EISEN.jaar.indexOf(jaar);
+    resultsBox.innerHTML='';const rows=[];
     for(const epd of state.epds){
-      const r=computeFor(epd,state.req,year,pcrTarget); state.results.push(r);
-      const card=el('div',{class:'border rounded-2xl p-4 bg-white'});
-      card.appendChild(el('div',{class:'flex justify-between items-start gap-4'},[
-        el('div',{class:'font-semibold'}, r.product||r.file),
-        el('div',{class:'badge '+(r.pass?'badge-pass':'badge-fail')}, r.pass?'PASS':'FAIL')
-      ]));
-      const tblHead=['Bestand','Asfaltsoort','Jaar','PCR (EPD)','A1–A3','A4–C4','D','A–D totaal','Plafond','Marge'];
-      const tr = el('tr',{},[
-        el('td',{class:'py-2 pr-4 mono'}, r.file),
-        el('td',{class:'py-2 pr-4 mono'}, r.mix||'—'),
-        el('td',{class:'py-2 pr-4 mono'}, r.year),
-        el('td',{class:'py-2 pr-4 mono'}, r.pcr||'—'),
-        el('td',{class:'py-2 pr-4 mono'}, isNaN(r.mkiA1A3)?'—':r.mkiA1A3.toFixed(3)),
-        el('td',{class:'py-2 pr-4 mono'}, isNaN(r.mkiA4C4)?'—':r.mkiA4C4.toFixed(3)),
-        el('td',{class:'py-2 pr-4 mono'}, isNaN(r.mkiD)?'—':r.mkiD.toFixed(3)),
-        el('td',{class:'py-2 pr-4 mono'}, isNaN(r.mkiTotalAD)?'—':r.mkiTotalAD.toFixed(3)),
-        el('td',{class:'py-2 pr-4 mono'}, isNaN(r.plafond)?'—':r.plafond.toFixed(3)),
-        el('td',{class:'py-2 pr-4 mono'}, (!isNaN(r.mkiTotalAD)&&!isNaN(r.plafond))?(r.plafond-r.mkiTotalAD).toFixed(3):'—')
+      const {parsed}=epd;const mix=epd.mix;const res={bestand:epd.file.name,product:parsed.product,asfalt:mix,jaar,pass:false,opmerkingen:[]};
+      if(!mix){res.opmerkingen.push("Geen asfaltsoort gekozen");rows.push(res);continue;}
+      const a1=parsed.mkiA1A3,mD=parsed.mkiD,a4=MKI_EISEN.a4c4[mix]||NaN,plaf=MKI_EISEN.plafonds[mix]?.[jaarIdx];
+      const totaal=(a1||0)+(a4||0)+(mD||0);
+      res.mkiA1A3=a1;res.mkiA4C4=a4;res.mkiD=mD;res.totaal=totaal;res.plafond=plaf;res.margin=plaf-totaal;
+      res.pass=(!isNaN(totaal)&&!isNaN(plaf)&&totaal<=plaf);
+      const card=el('div',{class:`border rounded-xl p-4 mb-4 ${res.pass?'bg-green-50':'bg-red-50'}`});
+      const head=el('div',{class:'flex justify-between items-center'},[
+        el('div',{class:'font-medium'},res.bestand),
+        el('div',{class:`badge ${res.pass?'badge-pass':'badge-fail'}`},res.pass?'PASS':'FAIL')
       ]);
-      const table = el('div',{class:'overflow-x-auto mt-3'}, el('table',{class:'min-w-full text-sm'},[
-        el('thead',{}, el('tr',{}, tblHead.map(h=>el('th',{class:'text-left py-2 pr-4 text-gray-600'},h)))),
-        el('tbody',{}, tr)
-      ]));
-      card.appendChild(table);
-      if(r.notes.length){ card.appendChild(el('div',{class:'mt-2 text-xs text-gray-600'}, 'Opmerkingen: '+r.notes.join(' · '))); }
+      card.appendChild(head);
+      const tbl=el('table',{class:'mt-2 text-sm mono'},[
+        el('tr',{},[el('td',{class:'pr-4'},'Asfaltsoort'),el('td',{},mix)]),
+        el('tr',{},[el('td',{class:'pr-4'},'Jaar'),el('td',{},jaar)]),
+        el('tr',{},[el('td',{class:'pr-4'},'MKI A1–A3'),el('td',{},fmtNL(a1))]),
+        el('tr',{},[el('td',{class:'pr-4'},'MKI A4–C4'),el('td',{},fmtNL(a4))]),
+        el('tr',{},[el('td',{class:'pr-4'},'MKI D'),el('td',{},fmtNL(mD))]),
+        el('tr',{},[el('td',{class:'pr-4 font-semibold'},'MKI A–D totaal'),el('td',{class:'font-semibold'},fmtNL(totaal))]),
+        el('tr',{},[el('td',{class:'pr-4'},'Plafondwaarde'),el('td',{},fmtNL(plaf))]),
+        el('tr',{},[el('td',{class:'pr-4'},'Marginale ruimte'),el('td',{},fmtNL(res.margin))])
+      ]);
+      card.appendChild(tbl);
       resultsBox.appendChild(card);
-
-      rows.push({ file:r.file, product:r.product, mix:r.mix, year:r.year, pcr_epd:r.pcr, mki_a1a3:r.mkiA1A3, mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond, margin:(!isNaN(r.mkiTotalAD)&&!isNaN(r.plafond))?(r.plafond-r.mkiTotalAD):'', pass:r.pass?'PASS':'FAIL', notes:r.notes.join(' | ') });
-      try{ await sb.from('epd_results').insert({ run_id: state.runId, file_id: epd.fileId||null, mix:r.mix, year:r.year, mki_a1a3:r.mkiA1A3, mki_a4c4:r.mkiA4C4, mki_d:r.mkiD, mki_total_ad:r.mkiTotalAD, plafond:r.plafond, pass:r.pass, notes:r.notes.join(' | ') }); }catch{}
+      rows.push({
+        Bestand:res.bestand,Productnaam:res.product,Asfaltsoort:mix,Jaar:jaar,
+        "MKI A1–A3":fmtNL(a1),"MKI A4–C4":fmtNL(a4),"MKI D":fmtNL(mD),
+        "MKI A–D totaal":fmtNL(totaal),Plafondwaarde:fmtNL(plaf),
+        "Marginale ruimte":fmtNL(res.margin),"Voldoet aan eis":res.pass?"Ja":"Nee",Opmerkingen:res.opmerkingen.join(" · ")
+      });
+      await sb.from('epd_results').insert({run_id:state.runId,file_id:epd.fileId,mix:mix,year:jaar,mki_a1a3:a1,mki_a4c4:a4,mki_d:mD,mki_total_ad:totaal,plafond:plaf,pass:res.pass,notes:res.opmerkingen.join(' · ')});
     }
+    // CSV export
     if(rows.length){
       const headers=Object.keys(rows[0]);
-      const csv=[headers.join(',')].concat(rows.map(r=>headers.map(h=>{ const v=r[h]; const s=(v===undefined||v===null)?'':String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }).join(','))).join('\n');
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
-      const csvBtn=$('#export-csv');
-      csvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=url; a.download='epd-mki-checks.csv'; a.click(); };
-      csvBtn.disabled=false;
+      const csv=[headers.join(";")].concat(rows.map(r=>headers.map(h=>String(r[h]??"").replace(/\./g,',')).join(";"))).join("\n");
+      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      csvBtn.disabled=false;csvBtn.onclick=()=>{const a=document.createElement("a");a.href=url;a.download="mki-toetsing-resultaten.csv";a.click();};
     }
-    toast('Controle uitgevoerd en opgeslagen', true);
+    toast("Controle uitgevoerd",true);
   });
-
-  // Safety net: toon fouten in UI
-  window.addEventListener('error', (e)=>{ toast('Fout: '+(e.message||'onbekend'), false); });
-  window.addEventListener('unhandledrejection', (e)=>{ toast('Fout: '+(e.reason?.message||'onbekend'), false); });
 });
 </script>
 </body>
