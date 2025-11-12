@@ -384,12 +384,12 @@
     "Waterstof (SMR groene stroom)"
   ];
 
-  // Beschikbare MKI per tkm (alleen waar data uit transport-data.php bekend was)
+  // MKI per tkm (zelfde voor A4 en C2, conform transport-data.php)
   const TRANSPORT_MKI_PER_TKM = {
     "Diesel (euro 5)": 0.008598488,
     "Diesel (euro 6)": 0.008029809,
     "HVO (euro 5)": 0.008142933,
-    // overige profielen kun je later aanvullen als je exacte MKI hebt:
+    // overige profielen kun je later aanvullen met exact dezelfde waarden als in transport-data.php:
     "Waterstof (elektrolyse groene stroom)": 0.011452738,
     "Waterstof (SMR grijze stroom)": 0.007750517,
     "Waterstof (SMR groene stroom)": 0.007205155
@@ -497,7 +497,7 @@
     return "NL-PCR Asfalt 2.0";
   }
 
-  // Heel eenvoudige poging om GWP A1-A3 en D uit de EPD te vissen (MKI-veilig, breekt niets als het niet lukt)
+  // GWP A1-A3 en D (best effort)
   function extractGWP(txt) {
     const t = txt.replace(/\s+/g,' ');
     const dash = '[\\-–—~]';
@@ -541,7 +541,6 @@
       }
     }
 
-    // GWP: best effort, mag mislukken (dan NaN)
     let gwpA13 = NaN, gwpD = NaN;
     const gwp = extractGWP(text);
     if (gwp) {
@@ -670,11 +669,11 @@
         centraleInput
       ]),
       createEl('div', {}, [
-        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Transportafstand (km, enkel)'),
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Transportafstand (A4, km, enkel)'),
         afstandInput
       ]),
       createEl('div', {}, [
-        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Retourtransport (%)'),
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Retourtransport A4 (%)'),
         retourInput
       ]),
       createEl('div', {}, [
@@ -684,6 +683,7 @@
     );
 
     const grid3 = createEl('div', { class: 'grid md:grid-cols-3 gap-3' });
+
     const aanlegBrandstofSelect = createEl('select', {
       class: 'w-full border rounded-xl px-3 py-2 text-sm'
     }, [
@@ -695,14 +695,22 @@
       class: 'inline-flex items-center text-xs text-gray-600 px-3 py-2 rounded-xl bg-gray-50'
     }, 'Referentielevensduur: — jaar');
 
-    const epdDrop = createEl('label', { class: 'dropzone flex items-center justify-between px-3 py-2 text-xs text-gray-600' }, [
-      createEl('div', {}, [
-        createEl('div', { class:'font-medium text-gray-800 mb-0.5' }, 'EPD (PDF)'),
-        createEl('div', {}, 'Kies of sleep een EPD voor dit mengsel. A1–A3 en D (MKI) worden automatisch gelezen.')
-      ]),
-      createEl('div', { class:'px-3 py-1 rounded-xl bg-gray-900 text-white text-xs' }, 'Kies PDF…'),
-      createEl('input', { type:'file', accept:'application/pdf,.pdf' })
-    ]);
+    // C2 inputs
+    const c2AfstandInput = createEl('input', {
+      type: 'number',
+      min: '0',
+      step: '1',
+      class: 'w-full border rounded-xl px-2 py-1 text-xs',
+      value: '50'
+    });
+    const c2RetourInput = createEl('input', {
+      type: 'number',
+      min: '0',
+      step: '1',
+      class: 'w-full border rounded-xl px-2 py-1 text-xs',
+      value: '0'
+    });
+    const c2BrandstofSelect = buildTransportBrandstofSelect();
 
     grid3.append(
       createEl('div', {}, [
@@ -713,8 +721,34 @@
         createEl('label', { class:'block text-xs font-medium mb-1' }, 'Referentielevensduur mengsel'),
         refLifeSpan
       ]),
-      createEl('div', {}, epdDrop)
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'C2-transport (einde levensduur)'),
+        createEl('div', { class:'grid grid-cols-1 gap-1' }, [
+          createEl('div', {}, [
+            createEl('span', { class:'block text-[11px] text-gray-600 mb-0.5' }, 'Afstand C2 (km, enkel)'),
+            c2AfstandInput
+          ]),
+          createEl('div', {}, [
+            createEl('span', { class:'block text-[11px] text-gray-600 mb-0.5' }, 'Retour C2 (%)'),
+            c2RetourInput
+          ]),
+          createEl('div', {}, [
+            createEl('span', { class:'block text-[11px] text-gray-600 mb-0.5' }, 'Brandstof C2'),
+            c2BrandstofSelect
+          ])
+        ])
+      ])
     );
+
+    // EPD dropzone
+    const epdDrop = createEl('label', { class: 'dropzone flex items-center justify-between px-3 py-2 text-xs text-gray-600 mt-2' }, [
+      createEl('div', {}, [
+        createEl('div', { class:'font-medium text-gray-800 mb-0.5' }, 'EPD (PDF)'),
+        createEl('div', {}, 'Kies of sleep een EPD voor dit mengsel. A1–A3 en D (MKI) worden automatisch gelezen.')
+      ]),
+      createEl('div', { class:'px-3 py-1 rounded-xl bg-gray-900 text-white text-xs' }, 'Kies PDF…'),
+      createEl('input', { type:'file', accept:'application/pdf,.pdf' })
+    ]);
 
     const epdFileInput = epdDrop.querySelector('input[type="file"]');
 
@@ -748,7 +782,7 @@
     );
     table.append(tHead, tBody);
 
-    card.append(header, grid1, grid2, grid3, table);
+    card.append(header, grid1, grid2, grid3, epdDrop, table);
     $('#mengsels-container').appendChild(card);
 
     // State object
@@ -766,6 +800,9 @@
       transportBrandstofSelect,
       aanlegBrandstofSelect,
       refLifeSpan,
+      c2AfstandInput,
+      c2RetourInput,
+      c2BrandstofSelect,
       epdFileInput,
       mkiA1A3Input,
       mkiDInput,
@@ -820,10 +857,14 @@
       }
     });
 
+    // Standaard: C2-afstand en brandstof initialiseren gelijk aan A4
+    c2AfstandInput.value = afstandInput.value;
+    c2BrandstofSelect.value = transportBrandstofSelect.value;
+
     return state;
   }
 
-  // ====== Impactberekening per mengsel ======
+  // ====== Impactberekening per mengsel (incl. C2) ======
   function computeImpactsForMengsel(m) {
     const asf = m.asfaltsoortSelect.value || '';
     if (!asf) return null;
@@ -833,37 +874,47 @@
     const gwpA1A3 = parseNumberInput(m.gwpA1A3Input);
     const gwpD    = parseNumberInput(m.gwpDInput);
 
-    const km      = parseNumberInput(m.afstandInput) || 0;
-    const retour  = parseNumberInput(m.retourInput) || 0;
-    const effKm   = km * (1 + retour / 100);
+    // A4
+    const kmA4      = parseNumberInput(m.afstandInput) || 0;
+    const retourA4  = parseNumberInput(m.retourInput) || 0;
+    const effKmA4   = kmA4 * (1 + retourA4 / 100);
+    const fuelA4    = m.transportBrandstofSelect.value;
+    const tFactorA4 = TRANSPORT_MKI_PER_TKM[fuelA4];
+    const mkiA4     = typeof tFactorA4 === 'number' ? tFactorA4 * effKmA4 : NaN;
 
-    const tFuel   = m.transportBrandstofSelect.value;
-    const tFactor = TRANSPORT_MKI_PER_TKM[tFuel];
-    const mkiA4   = typeof tFactor === 'number' ? tFactor * effKm : NaN;
-
+    // A5
     const a5Data  = A5_MKI[asf] || {};
-    const a5Fuel  = m.aanlegBrandstofSelect.value;
-    const mkiA5   = typeof a5Data[a5Fuel] === 'number' ? a5Data[a5Fuel] : NaN;
+    const fuelA5  = m.aanlegBrandstofSelect.value;
+    const mkiA5   = typeof a5Data[fuelA5] === 'number' ? a5Data[fuelA5] : NaN;
 
+    // B1 (optioneel geschaald met levensduur)
     const b1Val   = B1_MKI[asf];
     const lvRef   = LEVENSDUUR[asf] || null;
     const lvProj  = parseInt($('#projectlevensduur').value || '0', 10) || null;
     let mkiB1     = typeof b1Val === 'number' ? b1Val : NaN;
-
-    // Optie: schaal B1 met verhouding projectlevensduur / referentielevensduur
     if (lvRef && lvProj && lvProj !== lvRef) {
       mkiB1 = b1Val * (lvProj / lvRef);
     }
 
+    // C1
     const toep    = m.toepassingSelect.value === 'Waterbouw' ? 'Waterbouw' : 'Wegenbouw';
     const c1Data  = C1_MKI[asf] || {};
-    const c1Fuel  = (a5Fuel === 'HVO' || a5Fuel === 'Diesel') ? a5Fuel : 'Diesel';
+    const c1Fuel  = (fuelA5 === 'HVO' || fuelA5 === 'Diesel') ? fuelA5 : 'Diesel';
     const mkiC1   = typeof c1Data[c1Fuel] === 'number' ? c1Data[c1Fuel] : NaN;
 
+    // C2 (transport naar verwerker / stort)
+    const kmC2      = parseNumberInput(m.c2AfstandInput) || 0;
+    const retourC2  = parseNumberInput(m.c2RetourInput) || 0;
+    const effKmC2   = kmC2 * (1 + retourC2 / 100);
+    const fuelC2    = m.c2BrandstofSelect.value;
+    const tFactorC2 = TRANSPORT_MKI_PER_TKM[fuelC2];
+    const mkiC2     = typeof tFactorC2 === 'number' ? tFactorC2 * effKmC2 : NaN;
+
+    // C3 & C4 (type-afhankelijk)
     const mkiC3   = C3_MKI[toep];
     const mkiC4   = C4_MKI[toep];
 
-    const totalWithoutD = [mkiA1A3, mkiA4, mkiA5, mkiB1, mkiC1, mkiC3, mkiC4]
+    const totalWithoutD = [mkiA1A3, mkiA4, mkiA5, mkiB1, mkiC1, mkiC2, mkiC3, mkiC4]
       .filter(v => typeof v === 'number' && isFinite(v))
       .reduce((sum, v) => sum + v, 0);
 
@@ -879,10 +930,13 @@
       mengselcode: m.mengselCodeInput.value || '',
       mengselnaam: m.mengselNaamInput.value || '',
       centrale: m.centraleInput.value || '',
-      transportAfstandKm: km,
-      retourPct: retour,
-      transportBrandstof: tFuel,
-      aanlegBrandstof: a5Fuel,
+      transportAfstandKm: kmA4,
+      retourPct: retourA4,
+      transportBrandstof: fuelA4,
+      aanlegBrandstof: fuelA5,
+      c2AfstandKm: kmC2,
+      c2RetourPct: retourC2,
+      c2Brandstof: fuelC2,
       refLife: lvRef,
       projectLife: lvProj,
       mkiA1A3,
@@ -890,6 +944,7 @@
       mkiA5,
       mkiB1,
       mkiC1,
+      mkiC2,
       mkiC3,
       mkiC4,
       mkiD,
@@ -901,7 +956,7 @@
     };
   }
 
-  // ====== PDF generatie ======
+  // ====== PDF generatie (incl. C2) ======
   function generatePdf() {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       showToast('jsPDF niet geladen', false);
@@ -1006,10 +1061,13 @@
         ['Asfaltsoort', mix.asfaltsoort],
         ['Toepassingstype', mix.toepassing],
         ['Asfaltcentrale', mix.centrale || '—'],
-        ['Transportafstand (enkel)', `${fmt(mix.transportAfstandKm,1)} km`],
-        ['Retourtransport', `${fmt(mix.retourPct,1)} %`],
+        ['Transportafstand A4 (enkel)', `${fmt(mix.transportAfstandKm,1)} km`],
+        ['Retourtransport A4', `${fmt(mix.retourPct,1)} %`],
         ['Transportbrandstof (A4)', mix.transportBrandstof],
         ['Aanlegbrandstof (A5)', mix.aanlegBrandstof],
+        ['C2-transportafstand (enkel)', `${fmt(mix.c2AfstandKm,1)} km`],
+        ['Retourtransport C2', `${fmt(mix.c2RetourPct,1)} %`],
+        ['Transportbrandstof (C2)', mix.c2Brandstof],
         ['Referentielevensduur mengsel', mix.refLife ? mix.refLife + ' jaar' : '—'],
         ['Projectlevensduur', mix.projectLife ? mix.projectLife + ' jaar' : '—'],
         ['EPD product', mix.epdMeta?.product || '—'],
@@ -1028,7 +1086,7 @@
       y += 4;
       if (y > 260) { doc.addPage(); y = 20; }
 
-      // Tabel modules A1-A3, A4, A5, B1, C1, C3, C4, D
+      // Tabel modules A1-A3, A4, A5, B1, C1, C2, C3, C4, D
       doc.setFont('helvetica','bold');
       doc.text('Module-overzicht volgens EN 15804', 20, y);
       y += 6;
@@ -1049,6 +1107,7 @@
         ['A5', 'Aanlegfase (asfaltset, walsen etc.)', mix.mkiA5, NaN],
         ['B1', 'Gebruikfase (uitloging, functie)', mix.mkiB1, NaN],
         ['C1', 'Sloopfase', mix.mkiC1, NaN],
+        ['C2', 'Transport naar verwerker / stort', mix.mkiC2, NaN],
         ['C3', 'Recycling / breken', mix.mkiC3, NaN],
         ['C4', 'Eindverwerking', mix.mkiC4, NaN],
         ['D', 'Potentieel buiten systeemgrens', mix.mkiD, mix.gwpD]
@@ -1080,7 +1139,7 @@
     doc.save(fileName);
   }
 
-  // ====== CSV generatie ======
+  // ====== CSV generatie (incl. C2) ======
   function exportCsv() {
     const data = mengsels
       .map(computeImpactsForMengsel)
@@ -1094,10 +1153,11 @@
     const headers = [
       'Mengselcode','Mengselnaam','Asfaltsoort','Toepassingstype',
       'Asfaltcentrale',
-      'Transportafstand_km','Retourtransport_pct','Transportbrandstof',
-      'Aanlegbrandstof',
+      'Transportafstand_A4_km','Retourtransport_A4_pct','Transportbrandstof_A4',
+      'Aanlegbrandstof_A5',
+      'C2_afstand_km','C2_retour_pct','Transportbrandstof_C2',
       'Ref_levensduur_j','Project_levensduur_j',
-      'MKI_A1A3','MKI_A4','MKI_A5','MKI_B1','MKI_C1','MKI_C3','MKI_C4','MKI_D','MKI_A_D_totaal',
+      'MKI_A1A3','MKI_A4','MKI_A5','MKI_B1','MKI_C1','MKI_C2','MKI_C3','MKI_C4','MKI_D','MKI_A_D_totaal',
       'GWP_A1A3','GWP_D','GWP_A_D_totaal'
     ];
 
@@ -1119,6 +1179,9 @@
         csvNum(mix.retourPct),
         mix.transportBrandstof,
         mix.aanlegBrandstof,
+        csvNum(mix.c2AfstandKm),
+        csvNum(mix.c2RetourPct),
+        mix.c2Brandstof,
         mix.refLife != null ? mix.refLife : '',
         mix.projectLife != null ? mix.projectLife : '',
         csvNum(mix.mkiA1A3),
@@ -1126,6 +1189,7 @@
         csvNum(mix.mkiA5),
         csvNum(mix.mkiB1),
         csvNum(mix.mkiC1),
+        csvNum(mix.mkiC2),
         csvNum(mix.mkiC3),
         csvNum(mix.mkiC4),
         csvNum(mix.mkiD),
