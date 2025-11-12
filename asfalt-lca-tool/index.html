@@ -3,1369 +3,1164 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project asfalt LCA – InfraImpact</title>
-  <meta name="description" content="Stel een project-specifieke asfalt LCA op aan de hand van projectgegevens, asfaltcentrales, mengseldata en EPD’s. Inclusief MKI- en GWP-rapportage.">
+  <title>Asfalt LCA-tool – project LCA (EN 15804) | InfraImpact</title>
+  <meta name="description" content="Stel project-LCA's op voor asfaltmengsels volgens EN 15804 en de Nederlandse bepalingsmethode. Koppel EPD's, transportprofielen en aanleg-/eindefase-profielen.">
 
-  <!-- Favicons (pas paden aan als nodig) -->
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
   <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
   <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
-  <meta name="theme-color" content="#2F3B52">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- pdf.js voor EPD parsing -->
+  <script type="module">
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
+    window.pdfjsLib = pdfjsLib;
+  </script>
+
+  <!-- jsPDF voor rapport-generatie -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
-    :root {
-      --ii-bg: #f5f7fa;
-      --ii-primary: #1c4f82;
-      --ii-primary-dark: #153b60;
-      --ii-accent: #00a676;
-      --ii-text: #1f2933;
-      --ii-border: #d0d7e2;
-      --ii-radius: 10px;
-    }
-
-    * { box-sizing: border-box; }
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
 
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--ii-bg);
-      color: var(--ii-text);
+      background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
+      background-size: 400% 400%;
+      animation: bgMove 60s ease infinite;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    @keyframes bgMove {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
     }
 
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid var(--ii-border);
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .header-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .logo {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--ii-primary-dark);
-      text-decoration: none;
-    }
-
-    nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--ii-text);
-      font-size: 0.95rem;
-    }
-
-    nav a.active {
-      color: var(--ii-primary);
-      font-weight: 600;
-    }
-
-    main {
-      max-width: 1080px;
-      margin: 24px auto 40px;
-      padding: 0 16px 40px;
-    }
-
-    h1.page-title {
-      margin: 0 0 8px;
-      font-size: 1.8rem;
-      color: var(--ii-primary-dark);
-    }
-
-    p.page-subtitle {
-      margin: 0 0 20px;
-      max-width: 760px;
-      color: #4b5563;
-      font-size: 0.96rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.45fr);
-      gap: 20px;
-    }
-
-    @media (max-width: 960px) {
-      .grid { grid-template-columns: 1fr; }
+    .mono {
+      font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     .card {
+      border-radius: 1.25rem;
       background: #ffffff;
-      border-radius: var(--ii-radius);
-      border: 1px solid var(--ii-border);
-      padding: 16px 16px 18px;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.06);
     }
 
-    .card h2 {
-      margin: 0 0 6px;
-      font-size: 1.1rem;
-      color: var(--ii-primary-dark);
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      padding:0.1rem 0.6rem;
+      border-radius:999px;
+      font-size:0.75rem;
+      font-weight:500;
     }
+    .badge-epd-ok { background:#ecfdf5; color:#166534; }
+    .badge-epd-missing { background:#fef9c3; color:#854d0e; }
+    .badge-epd-error { background:#fee2e2; color:#b91c1c; }
 
-    .card h3 {
-      margin-top: 10px;
-      margin-bottom: 6px;
-      font-size: 0.98rem;
-      color: var(--ii-primary-dark);
-    }
-
-    .card p.lead {
-      margin: 0 0 12px;
-      font-size: 0.88rem;
-      color: #6b7280;
-    }
-
-    .field-group { margin-bottom: 10px; }
-
-    .field-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .field {
-      flex: 1;
-      min-width: 140px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      color: #4b5563;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select {
-      border-radius: 6px;
-      border: 1px solid var(--ii-border);
-      padding: 7px 9px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      background: #ffffff;
-    }
-
-    input[type="file"] {
-      font-size: 0.8rem;
-    }
-
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--ii-primary);
-      box-shadow: 0 0 0 1px rgba(28,79,130,0.08);
-    }
-
-    small {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 14px;
-      font-size: 0.85rem;
-      font-weight: 500;
+    .dropzone {
+      position: relative;
+      border: 2px dashed #e5e7eb;
+      border-radius: 0.75rem;
       cursor: pointer;
-      font-family: inherit;
+      transition: 0.2s;
     }
-
-    .btn-primary {
-      background: var(--ii-primary);
-      color: #ffffff;
-    }
-
-    .btn-primary:hover {
-      background: var(--ii-primary-dark);
-    }
-
-    .btn-secondary {
-      background: #ffffff;
-      color: var(--ii-primary-dark);
-      border: 1px solid var(--ii-border);
-    }
-
-    .btn-secondary:hover {
-      background: #f3f4f6;
-    }
-
-    .btn-danger {
-      background: #fee2e2;
-      color: #b91c1c;
-      border: 1px solid #fecaca;
-    }
-
-    .btn-danger:hover {
-      background: #fecaca;
-    }
-
-    .list {
-      border-radius: 8px;
-      border: 1px dashed var(--ii-border);
-      padding: 8px;
+    .dropzone:hover {
+      border-color: #9ca3af;
       background: #f9fafb;
-      max-height: 260px;
-      overflow-y: auto;
     }
-
-    .list-item {
-      background: #ffffff;
-      border-radius: 8px;
-      border: 1px solid var(--ii-border);
-      padding: 7px 9px;
-      margin-bottom: 7px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 0.8rem;
-    }
-
-    .list-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .list-title {
-      font-weight: 600;
-      color: var(--ii-primary-dark);
-    }
-
-    .list-sub {
-      color: #6b7280;
-      font-size: 0.78rem;
-    }
-
-    .muted {
-      font-size: 0.78rem;
-      color: #9ca3af;
-    }
-
-    footer {
-      border-top: 1px solid var(--ii-border);
-      padding: 14px 16px 18px;
-      font-size: 0.8rem;
-      color: #6b7280;
-      text-align: center;
-      background: #ffffff;
+    .dropzone input[type="file"] {
+      position:absolute;
+      inset:0;
+      opacity:0;
+      cursor:pointer;
     }
   </style>
 </head>
-<body>
-  <!-- Je kunt deze header vervangen door de exacte header van je site -->
-  <header>
-    <div class="header-inner">
-      <a class="logo" href="../index.html">InfraImpact</a>
-      <nav>
-        <ul>
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="../projecten.html">Projecten</a></li>
-          <li><a href="../epd-checker/">MKI-toetsing asfalt</a></li>
-          <li><a href="./index.html" class="active">Project asfalt LCA</a></li>
-          <li><a href="../over/">Over ons</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
 
-  <main>
-    <h1 class="page-title">Project asfalt LCA</h1>
-    <p class="page-subtitle">
-      Voer projectgegevens, asfaltcentrales en mengseldata in. Koppel EPD’s om automatisch MKI (A1–A3 en D)
-      en CO₂ (GWP A1–A3 en D) uit te lezen. Exporteer alles als CSV en PDF voor jouw LCA-rapportage.
-    </p>
+<body class="text-gray-800">
 
-    <div class="grid">
-      <div>
-        <!-- Project / rapport -->
-        <section class="card">
-          <h2>LCA-rapport invoer</h2>
-          <p class="lead">Basisgegevens van het rapport, in lijn met je LCApro-opzet.</p>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="projectName">Projectnaam</label>
-                <input type="text" id="projectName" placeholder="Bijv. Groot Onderhoud N123">
-              </div>
-              <div class="field">
-                <label for="companyName">Bedrijfsnaam</label>
-                <input type="text" id="companyName" placeholder="Bijv. InfraImpact">
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="clientName">Opdrachtgever</label>
-                <input type="text" id="clientName" placeholder="Bijv. Provincie X">
-              </div>
-              <div class="field">
-                <label for="lcaAuthor">LCA-uitvoerder</label>
-                <input type="text" id="lcaAuthor" placeholder="Bijv. Jim van der Kooij">
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="projectLifetime">Projectlevensduur (jaar)</label>
-                <input type="number" id="projectLifetime" min="1" max="200" step="1" value="50">
-              </div>
-              <div class="field">
-                <label for="projectLocation">Projectadres / coördinaten</label>
-                <input type="text" id="projectLocation" placeholder="Adres, plaats of X/Y-coördinaat">
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Asfaltcentrales -->
-        <section class="card">
-          <h2>Asfaltcentrales &amp; transport</h2>
-          <p class="lead">Voeg één of meerdere centrales toe met bijbehorende transportafstand.</p>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="plantName">Asfaltcentrale</label>
-                <input type="text" id="plantName" placeholder="Bijv. AC Rotterdam">
-              </div>
-              <div class="field">
-                <label for="plantDistance">Transportkilometers (km)</label>
-                <input type="number" id="plantDistance" min="0" step="1" placeholder="Bijv. 45">
-                <small>Enkele reis, indicatief.</small>
-              </div>
-            </div>
-            <div class="btn-row">
-              <button type="button" class="btn-secondary" onclick="addPlant()">Extra centrale</button>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label>Geregistreerde centrales</label>
-            <div id="plantList" class="list">
-              <p class="muted" id="noPlantsText">Nog geen asfaltcentrales toegevoegd.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div>
-        <!-- Mengsels & EPD -->
-        <section class="card">
-          <h2>Mengsels &amp; eigenschappen</h2>
-          <p class="lead">
-            Per mengsel: code, naam, centrale, asfaltsoort (LCApro), brandstoffen, retourtransport en MKI/GWP-waarden.
-            Een EPD-upload vult A1–A3 en D automatisch, maar blijft handmatig aanpasbaar.
-          </p>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="mixCode">Mengselcode</label>
-                <input type="text" id="mixCode" placeholder="Bijv. AC11-DA-70/100">
-              </div>
-              <div class="field">
-                <label for="mixName">Mengselnaam</label>
-                <input type="text" id="mixName" placeholder="Bijv. AC 11 deklaag">
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="mixPlant">Asfaltcentrale</label>
-                <select id="mixPlant">
-                  <option value="">Selecteer een asfaltcentrale</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="mixType">Asfaltsoort (LCApro)</label>
-                <select id="mixType">
-                  <option value="">— kies asfaltsoort —</option>
-                  <!-- Direct overgenomen uit lca_get_dropdown_data()['asfaltsoorten'] -->
-                  <option>01. AC surf zonder PR</option>
-                  <option>02. AC surf met 30% PR</option>
-                  <option>03. AC surf met gemodificeerd bitumen zonder PR</option>
-                  <option>04. AC surf met gemodificeerd bitumen met 30% PR</option>
-                  <option>05. AC surf rood, met penbitumen</option>
-                  <option>06. AC surf rood, met blank bindmiddel</option>
-                  <option>07. AC bin/base 50% PR</option>
-                  <option>08. AC bin/base 50% PR met gemodificeerd bitumen</option>
-                  <option>09. ZOAB Regulier</option>
-                  <option>10. DZOAB</option>
-                  <option>11. DZOAB 30% PR</option>
-                  <option>12. 2L-ZOAB toplaag met gemodificeerd bitumen</option>
-                  <option>13. 2L-ZOAB onderlaag</option>
-                  <option>14. 2L-ZOAB onderlaag 30% PR</option>
-                  <option>15. SMA 8-11</option>
-                  <option>16. SMA 8-11 met gemodificeerd</option>
-                  <option>17. SMA 5</option>
-                  <option>18. Geluidsreducerende SMA deklaag (obv 8G+)</option>
-                  <option>19. Waterbouwasfaltbeton</option>
-                  <option>20. Open steenasfalt</option>
-                  <option>21. Gietasfalt, waterbouw</option>
-                  <option>22. Asfaltmastiek, waterbouw</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="transportFuel">Transportbrandstof</label>
-                <select id="transportFuel">
-                  <option value="">Kies brandstof</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="HVO">HVO</option>
-                  <option value="Elektrisch">Elektrisch</option>
-                  <option value="Anders">Anders / mix</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="returnTransport">Retourtransport (%)</label>
-                <input type="number" id="returnTransport" min="0" max="100" step="1" value="0">
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="constructionFuel">Aanlegbrandstof (A5)</label>
-                <select id="constructionFuel">
-                  <option value="">Kies brandstof</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="HVO">HVO</option>
-                  <option value="Elektrisch">Elektrisch</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="epdFile">EPD upload (PDF)</label>
-                <input type="file" id="epdFile" accept="application/pdf">
-                <small>Bij upload worden MKI &amp; GWP A1–A3 + D uitgelezen indien mogelijk.</small>
-              </div>
-            </div>
-          </div>
-
-          <!-- MKI / CO₂ velden (met A1–A3 en D) -->
-          <div class="field-group">
-            <h3>MKI-waarden (per functionele eenheid)</h3>
-            <div class="field-row">
-              <div class="field">
-                <label for="mkiA1A3">MKI A1–A3</label>
-                <input type="number" id="mkiA1A3" step="any" placeholder="Bijv. 0,85">
-              </div>
-              <div class="field">
-                <label for="mkiD">MKI D</label>
-                <input type="number" id="mkiD" step="any" placeholder="Bijv. 0,15">
-              </div>
-            </div>
-            <small>Wordt bij EPD-upload automatisch ingevuld; altijd handmatig aanpasbaar.</small>
-          </div>
-
-          <div class="field-group">
-            <h3>CO₂ / GWP-waarden (kg CO₂-eq.)</h3>
-            <div class="field-row">
-              <div class="field">
-                <label for="co2A1A3">GWP A1–A3 (kg CO₂-eq.)</label>
-                <input type="number" id="co2A1A3" step="any" placeholder="Bijv. 10,5">
-              </div>
-              <div class="field">
-                <label for="co2D">GWP D (kg CO₂-eq.)</label>
-                <input type="number" id="co2D" step="any" placeholder="Bijv. 1,2">
-              </div>
-            </div>
-            <small>EPD-upload probeert deze velden te vullen; waarden blijven aanpasbaar.</small>
-          </div>
-
-          <div class="btn-row">
-            <button type="button" class="btn-secondary" onclick="addMix()">Extra mengsel</button>
-          </div>
-
-          <div class="field-group">
-            <label>Geregistreerde mengsels</label>
-            <div id="mixList" class="list">
-              <p class="muted" id="noMixesText">Nog geen mengsels toegevoegd.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Export -->
-        <section class="card">
-          <h2>Exporteren</h2>
-          <p class="lead">
-            Exporteer alle ingevoerde gegevens naar CSV en PDF voor jouw LCA-rapport of aanbestedingsdossier.
-          </p>
-          <div class="btn-row">
-            <button type="button" class="btn-primary" onclick="downloadCsv()">Download CSV</button>
-            <button type="button" class="btn-secondary" onclick="downloadPdf()">Download PDF</button>
-          </div>
-          <p class="muted" style="margin-top:8px;">
-            De tool rekent MKI- en GWP-totalen per mengsel (A–D) in lijn met LCApro:
-            MKI A–D = A1–A3 + D, GWP A–D = A1–A3 + D.
-          </p>
-        </section>
+  <!-- Eenvoudige nav (je kunt deze vervangen door je bestaande nav) -->
+  <nav class="bg-white/90 backdrop-blur border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
+      <a href="/" class="flex items-center gap-2">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-9 w-auto">
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <span class="text-green-700">Asfalt LCA-tool</span>
       </div>
     </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div id="toast" class="fixed top-4 right-4 hidden bg-gray-900 text-white text-sm px-4 py-2 rounded-xl shadow-lg z-50"></div>
+
+    <!-- Hero -->
+    <header>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">Asfalt LCA-tool (projectniveau)</h1>
+      <p class="mt-2 text-gray-700 max-w-3xl">
+        Stel project-LCA's op voor asfaltmengsels volgens <strong>EN 15804</strong> en de
+        <strong>Nederlandse bepalingsmethode</strong>. Koppel EPD's, kies transport- en aanlegprofielen
+        en exporteer een PDF-rapport en CSV.
+      </p>
+    </header>
+
+    <!-- Projectgegevens -->
+    <section class="card p-6 space-y-4">
+      <h2 class="text-xl font-semibold">1. Projectgegevens</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Projectnaam</label>
+          <input id="projectnaam" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Groot onderhoud N210">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Opdrachtgever</label>
+          <input id="opdrachtgever" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Provincie Zuid-Holland">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Bedrijfsnaam / adviseur</label>
+          <input id="bedrijfsnaam" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="InfraImpact / aannemer">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">LCA-uitvoerder</label>
+          <input id="lca-uitvoerder" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Jim van der Kooij">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Projectlevensduur (jaar)</label>
+          <input id="projectlevensduur" type="number" min="0" step="1" class="w-full border rounded-xl px-3 py-2" value="30">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Projectadres / coördinaten</label>
+          <input id="projectadres" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Straat, plaats of RD-coördinaten">
+        </div>
+      </div>
+    </section>
+
+    <!-- Mengsels -->
+    <section class="card p-6 space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-semibold">2. Asfaltmengsels in het project</h2>
+          <p class="text-sm text-gray-600">
+            Voeg voor elk asfaltmengsel een regel toe. Koppel een EPD voor A1-A3 en D, kies transport- en aanlegprofielen.
+          </p>
+        </div>
+        <button id="add-mengsel" type="button"
+                class="px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-500">
+          + Extra mengsel
+        </button>
+      </div>
+
+      <div id="mengsels-container" class="space-y-4"></div>
+    </section>
+
+    <!-- Export -->
+    <section class="flex flex-wrap items-center gap-4">
+      <button id="btn-pdf" type="button"
+              class="px-5 py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-600 disabled:opacity-50">
+        Genereer LCA-rapport (PDF)
+      </button>
+      <button id="btn-csv" type="button"
+              class="px-5 py-2.5 rounded-xl bg-gray-200 text-gray-900 font-medium hover:bg-gray-300 disabled:opacity-50">
+        Exporteer CSV
+      </button>
+      <p class="text-sm text-gray-600">
+        PDF en CSV worden gegenereerd op basis van de ingevulde mengsels en EPD-gegevens.
+      </p>
+    </section>
+
   </main>
 
-  <footer>
-    &copy; <span id="year"></span> InfraImpact – MKI &amp; LCA voor de GWW-sector.
-  </footer>
-
-  <!-- jsPDF voor PDF-export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js"></script>
-
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // ========= GLOBALE DATASTRUCTUREN =========
-    const asphaltPlants = [];
-    const mixes = [];
-
-    // ========= ALGEMENE HELPERS =========
-    function slugify(name) {
-      return (name || 'lca_rapport')
-        .toString()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '');
+  // ====== Kleine helpers ======
+  const $ = (sel) => document.querySelector(sel);
+  const createEl = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)) {
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else el.setAttribute(k, v);
     }
+    (Array.isArray(children) ? children : [children]).forEach(c => {
+      if (c == null) return;
+      if (typeof c === 'string' || typeof c === 'number') el.appendChild(document.createTextNode(String(c)));
+      else el.appendChild(c);
+    });
+    return el;
+  };
 
-    function normalizeMinus(s){ return s ? s.replace(/\\u2212/g,'-') : s; }
+  function showToast(msg, ok = true) {
+    const t = $('#toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.backgroundColor = ok ? '#111827' : '#b91c1c';
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 2800);
+  }
 
-    function parseNumEUexp(s){
-      if(!s) return NaN;
-      let str = normalizeMinus(String(s)).trim().replace(/\\u202F/g,'').replace(/\\s+/g,' ');
-      if (str.includes(',') && /[Ee][+\\-]?\\d+$/.test(str)) str = str.replace(',', '.');
-      else if (str.includes(',') && !str.includes('.')) str = str.replace(',', '.');
-      else if (str.includes(',') && str.includes('.')) {
-        const parts = str.split(',');
-        str = parts[0].replace(/\\./g,'') + '.' + parts.slice(1).join('');
+  function parseNumberInput(el) {
+    if (!el) return NaN;
+    let s = (el.value || '').trim();
+    if (!s) return NaN;
+    s = s.replace(/\u202F/g, '').replace(/\s+/g,' ');
+    if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
+    s = s.replace(/[^0-9eE+.\-]/g,'');
+    const n = Number(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function fmt(n, decimals = 2) {
+    if (typeof n !== 'number' || !isFinite(n)) return '—';
+    return n.toFixed(decimals).replace('.', ',');
+  }
+
+  // ====== Inhoud uit LCApro: asfaltsoorten & data ======
+  const ASFALTSOORTEN = [
+    "01. AC surf zonder PR",
+    "02. AC surf met 30% PR",
+    "03. AC surf met gemodificeerd bitumen zonder PR",
+    "04. AC surf met gemodificeerd bitumen met 30% PR",
+    "05. AC surf rood, met penbitumen",
+    "06. AC surf rood, met blank bindmiddel",
+    "07. AC bin/base 50% PR",
+    "08. AC bin/base 50% PR met gemodificeerd bitumen",
+    "09. ZOAB Regulier",
+    "10. DZOAB",
+    "11. DZOAB 30% PR",
+    "12. 2L-ZOAB toplaag met gemodificeerd bitumen",
+    "13. 2L-ZOAB onderlaag",
+    "14. 2L-ZOAB onderlaag 30% PR",
+    "15. SMA 8-11",
+    "16. SMA 8-11 met gemodificeerd",
+    "17. SMA 5",
+    "18. Geluidsreducerende SMA deklaag (obv 8G+)",
+    "19. Waterbouwasfaltbeton",
+    "20. Open steenasfalt",
+    "21. Gietasfalt, waterbouw",
+    "22. Asfaltmastiek, waterbouw"
+  ];
+
+  // A5 (aanlegfase) MKI per ton asfalt per mengsel + aanlegbrandstof
+  const A5_MKI = {
+    "01. AC surf zonder PR":                      { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "02. AC surf met 30% PR":                    { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "03. AC surf met gemodificeerd bitumen zonder PR": { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "04. AC surf met gemodificeerd bitumen met 30% PR":{ Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "05. AC surf rood, met penbitumen":          { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "06. AC surf rood, met blank bindmiddel":    { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "07. AC bin/base 50% PR":                    { Diesel: 0.14, HVO: 0.08, Elektrisch: 0.05 },
+    "08. AC bin/base 50% PR met gemodificeerd bitumen": { Diesel: 0.14, HVO: 0.08, Elektrisch: 0.05 },
+    "09. ZOAB Regulier":                         { Diesel: 0.14, HVO: 0.08, Elektrisch: 0.05 },
+    "10. DZOAB":                                 { Diesel: 0.12, HVO: 0.06, Elektrisch: 0.03 },
+    "11. DZOAB 30% PR":                          { Diesel: 0.12, HVO: 0.06, Elektrisch: 0.03 },
+    "12. 2L-ZOAB toplaag met gemodificeerd bitumen": { Diesel: 0.12, HVO: 0.06, Elektrisch: 0.03 },
+    "13. 2L-ZOAB onderlaag":                     { Diesel: 0.12, HVO: 0.06, Elektrisch: 0.03 },
+    "14. 2L-ZOAB onderlaag 30% PR":              { Diesel: 0.12, HVO: 0.06, Elektrisch: 0.03 },
+    "15. SMA 8-11":                              { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "16. SMA 8-11 met gemodificeerd":            { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "17. SMA 5":                                 { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "18. Geluidsreducerende SMA deklaag (obv 8G+)": { Diesel: 0.26, HVO: 0.14, Elektrisch: 0.10 },
+    "19. Waterbouwasfaltbeton":                  { Diesel: 0.21, HVO: 0.12 },
+    "20. Open steenasfalt":                      { Diesel: 0.21, HVO: 0.12 },
+    "21. Gietasfalt, waterbouw":                 { Diesel: 0.21, HVO: 0.12 },
+    "22. Asfaltmastiek, waterbouw":              { Diesel: 0.21, HVO: 0.12 }
+  };
+
+  // C1 (sloopfase) MKI per ton asfalt per mengsel + brandstof
+  const C1_MKI = {
+    "01. AC surf zonder PR":                      { Diesel: 0.13541603, HVO: 0.078024293 },
+    "02. AC surf met 30% PR":                    { Diesel: 0.13541603, HVO: 0.078024293 },
+    "03. AC surf met gemodificeerd bitumen zonder PR": { Diesel: 0.13541603, HVO: 0.078024293 },
+    "04. AC surf met gemodificeerd bitumen met 30% PR":{ Diesel: 0.13541603, HVO: 0.078024293 },
+    "05. AC surf rood, met penbitumen":          { Diesel: 0.13541603, HVO: 0.078024293 },
+    "06. AC surf rood, met blank bindmiddel":    { Diesel: 0.13541603, HVO: 0.078024293 },
+    "07. AC bin/base 50% PR":                    { Diesel: 0.31586755, HVO: 0.18199357 },
+    "08. AC bin/base 50% PR met gemodificeerd bitumen": { Diesel: 0.31586755, HVO: 0.18199357 },
+    "09. ZOAB Regulier":                         { Diesel: 0.31586755, HVO: 0.18199357 },
+    "10. DZOAB":                                 { Diesel: 0.17627297, HVO: 0.101559 },
+    "11. DZOAB 30% PR":                          { Diesel: 0.17627297, HVO: 0.101559 },
+    "12. 2L-ZOAB toplaag met gemodificeerd bitumen": { Diesel: 0.17627297, HVO: 0.101559 },
+    "13. 2L-ZOAB onderlaag":                     { Diesel: 0.17627297, HVO: 0.101559 },
+    "14. 2L-ZOAB onderlaag 30% PR":              { Diesel: 0.17627297, HVO: 0.101559 },
+    "15. SMA 8-11":                              { Diesel: 0.13541603, HVO: 0.078024293 },
+    "16. SMA 8-11 met gemodificeerd":            { Diesel: 0.13541603, HVO: 0.078024293 },
+    "17. SMA 5":                                 { Diesel: 0.13541603, HVO: 0.078024293 },
+    "18. Geluidsreducerende SMA deklaag (obv 8G+)": { Diesel: 0.13541603, HVO: 0.078024293 },
+    "19. Waterbouwasfaltbeton":                  { Diesel: 0.083571103, HVO: 0.048205457 },
+    "20. Open steenasfalt":                      { Diesel: 0.083571103, HVO: 0.048205457 },
+    "21. Gietasfalt, waterbouw":                 { Diesel: 0.083571103, HVO: 0.048205457 },
+    "22. Asfaltmastiek, waterbouw":              { Diesel: 0.083571103, HVO: 0.048205457 }
+  };
+
+  // B1 MKI per mengsel
+  const B1_MKI = {
+    "01. AC surf zonder PR": 0.08,
+    "02. AC surf met 30% PR": 0.08,
+    "03. AC surf met gemodificeerd bitumen zonder PR": 0.08,
+    "04. AC surf met gemodificeerd bitumen met 30% PR": 0.08,
+    "05. AC surf rood, met penbitumen": 0.12,
+    "06. AC surf rood, met blank bindmiddel": 0.12,
+    "07. AC bin/base 50% PR": 0.0,
+    "08. AC bin/base 50% PR met gemodificeerd bitumen": 0.0,
+    "09. ZOAB Regulier": 0.64,
+    "10. DZOAB": 0.64,
+    "11. DZOAB 30% PR": 0.64,
+    "12. 2L-ZOAB toplaag met gemodificeerd bitumen": 0.64,
+    "13. 2L-ZOAB onderlaag": 0.64,
+    "14. 2L-ZOAB onderlaag 30% PR": 0.64,
+    "15. SMA 8-11": 0.12,
+    "16. SMA 8-11 met gemodificeerd": 0.12,
+    "17. SMA 5": 0.14,
+    "18. Geluidsreducerende SMA deklaag (obv 8G+)": 0.14,
+    "19. Waterbouwasfaltbeton": 0.04,
+    "20. Open steenasfalt": 1.01,
+    "21. Gietasfalt, waterbouw": 0.02,
+    "22. Asfaltmastiek, waterbouw": 0.05
+  };
+
+  // Levensduur per asfaltsoort
+  const LEVENSDUUR = {
+    "01. AC surf zonder PR": 15,
+    "02. AC surf met 30% PR": 15,
+    "03. AC surf met gemodificeerd bitumen zonder PR": 15,
+    "04. AC surf met gemodificeerd bitumen met 30% PR": 15,
+    "05. AC surf rood, met penbitumen": 15,
+    "06. AC surf rood, met blank bindmiddel": 15,
+    "07. AC bin/base 50% PR": 30,
+    "08. AC bin/base 50% PR met gemodificeerd bitumen": 30,
+    "09. ZOAB Regulier": 15,
+    "10. DZOAB": 15,
+    "11. DZOAB 30% PR": 15,
+    "12. 2L-ZOAB toplaag met gemodificeerd bitumen": 15,
+    "13. 2L-ZOAB onderlaag": 30,
+    "14. 2L-ZOAB onderlaag 30% PR": 30,
+    "15. SMA 8-11": 15,
+    "16. SMA 8-11 met gemodificeerd": 15,
+    "17. SMA 5": 15,
+    "18. Geluidsreducerende SMA deklaag (obv 8G+)": 15,
+    "19. Waterbouwasfaltbeton": 40,
+    "20. Open steenasfalt": 40,
+    "21. Gietasfalt, waterbouw": 40,
+    "22. Asfaltmastiek, waterbouw": 40
+  };
+
+  // C3/C4 (recycling & eindverwerking) per type toepassing
+  const C3_MKI = {
+    Wegenbouw: 0.15929996,
+    Waterbouw: 0.0
+  };
+  const C4_MKI = {
+    Wegenbouw: 0.0,
+    Waterbouw: 0.72961418
+  };
+
+  // Transportprofielen: exacte namen uit LCApro
+  const TRANSPORTBRANDSTOFFEN = [
+    "Diesel (euro 5)",
+    "Diesel (euro 6)",
+    "HVO (euro 5)",
+    "HVO (euro 6)",
+    "Elektrisch (grijze stroom)",
+    "Elektrisch (groene stroom)",
+    "Waterstof (elektrolyse grijze stroom)",
+    "Waterstof (elektrolyse groene stroom)",
+    "Waterstof (SMR grijze stroom)",
+    "Waterstof (SMR groene stroom)"
+  ];
+
+  // Beschikbare MKI per tkm (alleen waar data uit transport-data.php bekend was)
+  const TRANSPORT_MKI_PER_TKM = {
+    "Diesel (euro 5)": 0.008598488,
+    "Diesel (euro 6)": 0.008029809,
+    "HVO (euro 5)": 0.008142933,
+    // overige profielen kun je later aanvullen als je exacte MKI hebt:
+    "Waterstof (elektrolyse groene stroom)": 0.011452738,
+    "Waterstof (SMR grijze stroom)": 0.007750517,
+    "Waterstof (SMR groene stroom)": 0.007205155
+  };
+
+  // ====== EPD parsing (gebaseerd op je bestaande EPD-checker) ======
+  function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; }
+
+  function parseNumEUexp(s) {
+    if (!s) return NaN;
+    let str = normalizeMinus(String(s)).trim()
+      .replace(/\u202F/g,'')
+      .replace(/\s+/g,' ');
+    if (str.includes(',') && /[Ee][+\-]?\d+$/.test(str)) {
+      str = str.replace(',', '.');
+    } else if (str.includes(',') && !str.includes('.')) {
+      str = str.replace(',', '.');
+    } else if (str.includes(',') && str.includes('.')) {
+      const parts = str.split(',');
+      str = parts[0].replace(/\./g,'') + '.' + parts.slice(1).join('');
+    }
+    str = str.replace(/[^0-9eE+\-\.]/g,'');
+    const n = Number(str);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function looksNumericToken(raw) {
+    if (!raw) return false;
+    const s = normalizeMinus(String(raw)).trim();
+    if (/[Ee][+\-]?\d+/.test(s)) return true;
+    if (/[\,\.]/.test(s)) return true;
+    if (/^\-?\d{2,}$/.test(s)) return true;
+    return false;
+  }
+
+  async function waitForPdfLib() {
+    while (!window.pdfjsLib) {
+      await new Promise(r => setTimeout(r, 80));
+    }
+  }
+
+  async function pdfToText(file) {
+    await waitForPdfLib();
+    const buf = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+    let text = '';
+    const pages = Math.min(8, pdf.numPages);
+    for (let p = 1; p <= pages; p++) {
+      const page = await pdf.getPage(p);
+      const c = await page.getTextContent();
+      text += '\n' + c.items.map(it => it.str).join(' ');
+    }
+    return text;
+  }
+
+  function pick(regex, txt) {
+    const m = txt.match(regex);
+    return m ? m[1].trim() : '';
+  }
+
+  function extractECITable(txt) {
+    const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
+    const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+    const m = t.match(re);
+    if (!m) return null;
+    const a13 = m[5], d = m[6];
+    if (!looksNumericToken(a13) || !looksNumericToken(d)) return null;
+    return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
+  }
+
+  function extractLabeledValues(txt) {
+    const t = txt.replace(/\s+/g,' ');
+    const dash = '[\\-–—~]';
+    const a13m = t.match(new RegExp(`\\bA1\\s*${dash}\\s*A3\\b[^\\d\\-]*([\\-]?\\d[\\d\\.\\,]*(?:[Ee][\\+\\-]?\\d+)?)`,'i'));
+    const dm   = t.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+    let a13Raw = a13m?.[1] || '';
+    let dRaw   = dm?.[1]   || '';
+    if (!looksNumericToken(a13Raw)) a13Raw = '';
+    if (!looksNumericToken(dRaw))   dRaw   = '';
+    const a13 = a13Raw ? parseNumEUexp(a13Raw) : NaN;
+    const d   = dRaw   ? parseNumEUexp(dRaw)   : NaN;
+    if (!isNaN(a13) || !isNaN(d)) return { a13,d,a13Raw,dRaw };
+    return null;
+  }
+
+  function extractFromMKIResults(txt) {
+    const mm = txt.match(/Resultaten[\s\S]{0,400}(?:MKI|ECI)\s+Euro([\s\S]{0,260})/i);
+    if (!mm) return null;
+    const after = mm[1].replace(/\s+/g,' ').trim();
+    const a13m = after.match(/A1\s*[–—\-~]\s*A3[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+    const dm   = after.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+    let a13Raw = a13m?.[1] || '';
+    let dRaw   = dm?.[1]   || '';
+    if (!looksNumericToken(a13Raw)) a13Raw='';
+    if (!looksNumericToken(dRaw))   dRaw='';
+    const a13 = a13Raw ? parseNumEUexp(a13Raw) : NaN;
+    const d   = dRaw   ? parseNumEUexp(dRaw)   : NaN;
+    if (!isNaN(a13) || !isNaN(d)) return { a13,d,a13Raw,dRaw };
+    return null;
+  }
+
+  function cleanPCR(txt) {
+    if (/NL-?PCR\s*Asfalt\s*2\.0/i.test(txt)) return "NL-PCR Asfalt 2.0";
+    if (/PCR[^0-9]*2\.0/i.test(txt)) return "PCR 2.0";
+    return "NL-PCR Asfalt 2.0";
+  }
+
+  // Heel eenvoudige poging om GWP A1-A3 en D uit de EPD te vissen (MKI-veilig, breekt niets als het niet lukt)
+  function extractGWP(txt) {
+    const t = txt.replace(/\s+/g,' ');
+    const dash = '[\\-–—~]';
+    const a13m = t.match(new RegExp(`GWP[^A-Za-z0-9]*A1\\s*${dash}\\s*A3[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)`,'i'));
+    const dm   = t.match(/GWP[^A-Za-z0-9]*D[^0-9\-]*([\-]?\d[\d\.,]*(?:[Ee][+\-]?\d+)?)/i);
+    let a13Raw = a13m?.[1] || '';
+    let dRaw   = dm?.[1]   || '';
+    if (!looksNumericToken(a13Raw)) a13Raw = '';
+    if (!looksNumericToken(dRaw))   dRaw   = '';
+    const a13 = a13Raw ? parseNumEUexp(a13Raw) : NaN;
+    const d   = dRaw   ? parseNumEUexp(dRaw)   : NaN;
+    if (!isNaN(a13) || !isNaN(d)) return { a13,d,a13Raw,dRaw };
+    return null;
+  }
+
+  async function parseEpd(file) {
+    const text = await pdfToText(file);
+    const product = pick(/Product:\s*([^\n]+?)\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\.pdf$/i,'');
+    const pcrRaw  = pick(/PCR[:\s]+([^\n]+)$/im, text) || "";
+    const pcr     = cleanPCR(pcrRaw || text);
+    const pubDate = pick(/(Datum(?:\s+van)?\s+publicatie|Issue date)[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
+
+    let a13, d, a13Raw="", dRaw="";
+    const eci = extractECITable(text);
+    if (eci) {
+      a13 = eci.a13; d = eci.d;
+      a13Raw = eci.a13Raw; dRaw = eci.dRaw;
+    }
+    if (isNaN(a13) || isNaN(d)) {
+      const lab = extractLabeledValues(text);
+      if (lab) {
+        if (isNaN(a13)) { a13 = lab.a13; a13Raw = lab.a13Raw || a13Raw; }
+        if (isNaN(d))   { d   = lab.d;   dRaw   = lab.dRaw   || dRaw;   }
       }
-      str = str.replace(/[^0-9eE+\\-\\.]/g,'');
-      const n = Number(str);
-      return Number.isFinite(n) ? n : NaN;
     }
-
-    function looksNumericToken(raw){
-      if(!raw) return false;
-      const s = normalizeMinus(String(raw)).trim();
-      if(/[Ee][+\\-]?\\d+/.test(s)) return true;
-      if(/[\\,\\.]/.test(s)) return true;
-      if(/^\\-?\\d{2,}$/.test(s)) return true;
-      return false;
-    }
-
-    async function waitPdf(){ while(!window.pdfjsLib){ await new Promise(r=>setTimeout(r,100)); } }
-
-    async function pdfToText(file){
-      await waitPdf();
-      const buf = await file.arrayBuffer();
-      const pdf = await window.pdfjsLib.getDocument({data:buf}).promise;
-      let text = '';
-      for(let p=1; p<=Math.min(8,pdf.numPages); p++){
-        const page = await pdf.getPage(p);
-        const c = await page.getTextContent();
-        text += '\\n' + c.items.map(it=>it.str).join(' ');
-      }
-      return text;
-    }
-
-    function pick(re,txt){
-      const m = txt.match(re);
-      return m ? m[1].trim() : '';
-    }
-
-    // ========= MKI extractie helpers =========
-    function extractECITable(txt){
-      const t = txt.replace(/\\s+/g,' ').replace(/\\u00A0/g,' ').trim();
-      const re = /(ECI|MKI)\\s*euro\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)/i;
-      const m = t.match(re);
-      if(!m) return null;
-      const a13 = m[5], d = m[6];
-      if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
-      return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
-    }
-
-    function extractLabeledMKI(txt){
-      const t = txt.replace(/\\s+/g,' ');
-      const dash = '[\\\\-–—~]';
-      const a13m = t.match(new RegExp(`\\\\bA1\\\\s*${dash}\\\\s*A3\\\\b[^\\\\d\\\\-]*([\\\\-]?\\\\d[\\\\d\\\\.\\\\,]*(?:[Ee][\\\\+\\\\-]?\\\\d+)?)`,'i'));
-      const dm   = t.match(/\\bD\\b[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
-      let a13Raw = a13m?.[1] || '';
-      let dRaw   = dm?.[1]   || '';
-      if(!looksNumericToken(a13Raw)) a13Raw = '';
-      if(!looksNumericToken(dRaw))   dRaw   = '';
-      const a13 = a13Raw ? parseNumEUexp(a13Raw) : NaN;
-      const d   = dRaw   ? parseNumEUexp(dRaw)   : NaN;
-      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
-      return null;
-    }
-
-    function extractFromMKIResults(txt){
-      const mm = txt.match(/Resultaten[\\s\\S]{0,400}(?:MKI|ECI)\\s+Euro([\\s\\S]{0,260})/i);
-      if(!mm) return null;
-      const after = mm[1].replace(/\\s+/g,' ').trim();
-      const a13m = after.match(/A1\\s*[–—\\-~]\\s*A3[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
-      const dm   = after.match(/\\bD\\b[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
-      let a13Raw = a13m?.[1] || '';
-      let dRaw   = dm?.[1]   || '';
-      if(!looksNumericToken(a13Raw)) a13Raw='';
-      if(!looksNumericToken(dRaw))   dRaw='';
-      const a13 = a13Raw?parseNumEUexp(a13Raw):NaN;
-      const d   = dRaw  ?parseNumEUexp(dRaw)  :NaN;
-      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
-      return null;
-    }
-
-    // ========= GWP extractie helpers (best effort) =========
-    function extractGWPTable(txt){
-      const t = txt.replace(/\\s+/g,' ').replace(/\\u00A0/g,' ').trim();
-      const re = /(GWP[^A-Za-z0-9]|GWP\\s*\\(total\\)|GWP\\s*totaal)[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)/i;
-      const m = t.match(re);
-      if(!m) return null;
-      const a13 = m[5], d = m[6];
-      if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
-      return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
-    }
-
-    function extractLabeledGWP(txt){
-      const t = txt.replace(/\\s+/g,' ');
-      const dash='[\\\\-–—~]';
-      const a13m = t.match(new RegExp(`GWP[^\\\\n]*A1\\\\s*${dash}\\\\s*A3[^\\\\d\\\\-]*([\\\\-]?\\\\d[\\\\d\\\\.\\\\,]*(?:[Ee][\\\\+\\\\-]?\\\\d+)?)`,'i'));
-      const dm   = t.match(/GWP[^A-Za-z0-9]*D[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
-      let a13Raw = a13m?.[1] || '';
-      let dRaw   = dm?.[1]   || '';
-      if(!looksNumericToken(a13Raw)) a13Raw='';
-      if(!looksNumericToken(dRaw))   dRaw='';
-      const a13 = a13Raw?parseNumEUexp(a13Raw):NaN;
-      const d   = dRaw  ?parseNumEUexp(dRaw)  :NaN;
-      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
-      return null;
-    }
-
-    // ========= EPD parsing =========
-    async function parseEpd(file){
-      const text = await pdfToText(file);
-      const product = pick(/Product:\\s*([^\\n]+?)\\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\\.pdf$/i,'');
-      const pcrRaw  = pick(/PCR[:\\s]+([^\\n]+)$/im, text) || "";
-      const pubDate = pick(/(Datum(?:\\s+van)?\\s+publicatie|Issue date)[:\\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
-
-      // MKI
-      let a13, d, a13Raw="", dRaw="";
-      const eci = extractECITable(text);
-      if(eci){ a13=eci.a13; d=eci.d; a13Raw=eci.a13Raw; dRaw=eci.dRaw; }
-      if(isNaN(a13) || isNaN(d)){
-        const lab = extractLabeledMKI(text);
-        if(lab){
-          if(isNaN(a13)){ a13=lab.a13; a13Raw=lab.a13Raw||a13Raw; }
-          if(isNaN(d)){ d=lab.d; dRaw=lab.dRaw||dRaw; }
-        }
-      }
-      if((isNaN(a13) && isNaN(d)) || (!looksNumericToken(a13Raw)&&!looksNumericToken(dRaw))){
-        const res = extractFromMKIResults(text);
-        if(res){
-          if(isNaN(a13)){ a13=res.a13; a13Raw=res.a13Raw; }
-          if(isNaN(d)){ d=res.d; dRaw=res.dRaw; }
-        }
-      }
-
-      // GWP
-      let gwpA13, gwpD, gwpA13Raw="", gwpDRaw="";
-      const gwpTab = extractGWPTable(text);
-      if(gwpTab){ gwpA13=gwpTab.a13; gwpD=gwpTab.d; gwpA13Raw=gwpTab.a13Raw; gwpDRaw=gwpTab.dRaw; }
-      if(isNaN(gwpA13) || isNaN(gwpD)){
-        const gwpLab = extractLabeledGWP(text);
-        if(gwpLab){
-          if(isNaN(gwpA13)){ gwpA13=gwpLab.a13; gwpA13Raw=gwpLab.a13Raw || gwpA13Raw; }
-          if(isNaN(gwpD)){ gwpD=gwpLab.d; gwpDRaw=gwpLab.dRaw || gwpDRaw; }
-        }
-      }
-
-      return {
-        product,
-        pcr: pcrRaw || "NL-PCR Asfalt 2.0",
-        pubDate,
-        mkiA1A3:a13,
-        mkiD:d,
-        mkiA1A3Raw:a13Raw,
-        mkiDRaw:dRaw,
-        gwpA1A3:gwpA13,
-        gwpD:gwpD,
-        gwpA1A3Raw:gwpA13Raw,
-        gwpDRaw:gwpDRaw
-      };
-    }
-
-    function parseInputPrecise(el){
-      let s = (el.value ?? "").trim();
-      if(!s) return NaN;
-      s = s.replace(/\\u202F/g,'').replace(/\\s+/g,' ');
-      if (s.includes(',') && /[Ee][+\\-]?\\d+$/.test(s)) s = s.replace(',', '.');
-      else if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
-      else if (s.includes(',') && s.includes('.')) {
-        const parts=s.split(',');
-        s=parts[0].replace(/\\./g,'')+'.'+parts.slice(1).join('');
-      }
-      s = s.replace(/[^0-9eE+\\-\\.]/g,'');
-      const n = Number(s);
-      return Number.isFinite(n)?n:NaN;
-    }
-
-    // ========= ASFALTCENTRALES =========
-    function addPlant() {
-      const name = document.getElementById('plantName').value.trim();
-      const distanceStr = document.getElementById('plantDistance').value;
-      const distance = distanceStr === '' ? null : parseFloat(distanceStr);
-
-      if (!name) {
-        alert('Vul minimaal de naam van de asfaltcentrale in.');
-        return;
-      }
-
-      const plant = {
-        id: Date.now() + '_' + Math.random().toString(16).slice(2),
-        name,
-        distanceKm: isNaN(distance) ? null : distance
-      };
-
-      asphaltPlants.push(plant);
-      document.getElementById('plantName').value = '';
-      document.getElementById('plantDistance').value = '';
-      renderPlants();
-      updateMixPlantOptions();
-    }
-
-    function removePlant(id) {
-      const idx = asphaltPlants.findIndex(p => p.id === id);
-      if (idx !== -1) {
-        asphaltPlants.splice(idx, 1);
-        renderPlants();
-        updateMixPlantOptions();
+    if ((isNaN(a13) && isNaN(d)) || (!looksNumericToken(a13Raw) && !looksNumericToken(dRaw))) {
+      const res = extractFromMKIResults(text);
+      if (res) {
+        if (isNaN(a13)) { a13 = res.a13; a13Raw = res.a13Raw; }
+        if (isNaN(d))   { d   = res.d;   dRaw   = res.dRaw;   }
       }
     }
 
-    function renderPlants() {
-      const list = document.getElementById('plantList');
-      list.innerHTML = '';
-
-      if (asphaltPlants.length === 0) {
-        const p = document.createElement('p');
-        p.className = 'muted';
-        p.id = 'noPlantsText';
-        p.textContent = 'Nog geen asfaltcentrales toegevoegd.';
-        list.appendChild(p);
-        return;
-      }
-
-      asphaltPlants.forEach(plant => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-
-        const meta = document.createElement('div');
-        meta.className = 'list-meta';
-
-        const title = document.createElement('div');
-        title.className = 'list-title';
-        title.textContent = plant.name;
-
-        const sub = document.createElement('div');
-        sub.className = 'list-sub';
-        const dist = plant.distanceKm != null ? plant.distanceKm + ' km transport' : 'Transportafstand: n.v.t.';
-        sub.textContent = dist;
-
-        meta.appendChild(title);
-        meta.appendChild(sub);
-
-        const actions = document.createElement('div');
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn-danger';
-        btn.textContent = 'Verwijderen';
-        btn.onclick = () => removePlant(plant.id);
-
-        actions.appendChild(btn);
-
-        div.appendChild(meta);
-        div.appendChild(actions);
-
-        list.appendChild(div);
-      });
+    // GWP: best effort, mag mislukken (dan NaN)
+    let gwpA13 = NaN, gwpD = NaN;
+    const gwp = extractGWP(text);
+    if (gwp) {
+      gwpA13 = gwp.a13;
+      gwpD   = gwp.d;
     }
 
-    function updateMixPlantOptions() {
-      const select = document.getElementById('mixPlant');
-      const currentValue = select.value;
-      select.innerHTML = '<option value="">Selecteer een asfaltcentrale</option>';
+    return {
+      product,
+      pcr,
+      pubDate,
+      mkiA1A3: a13,
+      mkiD: d,
+      gwpA1A3: gwpA13,
+      gwpD: gwpD
+    };
+  }
 
-      asphaltPlants.forEach(plant => {
-        const opt = document.createElement('option');
-        opt.value = plant.id;
-        opt.textContent = plant.name;
-        select.appendChild(opt);
-      });
+  // ====== Mengsel UI & state ======
+  let mengselCounter = 0;
+  const mengsels = [];
 
-      if (asphaltPlants.some(p => p.id === currentValue)) {
-        select.value = currentValue;
-      }
+  function defaultToepassing(asfaltsoort) {
+    if (!asfaltsoort) return 'Wegenbouw';
+    if (/waterbouw/i.test(asfaltsoort)) return 'Waterbouw';
+    return 'Wegenbouw';
+  }
+
+  function buildTransportBrandstofSelect() {
+    const sel = createEl('select', { class: 'w-full border rounded-xl px-3 py-2 text-sm' });
+    TRANSPORTBRANDSTOFFEN.forEach(name => {
+      sel.appendChild(createEl('option', { value: name, text: name }));
+    });
+    return sel;
+  }
+
+  function buildAsfaltsoortSelect() {
+    const sel = createEl('select', { class: 'w-full border rounded-xl px-3 py-2 text-sm' });
+    sel.appendChild(createEl('option', { value: '', text: '— kies asfaltsoort —' }));
+    ASFALTSOORTEN.forEach(name => {
+      sel.appendChild(createEl('option', { value: name, text: name }));
+    });
+    return sel;
+  }
+
+  function addMengselCard(initial = {}) {
+    const idx = ++mengselCounter;
+
+    const card = createEl('div', { class: 'card p-4 space-y-3' });
+    const header = createEl('div', { class: 'flex items-center justify-between gap-2' }, [
+      createEl('div', { class: 'text-sm font-semibold' }, `Mengsel ${idx}`),
+      createEl('div', { class: 'flex items-center gap-2' }, [
+        createEl('span', { class: 'badge badge-epd-missing', text: 'EPD: niet gekoppeld' }),
+        createEl('button', {
+          type: 'button',
+          class: 'text-xs text-red-600 hover:underline'
+        }, 'Verwijderen')
+      ])
+    ]);
+
+    const badge = header.querySelector('.badge');
+
+    const grid1 = createEl('div', { class: 'grid md:grid-cols-4 gap-3' });
+    const mengselCodeInput = createEl('input', {
+      type: 'text',
+      class: 'w-full border rounded-xl px-3 py-2 text-sm',
+      placeholder: 'Mengselcode'
+    });
+    const mengselNaamInput = createEl('input', {
+      type: 'text',
+      class: 'w-full border rounded-xl px-3 py-2 text-sm',
+      placeholder: 'Mengselnaam'
+    });
+    const asfaltsoortSelect = buildAsfaltsoortSelect();
+    const toepassingSelect = createEl('select', {
+      class: 'w-full border rounded-xl px-3 py-2 text-sm'
+    }, [
+      createEl('option', { value:'Wegenbouw', text:'Wegenbouw' }),
+      createEl('option', { value:'Waterbouw', text:'Waterbouw' })
+    ]);
+
+    grid1.append(
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Mengselcode'),
+        mengselCodeInput
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Mengselnaam'),
+        mengselNaamInput
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Asfaltsoort'),
+        asfaltsoortSelect
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Toepassingstype'),
+        toepassingSelect
+      ])
+    );
+
+    const grid2 = createEl('div', { class: 'grid md:grid-cols-4 gap-3' });
+    const centraleInput = createEl('input', {
+      type: 'text',
+      class: 'w-full border rounded-xl px-3 py-2 text-sm',
+      placeholder: 'Asfaltcentrale'
+    });
+    const afstandInput = createEl('input', {
+      type: 'number',
+      min: '0',
+      step: '1',
+      class: 'w-full border rounded-xl px-3 py-2 text-sm',
+      value: '50'
+    });
+    const retourInput = createEl('input', {
+      type: 'number',
+      min: '0',
+      step: '1',
+      class: 'w-full border rounded-xl px-3 py-2 text-sm',
+      value: '0'
+    });
+    const transportBrandstofSelect = buildTransportBrandstofSelect();
+
+    grid2.append(
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Asfaltcentrale'),
+        centraleInput
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Transportafstand (km, enkel)'),
+        afstandInput
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Retourtransport (%)'),
+        retourInput
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Transportbrandstof (A4)'),
+        transportBrandstofSelect
+      ])
+    );
+
+    const grid3 = createEl('div', { class: 'grid md:grid-cols-3 gap-3' });
+    const aanlegBrandstofSelect = createEl('select', {
+      class: 'w-full border rounded-xl px-3 py-2 text-sm'
+    }, [
+      createEl('option', { value:'Diesel', text:'Diesel' }),
+      createEl('option', { value:'HVO', text:'HVO' }),
+      createEl('option', { value:'Elektrisch', text:'Elektrisch' })
+    ]);
+    const refLifeSpan = createEl('span', {
+      class: 'inline-flex items-center text-xs text-gray-600 px-3 py-2 rounded-xl bg-gray-50'
+    }, 'Referentielevensduur: — jaar');
+
+    const epdDrop = createEl('label', { class: 'dropzone flex items-center justify-between px-3 py-2 text-xs text-gray-600' }, [
+      createEl('div', {}, [
+        createEl('div', { class:'font-medium text-gray-800 mb-0.5' }, 'EPD (PDF)'),
+        createEl('div', {}, 'Kies of sleep een EPD voor dit mengsel. A1–A3 en D (MKI) worden automatisch gelezen.')
+      ]),
+      createEl('div', { class:'px-3 py-1 rounded-xl bg-gray-900 text-white text-xs' }, 'Kies PDF…'),
+      createEl('input', { type:'file', accept:'application/pdf,.pdf' })
+    ]);
+
+    grid3.append(
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Aanlegbrandstof (A5)'),
+        aanlegBrandstofSelect
+      ]),
+      createEl('div', {}, [
+        createEl('label', { class:'block text-xs font-medium mb-1' }, 'Referentielevensduur mengsel'),
+        refLifeSpan
+      ]),
+      createEl('div', {}, epdDrop)
+    );
+
+    const epdFileInput = epdDrop.querySelector('input[type="file"]');
+
+    // Tabel met MKI & GWP A1-A3 en D
+    const table = createEl('table', { class:'w-full text-xs mono border border-gray-200 rounded-lg overflow-hidden mt-2' });
+    const tHead = createEl('thead', { class:'bg-gray-50' }, [
+      createEl('tr', {}, [
+        createEl('th', { class:'px-2 py-1 text-left' }, ''),
+        createEl('th', { class:'px-2 py-1 text-left' }, 'A1-A3'),
+        createEl('th', { class:'px-2 py-1 text-left' }, 'D')
+      ])
+    ]);
+    const tBody = createEl('tbody');
+
+    const mkiA1A3Input = createEl('input', { type:'number', step:'any', class:'w-full border rounded px-1 py-0.5 text-xs' });
+    const mkiDInput    = createEl('input', { type:'number', step:'any', class:'w-full border rounded px-1 py-0.5 text-xs' });
+    const gwpA1A3Input = createEl('input', { type:'number', step:'any', class:'w-full border rounded px-1 py-0.5 text-xs' });
+    const gwpDInput    = createEl('input', { type:'number', step:'any', class:'w-full border rounded px-1 py-0.5 text-xs' });
+
+    tBody.append(
+      createEl('tr', {}, [
+        createEl('td', { class:'px-2 py-1 font-medium' }, 'MKI [€/FU]'),
+        createEl('td', { class:'px-2 py-1' }, mkiA1A3Input),
+        createEl('td', { class:'px-2 py-1' }, mkiDInput)
+      ]),
+      createEl('tr', {}, [
+        createEl('td', { class:'px-2 py-1 font-medium' }, 'GWP [kg CO₂-eq/FU]'),
+        createEl('td', { class:'px-2 py-1' }, gwpA1A3Input),
+        createEl('td', { class:'px-2 py-1' }, gwpDInput)
+      ])
+    );
+    table.append(tHead, tBody);
+
+    card.append(header, grid1, grid2, grid3, table);
+    $('#mengsels-container').appendChild(card);
+
+    // State object
+    const state = {
+      idx,
+      card,
+      badge,
+      mengselCodeInput,
+      mengselNaamInput,
+      asfaltsoortSelect,
+      toepassingSelect,
+      centraleInput,
+      afstandInput,
+      retourInput,
+      transportBrandstofSelect,
+      aanlegBrandstofSelect,
+      refLifeSpan,
+      epdFileInput,
+      mkiA1A3Input,
+      mkiDInput,
+      gwpA1A3Input,
+      gwpDInput,
+      epdMeta: null
+    };
+    mengsels.push(state);
+
+    // Initial defaults if provided
+    if (initial.asfaltsoort) {
+      asfaltsoortSelect.value = initial.asfaltsoort;
     }
+    toepassingSelect.value = defaultToepassing(asfaltsoortSelect.value);
 
-    function getPlantNameById(id) {
-      const found = asphaltPlants.find(p => p.id === id);
-      return found ? found.name : '—';
-    }
+    // Event handlers
+    header.querySelector('button').addEventListener('click', () => {
+      card.remove();
+      const idxIn = mengsels.indexOf(state);
+      if (idxIn >= 0) mengsels.splice(idxIn, 1);
+    });
 
-    // ========= MENGSELS =========
-    async function handleEpdUpload(){
-      const input = document.getElementById('epdFile');
-      const file = input.files[0];
+    asfaltsoortSelect.addEventListener('change', () => {
+      const asf = asfaltsoortSelect.value;
+      toepassingSelect.value = defaultToepassing(asf);
+      const lv = LEVENSDUUR[asf];
+      refLifeSpan.textContent = 'Referentielevensduur: ' + (lv ? lv + ' jaar' : '— jaar');
+    });
+
+    epdFileInput.addEventListener('change', async () => {
+      const file = epdFileInput.files && epdFileInput.files[0];
       if (!file) return;
+      badge.textContent = 'EPD: lezen…';
+      badge.className = 'badge badge-epd-missing';
       try {
-        const parsed = await parseEpd(file);
-        if(!isNaN(parsed.mkiA1A3)) document.getElementById('mkiA1A3').value = parsed.mkiA1A3;
-        if(!isNaN(parsed.mkiD))    document.getElementById('mkiD').value    = parsed.mkiD;
-        if(!isNaN(parsed.gwpA1A3)) document.getElementById('co2A1A3').value = parsed.gwpA1A3;
-        if(!isNaN(parsed.gwpD))    document.getElementById('co2D').value    = parsed.gwpD;
-      } catch(e){
-        console.warn('EPD lezen mislukt', e);
-        alert('Kon MKI/GWP niet automatisch uit de EPD halen. Je kunt de waarden handmatig invullen.');
-      }
-    }
+        const info = await parseEpd(file);
+        state.epdMeta = info;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const epdInput = document.getElementById('epdFile');
-      if (epdInput) {
-        epdInput.addEventListener('change', handleEpdUpload);
+        if (!isNaN(info.mkiA1A3)) mkiA1A3Input.value = info.mkiA1A3.toFixed(4);
+        if (!isNaN(info.mkiD))    mkiDInput.value    = info.mkiD.toFixed(4);
+        if (!isNaN(info.gwpA1A3)) gwpA1A3Input.value = info.gwpA1A3.toFixed(4);
+        if (!isNaN(info.gwpD))    gwpDInput.value    = info.gwpD.toFixed(4);
+
+        badge.textContent = 'EPD: gekoppeld';
+        badge.className = 'badge badge-epd-ok';
+        showToast(`EPD gekoppeld aan mengsel ${idx}`, true);
+      } catch (e) {
+        console.error(e);
+        badge.textContent = 'EPD: fout bij lezen';
+        badge.className = 'badge badge-epd-error';
+        showToast('Kon EPD niet uitlezen. Vul A1-A3 en D handmatig in.', false);
       }
     });
 
-    function addMix() {
-      const code = document.getElementById('mixCode').value.trim();
-      const name = document.getElementById('mixName').value.trim();
-      const plantId = document.getElementById('mixPlant').value;
-      const type = document.getElementById('mixType').value;
-      const transportFuel = document.getElementById('transportFuel').value;
-      const returnTransportStr = document.getElementById('returnTransport').value;
-      const returnTransport = returnTransportStr === '' ? null : parseFloat(returnTransportStr);
-      const constructionFuel = document.getElementById('constructionFuel').value;
-      const mkiA1A3 = parseInputPrecise(document.getElementById('mkiA1A3'));
-      const mkiD    = parseInputPrecise(document.getElementById('mkiD'));
-      const co2A1A3 = parseInputPrecise(document.getElementById('co2A1A3'));
-      const co2D    = parseInputPrecise(document.getElementById('co2D'));
-      const epdInput = document.getElementById('epdFile');
-      const epdFile = epdInput.files[0] || null;
-      const epdFileName = epdFile ? epdFile.name : '';
+    return state;
+  }
 
-      if (!code || !name) {
-        alert('Vul minimaal mengselcode en mengselnaam in.');
-        return;
-      }
-      if (!plantId) {
-        alert('Selecteer een asfaltcentrale voor dit mengsel.');
-        return;
-      }
+  // ====== Impactberekening per mengsel ======
+  function computeImpactsForMengsel(m) {
+    const asf = m.asfaltsoortSelect.value || '';
+    if (!asf) return null;
 
-      const mix = {
-        id: Date.now() + '_' + Math.random().toString(16).slice(2),
-        code,
-        name,
-        plantId,
-        type,
-        transportFuel,
-        returnTransport: isNaN(returnTransport) ? null : returnTransport,
-        constructionFuel,
-        mkiA1A3: isNaN(mkiA1A3) ? null : mkiA1A3,
-        mkiD:    isNaN(mkiD)    ? null : mkiD,
-        co2A1A3: isNaN(co2A1A3) ? null : co2A1A3,
-        co2D:    isNaN(co2D)    ? null : co2D,
-        epdFileName
-      };
+    const mkiA1A3 = parseNumberInput(m.mkiA1A3Input);
+    const mkiD    = parseNumberInput(m.mkiDInput);
+    const gwpA1A3 = parseNumberInput(m.gwpA1A3Input);
+    const gwpD    = parseNumberInput(m.gwpDInput);
 
-      mixes.push(mix);
+    const km      = parseNumberInput(m.afstandInput) || 0;
+    const retour  = parseNumberInput(m.retourInput) || 0;
+    const effKm   = km * (1 + retour / 100);
 
-      // inputs leegmaken (centrale/asfaltsoort blijven staan)
-      document.getElementById('mixCode').value = '';
-      document.getElementById('mixName').value = '';
-      document.getElementById('transportFuel').value = '';
-      document.getElementById('returnTransport').value = '0';
-      document.getElementById('constructionFuel').value = '';
-      document.getElementById('mkiA1A3').value = '';
-      document.getElementById('mkiD').value = '';
-      document.getElementById('co2A1A3').value = '';
-      document.getElementById('co2D').value = '';
-      document.getElementById('epdFile').value = '';
+    const tFuel   = m.transportBrandstofSelect.value;
+    const tFactor = TRANSPORT_MKI_PER_TKM[tFuel];
+    const mkiA4   = typeof tFactor === 'number' ? tFactor * effKm : NaN;
 
-      renderMixes();
+    const a5Data  = A5_MKI[asf] || {};
+    const a5Fuel  = m.aanlegBrandstofSelect.value;
+    const mkiA5   = typeof a5Data[a5Fuel] === 'number' ? a5Data[a5Fuel] : NaN;
+
+    const b1Val   = B1_MKI[asf];
+    const lvRef   = LEVENSDUUR[asf] || null;
+    const lvProj  = parseInt($('#projectlevensduur').value || '0', 10) || null;
+    let mkiB1     = typeof b1Val === 'number' ? b1Val : NaN;
+
+    // Optie: schaal B1 met verhouding projectlevensduur / referentielevensduur
+    if (lvRef && lvProj && lvProj !== lvRef) {
+      mkiB1 = b1Val * (lvProj / lvRef);
     }
 
-    function removeMix(id) {
-      const idx = mixes.findIndex(m => m.id === id);
-      if (idx !== -1) {
-        mixes.splice(idx, 1);
-        renderMixes();
-      }
+    const toep    = m.toepassingSelect.value === 'Waterbouw' ? 'Waterbouw' : 'Wegenbouw';
+    const c1Data  = C1_MKI[asf] || {};
+    const c1Fuel  = (a5Fuel === 'HVO' || a5Fuel === 'Diesel') ? a5Fuel : 'Diesel';
+    const mkiC1   = typeof c1Data[c1Fuel] === 'number' ? c1Data[c1Fuel] : NaN;
+
+    const mkiC3   = C3_MKI[toep];
+    const mkiC4   = C4_MKI[toep];
+
+    const totalWithoutD = [mkiA1A3, mkiA4, mkiA5, mkiB1, mkiC1, mkiC3, mkiC4]
+      .filter(v => typeof v === 'number' && isFinite(v))
+      .reduce((sum, v) => sum + v, 0);
+
+    const totalWithD = totalWithoutD + (isFinite(mkiD) ? mkiD : 0);
+
+    const gwpTotal = [gwpA1A3, gwpD]
+      .filter(v => typeof v === 'number' && isFinite(v))
+      .reduce((sum, v) => sum + v, 0);
+
+    return {
+      asfaltsoort: asf,
+      toepassing: toep,
+      mengselcode: m.mengselCodeInput.value || '',
+      mengselnaam: m.mengselNaamInput.value || '',
+      centrale: m.centraleInput.value || '',
+      transportAfstandKm: km,
+      retourPct: retour,
+      transportBrandstof: tFuel,
+      aanlegBrandstof: a5Fuel,
+      refLife: lvRef,
+      projectLife: lvProj,
+      mkiA1A3,
+      mkiA4,
+      mkiA5,
+      mkiB1,
+      mkiC1,
+      mkiC3,
+      mkiC4,
+      mkiD,
+      mkiTotalAD: totalWithD,
+      gwpA1A3,
+      gwpD,
+      gwpTotalAD: gwpTotal,
+      epdMeta: m.epdMeta
+    };
+  }
+
+  // ====== PDF generatie ======
+  function generatePdf() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      showToast('jsPDF niet geladen', false);
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const data = mengsels
+      .map(computeImpactsForMengsel)
+      .filter(x => x && x.asfaltsoort);
+
+    if (!data.length) {
+      showToast('Voeg minimaal één mengsel toe met asfaltsoort en MKI-data.', false);
+      return;
     }
 
-    function renderMixes() {
-      const list = document.getElementById('mixList');
-      list.innerHTML = '';
+    const projectnaam   = $('#projectnaam').value || 'Project';
+    const opdrachtgever = $('#opdrachtgever').value || '';
+    const bedrijfsnaam  = $('#bedrijfsnaam').value || '';
+    const lcaUitvoerder = $('#lca-uitvoerder').value || '';
+    const projLife      = $('#projectlevensduur').value || '';
+    const projAdres     = $('#projectadres').value || '';
 
-      if (mixes.length === 0) {
-        const p = document.createElement('p');
-        p.className = 'muted';
-        p.id = 'noMixesText';
-        p.textContent = 'Nog geen mengsels toegevoegd.';
-        list.appendChild(p);
-        return;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+
+    // Voorblad
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(20);
+    doc.text('LCA-rapport asfalt', 20, 30);
+    doc.setFontSize(14);
+    doc.text(projectnaam, 20, 40);
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    let y = 55;
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('nl-NL');
+
+    const infoLines = [
+      ['Opdrachtgever', opdrachtgever],
+      ['Bedrijf / adviseur', bedrijfsnaam],
+      ['LCA-uitvoerder', lcaUitvoerder],
+      ['Projectlevensduur', projLife ? projLife + ' jaar' : '—'],
+      ['Projectadres / coördinaten', projAdres || '—'],
+      ['Datum', dateStr],
+      ['Normenkader', 'EN 15804 + NMD Bepalingsmethode (MKI, €/FU)']
+    ];
+    infoLines.forEach(([label, value]) => {
+      doc.text(`${label}:`, 20, y);
+      doc.text(String(value), 70, y);
+      y += 6;
+    });
+
+    doc.addPage();
+
+    // Samenvattingstabel per mengsel
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(12);
+    doc.text('Overzicht mengsels en MKI A–D', 20, 20);
+    doc.setFontSize(9);
+
+    const colX = [20, 45, 105, 130, 150, 170];
+    let rowY = 28;
+
+    doc.text('Code', colX[0], rowY);
+    doc.text('Mengselnaam', colX[1], rowY);
+    doc.text('Asfaltsoort', colX[2], rowY);
+    doc.text('MKI A1-A3', colX[3], rowY);
+    doc.text('MKI A–D totaal', colX[4], rowY);
+    doc.text('GWP A–D', colX[5], rowY);
+    rowY += 4;
+    doc.setDrawColor(200,200,200);
+    doc.line(20, rowY, 190, rowY);
+    rowY += 4;
+
+    doc.setFont('helvetica','normal');
+
+    data.forEach(mix => {
+      if (rowY > 270) {
+        doc.addPage();
+        rowY = 20;
       }
+      doc.text(mix.mengselcode || '-', colX[0], rowY);
+      doc.text((mix.mengselnaam || '').slice(0,25), colX[1], rowY);
+      doc.text((mix.asfaltsoort || '').slice(0,30), colX[2], rowY);
+      doc.text(fmt(mix.mkiA1A3), colX[3], rowY);
+      doc.text(fmt(mix.mkiTotalAD), colX[4], rowY);
+      doc.text(fmt(mix.gwpTotalAD), colX[5], rowY);
+      rowY += 5;
+    });
 
-      mixes.forEach(mix => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-
-        const meta = document.createElement('div');
-        meta.className = 'list-meta';
-
-        const title = document.createElement('div');
-        title.className = 'list-title';
-        title.textContent = mix.code + ' – ' + mix.name;
-
-        const sub1 = document.createElement('div');
-        sub1.className = 'list-sub';
-        sub1.textContent =
-          'Asfaltcentrale: ' + getPlantNameById(mix.plantId) +
-          ' · Asfaltsoort: ' + (mix.type || 'n.v.t.');
-
-        const sub2 = document.createElement('div');
-        sub2.className = 'list-sub';
-        const rt = mix.returnTransport != null ? mix.returnTransport + ' % retour' : 'Retourtransport: n.v.t.';
-        sub2.textContent =
-          'Transp.: ' + (mix.transportFuel || 'n.v.t.') +
-          ' · Aanleg: ' + (mix.constructionFuel || 'n.v.t.') +
-          ' · ' + rt;
-
-        const sub3 = document.createElement('div');
-        sub3.className = 'list-sub';
-        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
-        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
-        sub3.textContent =
-          'MKI A1–A3: ' + (mix.mkiA1A3 ?? 'n.v.t.') +
-          ' · MKI D: ' + (mix.mkiD ?? 'n.v.t.') +
-          ' · MKI A–D: ' + (isNaN(mkiTot) ? 'n.v.t.' : mkiTot) +
-          ' · GWP A1–A3: ' + (mix.co2A1A3 ?? 'n.v.t.') +
-          ' · GWP D: ' + (mix.co2D ?? 'n.v.t.') +
-          ' · GWP A–D: ' + (isNaN(co2Tot) ? 'n.v.t.' : co2Tot);
-
-        const sub4 = document.createElement('div');
-        sub4.className = 'list-sub';
-        sub4.textContent = 'EPD: ' + (mix.epdFileName || 'geen gekoppeld');
-
-        meta.appendChild(title);
-        meta.appendChild(sub1);
-        meta.appendChild(sub2);
-        meta.appendChild(sub3);
-        meta.appendChild(sub4);
-
-        const actions = document.createElement('div');
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn-danger';
-        btn.textContent = 'Verwijderen';
-        btn.onclick = () => removeMix(mix.id);
-
-        actions.appendChild(btn);
-
-        div.appendChild(meta);
-        div.appendChild(actions);
-
-        list.appendChild(div);
-      });
-    }
-
-    // ========= DATA HELPERS VOOR EXPORT =========
-    function collectProjectData() {
-      return {
-        projectName: document.getElementById('projectName').value || '',
-        companyName: document.getElementById('companyName').value || '',
-        clientName: document.getElementById('clientName').value || '',
-        lcaAuthor: document.getElementById('lcaAuthor').value || '',
-        projectLifetime: document.getElementById('projectLifetime').value || '',
-        projectLocation: document.getElementById('projectLocation').value || '',
-        generatedAt: new Date()
-      };
-    }
-
-    function collectPlants() {
-      return asphaltPlants.map(p => ({
-        name: p.name,
-        distanceKm: p.distanceKm
-      }));
-    }
-
-    function collectMixesWithDerived() {
-      return mixes.map(mix => {
-        const mkiTotal = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
-        const gwpTotal = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
-        return {
-          code: mix.code,
-          name: mix.name,
-          plantName: getPlantNameById(mix.plantId),
-          type: mix.type || '',
-          transportFuel: mix.transportFuel || '',
-          returnTransport: mix.returnTransport,
-          constructionFuel: mix.constructionFuel || '',
-          mkiA1A3: mix.mkiA1A3,
-          mkiD: mix.mkiD,
-          mkiTotal: isNaN(mkiTotal) ? null : mkiTotal,
-          co2A1A3: mix.co2A1A3,
-          co2D: mix.co2D,
-          co2Total: isNaN(gwpTotal) ? null : gwpTotal,
-          epdFileName: mix.epdFileName || ''
-        };
-      });
-    }
-
-    // ========= CSV EXPORT =========
-    function downloadCsv() {
-      if (mixes.length === 0) {
-        alert('Voeg minimaal één mengsel toe voordat je exporteert.');
-        return;
-      }
-
-      const sep = ';';
-      let csv = '';
-
-      const project = collectProjectData();
-      const plants = collectPlants();
-      const mixData = collectMixesWithDerived();
-
-      csv += 'LCA Tool;InfraImpact\\n';
-      csv += 'Datum;' + project.generatedAt.toLocaleDateString('nl-NL') + '\\n\\n';
-
-      csv += 'Sectie;Veld;Waarde;Eenheid\\n';
-      csv += 'Project;Projectnaam;' + project.projectName + ';\\n';
-      csv += 'Project;Bedrijfsnaam;' + project.companyName + ';\\n';
-      csv += 'Project;Opdrachtgever;' + project.clientName + ';\\n';
-      csv += 'Project;LCA Uitvoerder;' + project.lcaAuthor + ';\\n';
-      csv += 'Project;Projectlevensduur;' + project.projectLifetime + ';jaar\\n';
-      csv += 'Project;Projectadres/Coördinaten;' + project.projectLocation + ';\\n\\n';
-
-      csv += 'Asfaltcentrales & Transport;;;\\n';
-      csv += 'Asfaltcentrale;Transportkilometers (km);;\\n';
-      if (plants.length === 0) {
-        csv += 'Geen geregistreerde asfaltcentrales;;;' + '\\n';
-      } else {
-        plants.forEach(p => {
-          const dist = (p.distanceKm != null)
-            ? String(p.distanceKm).replace('.', ',')
-            : '';
-          csv += p.name + sep + dist + sep + sep + '\\n';
-        });
-      }
-      csv += '\\n';
-
-      csv += 'Mengsels & Eigenschappen;;;;;;;;;;;;;\\n';
-      csv += [
-        'Mengselcode',
-        'Mengselnaam',
-        'Asfaltcentrale',
-        'Asfaltsoort',
-        'Transportbrandstof',
-        'Retourtransport (%)',
-        'Aanlegbrandstof',
-        'MKI A1-A3',
-        'MKI D',
-        'MKI A-D totaal',
-        'GWP A1-A3 (kg CO2-eq.)',
-        'GWP D (kg CO2-eq.)',
-        'GWP A-D totaal (kg CO2-eq.)',
-        'EPD bestand'
-      ].join(sep) + '\\n';
-
-      const v = (val) => (val == null || isNaN(val)) ? '' : String(val).replace('.', ',');
-
-      mixData.forEach(mix => {
-        const mkiTot = mix.mkiTotal;
-        const co2Tot = mix.co2Total;
-        csv += [
-          mix.code,
-          mix.name,
-          mix.plantName,
-          mix.type || '',
-          mix.transportFuel || '',
-          mix.returnTransport != null ? v(mix.returnTransport) : '',
-          mix.constructionFuel || '',
-          v(mix.mkiA1A3),
-          v(mix.mkiD),
-          (mix.mkiTotal == null ? '' : v(mix.mkiTotal)),
-          v(mix.co2A1A3),
-          v(mix.co2D),
-          (co2Tot == null ? '' : v(co2Tot)),
-          mix.epdFileName || ''
-        ].join(sep) + '\\n';
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      const fileName = 'lca_tool_' + slugify(project.projectName) + '.csv';
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-
-    // ========= PDF EXPORT (structuur in lijn met LCApro) =========
-    function downloadPdf() {
-      if (mixes.length === 0) {
-        alert('Voeg minimaal één mengsel toe voordat je exporteert.');
-        return;
-      }
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-      const project = collectProjectData();
-      const plants = collectPlants();
-      const mixData = collectMixesWithDerived();
-
-      let y = 15;
-      const left = 15;
-      const lineHeight = 6;
-
-      function addLine(text, size = 10, bold = false) {
-        doc.setFont('helvetica', bold ? 'bold' : 'normal');
-        doc.setFontSize(size);
-        const splitted = doc.splitTextToSize(text, 180);
-        splitted.forEach(line => {
-          if (y > 280) {
-            doc.addPage();
-            y = 15;
-          }
-          doc.text(line, left, y);
-          y += lineHeight;
-        });
-      }
-
-      function addSectionTitle(title) {
-        y += 2;
-        addLine(title, 11, true);
-        y += 1;
-      }
-
-      function addTable(headers, rows) {
-        const colWidths = [30, 40, 40, 30, 30, 30, 30, 30, 30, 40];
-        const startX = left;
-        let currentY = y;
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-
-        if (currentY > 270) {
-          doc.addPage();
-          currentY = 15;
-        }
-        let x = startX;
-        headers.forEach((h, i) => {
-          const w = colWidths[i] || 30;
-          doc.text(doc.splitTextToSize(h, w - 2), x, currentY);
-          x += w;
-        });
-        currentY += 5;
-
-        doc.setFont('helvetica', 'normal');
-
-        rows.forEach(row => {
-          if (currentY > 270) {
-            doc.addPage();
-            currentY = 15;
-            let xh = startX;
-            doc.setFont('helvetica', 'bold');
-            headers.forEach((h, i) => {
-              const w = colWidths[i] || 30;
-              doc.text(doc.splitTextToSize(h, w - 2), xh, currentY);
-              xh += w;
-            });
-            doc.setFont('helvetica', 'normal');
-            currentY += 5;
-          }
-          let xRow = startX;
-          row.forEach((cell, i) => {
-            const w = colWidths[i] || 30;
-            const txt = cell == null ? '' : String(cell);
-            const lines = doc.splitTextToSize(txt, w - 2);
-            lines.forEach((line, idx) => {
-              doc.text(line, xRow, currentY + idx * 4);
-            });
-            xRow += w;
-          });
-          currentY += 6;
-        });
-
-        y = currentY + 2;
-      }
-
-      function fmt(num) {
-        if (num == null || isNaN(num)) return 'n.v.t.';
-        return Number(num).toFixed(3).replace('.', ',');
-      }
-
-      // 1. Voorblad
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text('LCA-rapport asfalt – InfraImpact', left, y);
-      y += 8;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      const projTitel = project.projectName || 'Onbenoemd project';
-      doc.text('Project: ' + projTitel, left, y); y += 6;
-      doc.text('Opdrachtgever: ' + (project.clientName || '-'), left, y); y += 6;
-      doc.text('LCA-uitvoerder: ' + (project.lcaAuthor || '-'), left, y); y += 6;
-      doc.text('Bedrijf: ' + (project.companyName || '-'), left, y); y += 6;
-      doc.text('Projectlevensduur: ' + (project.projectLifetime || '-') + ' jaar', left, y); y += 6;
-      doc.text('Locatie: ' + (project.projectLocation || '-'), left, y); y += 6;
-      doc.text('Rapportdatum: ' + project.generatedAt.toLocaleDateString('nl-NL'), left, y); y += 10;
-
-      addLine(
-        'Dit rapport is opgesteld op basis van ingevoerde mengselgegevens en EPD’s. ' +
-        'MKI- en GWP-waarden (A1–A3 en D) zijn rechtstreeks overgenomen uit de brondata ' +
-        'of handmatige invoer in de LCA-tool.',
-        9
-      );
-
-      // Nieuwe pagina voor inhoud
+    // Detailpagina per mengsel
+    data.forEach((mix, idx) => {
       doc.addPage();
-      y = 15;
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(12);
+      doc.text(`Mengsel ${idx+1}: ${mix.mengselcode || ''} ${mix.mengselnaam || ''}`, 20, 20);
+      doc.setFontSize(9);
+      doc.setFont('helvetica','normal');
 
-      // 2. Projectgegevens
-      addSectionTitle('1. Projectgegevens');
-      addLine('Projectnaam: ' + (project.projectName || '-'), 10);
-      addLine('Opdrachtgever: ' + (project.clientName || '-'), 10);
-      addLine('LCA-uitvoerder: ' + (project.lcaAuthor || '-'), 10);
-      addLine('Bedrijf: ' + (project.companyName || '-'), 10);
-      addLine('Projectlevensduur: ' + (project.projectLifetime || '-') + ' jaar', 10);
-      addLine('Projectlocatie: ' + (project.projectLocation || '-'), 10);
+      let y = 28;
+      const metaLines = [
+        ['Asfaltsoort', mix.asfaltsoort],
+        ['Toepassingstype', mix.toepassing],
+        ['Asfaltcentrale', mix.centrale || '—'],
+        ['Transportafstand (enkel)', `${fmt(mix.transportAfstandKm,1)} km`],
+        ['Retourtransport', `${fmt(mix.retourPct,1)} %`],
+        ['Transportbrandstof (A4)', mix.transportBrandstof],
+        ['Aanlegbrandstof (A5)', mix.aanlegBrandstof],
+        ['Referentielevensduur mengsel', mix.refLife ? mix.refLife + ' jaar' : '—'],
+        ['Projectlevensduur', mix.projectLife ? mix.projectLife + ' jaar' : '—'],
+        ['EPD product', mix.epdMeta?.product || '—'],
+        ['PCR', mix.epdMeta?.pcr || '—'],
+        ['Publicatiedatum EPD', mix.epdMeta?.pubDate || '—']
+      ];
+      metaLines.forEach(([label,value]) => {
+        if (y > 260) {
+          doc.addPage(); y = 20;
+        }
+        doc.text(label + ':', 20, y);
+        doc.text(String(value), 70, y);
+        y += 5;
+      });
 
-      // 3. Asfaltcentrales
-      addSectionTitle('2. Asfaltcentrales en transport');
-      if (!plants.length) {
-        addLine('Er zijn geen asfaltcentrales geregistreerd in de tool.', 9);
-      } else {
-        const plantRows = plants.map(p => [
-          p.name,
-          p.distanceKm != null ? (p.distanceKm + ' km') : 'n.v.t.'
-        ]);
-        addTable(['Asfaltcentrale', 'Transportafstand (km)'], plantRows);
-      }
+      y += 4;
+      if (y > 260) { doc.addPage(); y = 20; }
 
-      // 4. Mengsels en indicatoren
-      addSectionTitle('3. Mengsels en milieu-indicatoren');
+      // Tabel modules A1-A3, A4, A5, B1, C1, C3, C4, D
+      doc.setFont('helvetica','bold');
+      doc.text('Module-overzicht volgens EN 15804', 20, y);
+      y += 6;
+      doc.setFont('helvetica','normal');
 
-      addLine(
-        'Onderstaande tabel toont per asfaltmengsel de toegepaste centrales, asfaltsoort, ' +
-        'transport- en aanlegparameters en de MKI- en GWP-waarden. De MKI A–D en GWP A–D zijn steeds A1–A3 + D.',
-        9
-      );
+      const headerY = y;
+      doc.text('Module', 20, headerY);
+      doc.text('Omschrijving', 45, headerY);
+      doc.text('MKI [€/FU]', 140, headerY);
+      doc.text('GWP [kg CO₂-eq/FU]', 165, headerY);
+      y += 4;
+      doc.line(20, y, 190, y);
+      y += 4;
 
-      const mixRows = mixData.map(m => [
-        m.code + ' – ' + m.name,
-        m.plantName,
-        m.type || '',
-        fmt(m.mkiA1A3),
-        fmt(m.mkiD),
-        fmt(m.mkiTotal),
-        fmt(m.co2A1A3),
-        fmt(m.co2D),
-        fmt(m.co2Total),
-        m.epdFileName || ''
-      ]);
+      const rows = [
+        ['A1-A3', 'Productfase (grondstoffen, productie)', mix.mkiA1A3, mix.gwpA1A3],
+        ['A4', 'Transport naar werk (vrachtwagen, tkm)', mix.mkiA4, NaN],
+        ['A5', 'Aanlegfase (asfaltset, walsen etc.)', mix.mkiA5, NaN],
+        ['B1', 'Gebruikfase (uitloging, functie)', mix.mkiB1, NaN],
+        ['C1', 'Sloopfase', mix.mkiC1, NaN],
+        ['C3', 'Recycling / breken', mix.mkiC3, NaN],
+        ['C4', 'Eindverwerking', mix.mkiC4, NaN],
+        ['D', 'Potentieel buiten systeemgrens', mix.mkiD, mix.gwpD]
+      ];
 
-      if (!mixRows.length) {
-        addLine('Er zijn geen mengsels geregistreerd.', 9);
-      } else {
-        addTable(
-          [
-            'Mengsel',
-            'Asfaltcentrale',
-            'Asfaltsoort',
-            'MKI A1–A3',
-            'MKI D',
-            'MKI A–D',
-            'GWP A1–A3',
-            'GWP D',
-            'GWP A–D',
-            'EPD-bestand'
-          ],
-          mixRows
-        );
-      }
+      rows.forEach(([mod, desc, mki, gwp]) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(mod, 20, y);
+        doc.text(desc.slice(0,60), 45, y);
+        doc.text(fmt(mki), 140, y, { align:'right' });
+        doc.text(fmt(gwp), 190, y, { align:'right' });
+        y += 5;
+      });
 
-      // 5. Toelichting berekeningen
-      addSectionTitle('4. Toelichting berekeningen (MKI / GWP)');
-      addLine('Voor elk mengsel geldt in dit rapport:', 9);
-      addLine('• MKI A–D = MKI A1–A3 + MKI D', 9);
-      addLine('• GWP A–D = GWP A1–A3 + GWP D (kg CO₂-eq.)', 9);
-      addLine(
-        'De functionele eenheid (bijvoorbeeld per ton asfalt of per m²) is gelijk aan de eenheid uit de gebruikte EPD’s of invoer.',
-        9
-      );
-      addLine(
-        'Gebruik dit rapport als input voor aanbestedingsdossiers en interne sturing, maar ' +
-        'toets altijd aan de actuele PCR- en NMD-richtlijnen.',
-        9
-      );
+      y += 4;
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica','bold');
+      doc.text('MKI totaal A–D:', 20, y);
+      doc.text(fmt(mix.mkiTotalAD) + ' €/FU', 60, y);
+      y += 5;
+      doc.text('GWP totaal A–D:', 20, y);
+      doc.text(fmt(mix.gwpTotalAD) + ' kg CO₂-eq/FU', 60, y);
+    });
 
-      const fileName = 'lca_rapport_' + slugify(project.projectName) + '.pdf';
-      doc.save(fileName);
+    const fileName = 'LCA-asfalt-' + (projectnaam || 'rapport').replace(/[^a-z0-9]+/gi,'_') + '.pdf';
+    doc.save(fileName);
+  }
+
+  // ====== CSV generatie ======
+  function exportCsv() {
+    const data = mengsels
+      .map(computeImpactsForMengsel)
+      .filter(x => x && x.asfaltsoort);
+
+    if (!data.length) {
+      showToast('Geen mengsels met complete data voor CSV.', false);
+      return;
     }
+
+    const headers = [
+      'Mengselcode','Mengselnaam','Asfaltsoort','Toepassingstype',
+      'Asfaltcentrale',
+      'Transportafstand_km','Retourtransport_pct','Transportbrandstof',
+      'Aanlegbrandstof',
+      'Ref_levensduur_j','Project_levensduur_j',
+      'MKI_A1A3','MKI_A4','MKI_A5','MKI_B1','MKI_C1','MKI_C3','MKI_C4','MKI_D','MKI_A_D_totaal',
+      'GWP_A1A3','GWP_D','GWP_A_D_totaal'
+    ];
+
+    const lines = [headers.join(';')];
+
+    function csvNum(n) {
+      if (typeof n !== 'number' || !isFinite(n)) return '';
+      return n.toString().replace('.', ',');
+    }
+
+    data.forEach(mix => {
+      const row = [
+        mix.mengselcode,
+        mix.mengselnaam,
+        mix.asfaltsoort,
+        mix.toepassing,
+        mix.centrale,
+        csvNum(mix.transportAfstandKm),
+        csvNum(mix.retourPct),
+        mix.transportBrandstof,
+        mix.aanlegBrandstof,
+        mix.refLife != null ? mix.refLife : '',
+        mix.projectLife != null ? mix.projectLife : '',
+        csvNum(mix.mkiA1A3),
+        csvNum(mix.mkiA4),
+        csvNum(mix.mkiA5),
+        csvNum(mix.mkiB1),
+        csvNum(mix.mkiC1),
+        csvNum(mix.mkiC3),
+        csvNum(mix.mkiC4),
+        csvNum(mix.mkiD),
+        csvNum(mix.mkiTotalAD),
+        csvNum(mix.gwpA1A3),
+        csvNum(mix.gwpD),
+        csvNum(mix.gwpTotalAD)
+      ].map(v => {
+        const s = String(v ?? '');
+        return /[;"\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+      });
+      lines.push(row.join(';'));
+    });
+
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + lines.join('\n')], { type:'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'LCA-asfalt-resultaten.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ====== Init ======
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#add-mengsel').addEventListener('click', () => addMengselCard());
+    addMengselCard(); // start met 1 mengsel
+
+    $('#btn-pdf').addEventListener('click', generatePdf);
+    $('#btn-csv').addEventListener('click', exportCsv);
+  });
   </script>
 
-  <!-- pdf.js loader (zoals bij de EPD-checker) -->
-  <script type="module">
-    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
-    window.pdfjsLib = pdfjsLib;
-  </script>
 </body>
 </html>
