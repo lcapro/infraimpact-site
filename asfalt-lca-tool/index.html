@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project asfalt LCA – InfraImpact</title>
+  <meta name="description" content="Stel snel een project-specifieke asfalt LCA op aan de hand van enkele projectinputs. Een tool van InfraImpact.">
+
+  <!-- Favicons & App Icons - pas paden aan indien nodig -->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#2F3B52">
+
+  <style>
+    :root {
+      --ii-bg: #f5f7fa;
+      --ii-primary: #1c4f82;
+      --ii-primary-dark: #153b60;
+      --ii-accent: #00a676;
+      --ii-text: #1f2933;
+      --ii-border: #d0d7e2;
+      --ii-radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--ii-bg);
+      color: var(--ii-text);
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--ii-border);
+    }
+
+    .header-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--ii-primary-dark);
+      text-decoration: none;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--ii-text);
+      font-size: 0.95rem;
+    }
+
+    nav a.active {
+      color: var(--ii-primary);
+      font-weight: 600;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 24px auto 40px;
+      padding: 0 16px 40px;
+    }
+
+    .page-title {
+      margin-bottom: 8px;
+      font-size: 1.7rem;
+      color: var(--ii-primary-dark);
+    }
+
+    .page-subtitle {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #4b5563;
+      max-width: 700px;
+      font-size: 0.98rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--ii-radius);
+      border: 1px solid var(--ii-border);
+      padding: 16px 16px 18px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 6px;
+      color: var(--ii-primary-dark);
+    }
+
+    .card p.lead {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: #4b5563;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      border-radius: 6px;
+      border: 1px solid var(--ii-border);
+      padding: 7px 9px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--ii-primary);
+      box-shadow: 0 0 0 1px rgba(28,79,130,0.1);
+    }
+
+    small {
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 14px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--ii-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--ii-primary-dark);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--ii-primary-dark);
+      border: 1px solid var(--ii-border);
+    }
+
+    .layers-list {
+      border-radius: 8px;
+      border: 1px dashed var(--ii-border);
+      padding: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      background: #f9fafb;
+    }
+
+    .layer-item {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid var(--ii-border);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+
+    .layer-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .layer-name {
+      font-weight: 600;
+      color: var(--ii-primary-dark);
+    }
+
+    .layer-sub {
+      color: #6b7280;
+    }
+
+    .layer-actions button {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+
+    .result-block h3 {
+      font-size: 1rem;
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+
+    .result-highlight {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      background: #e5f4ee;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      color: #116149;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 8px;
+    }
+
+    th, td {
+      padding: 6px 4px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: #4b5563;
+    }
+
+    tfoot td {
+      font-weight: 600;
+    }
+
+    .muted {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    footer {
+      border-top: 1px solid var(--ii-border);
+      padding: 14px 16px 18px;
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: center;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Vervang deze header indien nodig door de bestaande InfraImpact header -->
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">InfraImpact</a>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="projecten.html">Projecten</a></li>
+          <li><a href="epd-checker.html">MKI-toetsing asfalt</a></li>
+          <li><a href="asfalt-lca-tool.html" class="active">Project asfalt LCA</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="page-title">Project asfalt LCA</h1>
+    <p class="page-subtitle">
+      Vul enkele projectgegevens en asfaltlagen in en krijg direct een indicatieve projectspecifieke MKI voor asfalt.
+      Geschikt als startpunt voor LCA-rapportage en aanbestedingen in de GWW.
+    </p>
+
+    <div class="layout">
+      <!-- Linkerkolom: invoer -->
+      <section class="card">
+        <h2>Projectgegevens & invoer</h2>
+        <p class="lead">Deze tool rekent met generieke dichtheden en MKI-waarden. Vervang deze in de code waar nodig door projectspecifieke factoren.</p>
+
+        <form id="lcaForm" onsubmit="event.preventDefault(); calculateLCA();">
+          <div class="field-group">
+            <div class="field-row">
+              <div class="field">
+                <label for="projectName">Projectnaam</label>
+                <input type="text" id="projectName" placeholder="Bijv. Groot Onderhoud N123">
+              </div>
+              <div class="field">
+                <label for="client">Opdrachtgever</label>
+                <input type="text" id="client" placeholder="Bijv. Gemeente X">
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-row">
+              <div class="field">
+                <label for="referenceYear">Referentiejaar</label>
+                <input type="number" id="referenceYear" min="2000" max="2100" value="2025">
+              </div>
+              <div class="field">
+                <label for="totalArea">Totaal asfaltoppervlak (m²)</label>
+                <input type="number" id="totalArea" min="1" step="1" placeholder="Bijv. 25.000">
+                <small>Wordt gebruikt om MKI per m² te bepalen.</small>
+              </div>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:10px 0 12px;">
+
+          <h3 style="font-size:0.95rem;margin:0 0 6px;">Asfaltlagen</h3>
+          <p class="muted">Voeg één of meerdere lagen toe (deklaag, tussenlaag, onderlaag, etc.). De combinatie bepaalt de project-MKI.</p>
+
+          <div class="field-group">
+            <div class="field-row">
+              <div class="field">
+                <label for="layerName">Laagnaam</label>
+                <input type="text" id="layerName" placeholder="Bijv. Deklaag">
+              </div>
+              <div class="field">
+                <label for="mixType">Asfaltmengsel</label>
+                <select id="mixType">
+                  <!-- Deze lijst kun je uitbreiden/aanpassen aan jouw standaardmengsels -->
+                  <option value="AC11_surface">AC 11 deklaag (standaard)</option>
+                  <option value="DZOAB_surface">DZOAB deklaag</option>
+                  <option value="AC16_binder">AC 16 bindlaag</option>
+                  <option value="AC22_base">AC 22 onderlaag</option>
+                  <option value="other">Overig mengsel (generiek)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="thickness">Dikte laag (cm)</label>
+                <input type="number" id="thickness" min="1" step="0.5" placeholder="Bijv. 4">
+              </div>
+              <div class="field">
+                <label for="density">Dichtheid (t/m³)</label>
+                <input type="number" id="density" min="1.5" step="0.05" value="2.35">
+                <small>Standaard ≈ 2,35 t/m³ (pas aan indien nodig).</small>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="recycled">Hergebruik / PR</label>
+                <select id="recycled">
+                  <option value="none">Geen / standaard</option>
+                  <option value="low">Laag PR-gehalte</option>
+                  <option value="high">Hoog PR-gehalte</option>
+                </select>
+                <small>Dit stuurt een eenvoudige correctiefactor aan (zie code).</small>
+              </div>
+              <div class="field">
+                <label for="materialTransportKm">Transport grondstoffen (km)</label>
+                <input type="number" id="materialTransportKm" min="0" step="1" value="50">
+                <small>Gemiddelde enkele reis (indicatief).</small>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="button" class="btn-secondary" onclick="addLayer()">Laag toevoegen</button>
+              <button type="button" class="btn-secondary" onclick="clearLayers()">Lagen leegmaken</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="field-group">
+          <label>Geselecteerde lagen</label>
+          <div id="layersList" class="layers-list">
+            <p class="muted" id="noLayersText">Nog geen lagen toegevoegd.</p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="calculateLCA()">Bereken project-MKI</button>
+          <button class="btn-secondary" onclick="downloadCsv()">Download CSV-rapport</button>
+        </div>
+      </section>
+
+      <!-- Rechterkolom: resultaten -->
+      <section class="card">
+        <h2>Resultaten</h2>
+        <p class="lead">Na het berekenen verschijnt hier een samenvatting van de MKI per laag en voor het totale project.</p>
+
+        <div id="resultsContainer" class="result-block">
+          <p class="muted">Voer eerst een projectoppervlak en ten minste één asfaltlaag in en klik op <strong>Bereken project-MKI</strong>.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Vervang door je bestaande footer indien gewenst -->
+  <footer>
+    &copy; <span id="year"></span> InfraImpact – MKI &amp; LCA voor de GWW-sector.
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ====== LCA-configuratie (vereenvoudigd, VUL AAN MET JOUW DATA) ======
+
+    // Dummy MKI-waarden per ton asfalt (€/ton) – vervang door echte waarden uit NMD / eigen database.
+    const MIXTURE_MKI_PER_TON = {
+      AC11_surface: 60,      // TODO: vervang door echte MKI €/ton
+      DZOAB_surface: 80,     // TODO: vervang door echte MKI €/ton (let op PR/KA varianten)
+      AC16_binder: 55,       // TODO
+      AC22_base: 45,         // TODO
+      other: 65              // Generieke default
+    };
+
+    // Eenvoudige correctiefactor voor PR / hergebruik:
+    // none = 1.0, low = 0.95, high = 0.9  -> pas dit desgewenst aan.
+    const RECYCLE_FACTOR = {
+      none: 1.0,
+      low: 0.95,
+      high: 0.9
+    };
+
+    // Zeer eenvoudige factor voor transport-MKI (€/ton/km) – vervang door onderbouwde waarde.
+    const TRANSPORT_MKI_PER_TON_KM = 0.01; // TODO: vervangen door gevalideerde factor
+
+    const layers = [];
+
+    function addLayer() {
+      const layerName = document.getElementById('layerName').value.trim();
+      const mixType = document.getElementById('mixType').value;
+      const thickness = parseFloat(document.getElementById('thickness').value);
+      const density = parseFloat(document.getElementById('density').value);
+      const recycled = document.getElementById('recycled').value;
+      const materialTransportKm = parseFloat(document.getElementById('materialTransportKm').value);
+
+      if (!layerName || isNaN(thickness) || isNaN(density)) {
+        alert('Vul in ieder geval laagnaam, dikte en dichtheid in.');
+        return;
+      }
+
+      const layer = {
+        id: Date.now() + '_' + Math.random().toString(16).slice(2),
+        name: layerName,
+        mixType,
+        thickness_cm: thickness,
+        density_t_m3: density,
+        recycled,
+        materialTransportKm
+      };
+
+      layers.push(layer);
+      renderLayers();
+      // Velden deels leegmaken
+      document.getElementById('layerName').value = '';
+      document.getElementById('thickness').value = '';
+    }
+
+    function removeLayer(id) {
+      const index = layers.findIndex(l => l.id === id);
+      if (index !== -1) {
+        layers.splice(index, 1);
+        renderLayers();
+        calculateLCA(true); // herbereken in stilte
+      }
+    }
+
+    function clearLayers() {
+      layers.length = 0;
+      renderLayers();
+      document.getElementById('resultsContainer').innerHTML =
+        '<p class="muted">Voer eerst een projectoppervlak en ten minste één asfaltlaag in en klik op <strong>Bereken project-MKI</strong>.</p>';
+    }
+
+    function renderLayers() {
+      const list = document.getElementById('layersList');
+      list.innerHTML = '';
+
+      if (layers.length === 0) {
+        const p = document.createElement('p');
+        p.className = 'muted';
+        p.id = 'noLayersText';
+        p.textContent = 'Nog geen lagen toegevoegd.';
+        list.appendChild(p);
+        return;
+      }
+
+      layers.forEach(layer => {
+        const div = document.createElement('div');
+        div.className = 'layer-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'layer-meta';
+
+        const name = document.createElement('div');
+        name.className = 'layer-name';
+        name.textContent = layer.name;
+
+        const mixLabelMap = {
+          AC11_surface: 'AC 11 deklaag',
+          DZOAB_surface: 'DZOAB deklaag',
+          AC16_binder: 'AC 16 bindlaag',
+          AC22_base: 'AC 22 onderlaag',
+          other: 'Overig mengsel'
+        };
+
+        const sub = document.createElement('div');
+        sub.className = 'layer-sub';
+        sub.textContent = (mixLabelMap[layer.mixType] || layer.mixType) +
+          ' – ' + layer.thickness_cm + ' cm – ' +
+          'dichtheid ' + layer.density_t_m3.toFixed(2) + ' t/m³';
+
+        const extra = document.createElement('div');
+        extra.className = 'muted';
+        const recycleLabel = layer.recycled === 'none'
+          ? 'geen PR-correctie'
+          : (layer.recycled === 'low' ? 'laag PR-gehalte' : 'hoog PR-gehalte');
+        extra.textContent = 'Hergebruik: ' + recycleLabel +
+          ' · Transport: ' + layer.materialTransportKm + ' km';
+
+        meta.appendChild(name);
+        meta.appendChild(sub);
+        meta.appendChild(extra);
+
+        const actions = document.createElement('div');
+        actions.className = 'layer-actions';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn-secondary';
+        removeBtn.textContent = 'Verwijder';
+        removeBtn.onclick = () => removeLayer(layer.id);
+
+        actions.appendChild(removeBtn);
+
+        div.appendChild(meta);
+        div.appendChild(actions);
+
+        list.appendChild(div);
+      });
+    }
+
+    function calculateLCA(silent = false) {
+      const totalArea = parseFloat(document.getElementById('totalArea').value);
+      if (isNaN(totalArea) || totalArea <= 0) {
+        if (!silent) {
+          alert('Vul een geldig totaal asfaltoppervlak (m²) in.');
+        }
+        return;
+      }
+
+      if (layers.length === 0) {
+        if (!silent) {
+          alert('Voeg minimaal één asfaltlaag toe.');
+        }
+        return;
+      }
+
+      let totalMkiProject = 0;
+      let totalTonnage = 0;
+
+      const layerResults = layers.map(layer => {
+        const mixMkiPerTon = MIXTURE_MKI_PER_TON[layer.mixType] ?? MIXTURE_MKI_PER_TON.other;
+        const recycleFactor = RECYCLE_FACTOR[layer.recycled] ?? 1.0;
+
+        // Volume laag (m³) = oppervlakte (m²) * dikte (m) – dikte komt in cm binnen
+        const thickness_m = layer.thickness_cm / 100.0;
+        const volume_m3 = totalArea * thickness_m;
+        const tonnage = volume_m3 * layer.density_t_m3;
+
+        // Product-MKI
+        const productMki = tonnage * mixMkiPerTon * recycleFactor;
+
+        // Transport-MKI (eenvoudig lineair model)
+        const transportMki = tonnage * layer.materialTransportKm * TRANSPORT_MKI_PER_TON_KM;
+
+        const layerTotalMki = productMki + transportMki;
+
+        totalMkiProject += layerTotalMki;
+        totalTonnage += tonnage;
+
+        return {
+          ...layer,
+          tonnage,
+          productMki,
+          transportMki,
+          layerTotalMki
+        };
+      });
+
+      const mkiPerM2 = totalMkiProject / totalArea;
+
+      renderResults(layerResults, totalMkiProject, totalTonnage, mkiPerM2);
+    }
+
+    function renderResults(layerResults, totalMkiProject, totalTonnage, mkiPerM2) {
+      const container = document.getElementById('resultsContainer');
+      if (!layerResults || layerResults.length === 0) {
+        container.innerHTML = '<p class="muted">Nog geen resultaat berekend.</p>';
+        return;
+      }
+
+      const euro = value => value.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      const num = (value, decimals = 2) => value.toLocaleString('nl-NL', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+
+      const mixLabelMap = {
+        AC11_surface: 'AC 11 deklaag',
+        DZOAB_surface: 'DZOAB deklaag',
+        AC16_binder: 'AC 16 bindlaag',
+        AC22_base: 'AC 22 onderlaag',
+        other: 'Overig mengsel'
+      };
+
+      let html = '';
+
+      html += '<h3>Samenvatting project-MKI</h3>';
+      html += '<div class="result-highlight">';
+      html += '<div class="pill">Totale MKI asfalt: <strong>' + euro(totalMkiProject) + ' €/project</strong></div>';
+      html += '<div class="pill">Totale tonnage: <strong>' + num(totalTonnage) + ' t</strong></div>';
+      html += '<div class="pill">MKI per m² asfalt: <strong>' + euro(mkiPerM2) + ' €/m²</strong></div>';
+      html += '</div>';
+
+      html += '<p class="muted">Let op: waarden zijn indicatief. Gebruik projectspecifieke data en gevalideerde MKI-bronnen voor definitieve rapportage.</p>';
+
+      html += '<h3>Per laag</h3>';
+      html += '<table>';
+      html += '<thead><tr>' +
+        '<th>Laag</th>' +
+        '<th>Mengsel</th>' +
+        '<th>Dikte (cm)</th>' +
+        '<th>Tonnage (t)</th>' +
+        '<th>MKI product (€/proj.)</th>' +
+        '<th>MKI transport (€/proj.)</th>' +
+        '<th>MKI laag totaal (€/proj.)</th>' +
+        '</tr></thead><tbody>';
+
+      layerResults.forEach(l => {
+        html += '<tr>' +
+          '<td>' + escapeHtml(l.name) + '</td>' +
+          '<td>' + (mixLabelMap[l.mixType] || l.mixType) + '</td>' +
+          '<td>' + num(l.thickness_cm, 1) + '</td>' +
+          '<td>' + num(l.tonnage, 1) + '</td>' +
+          '<td>' + euro(l.productMki) + '</td>' +
+          '<td>' + euro(l.transportMki) + '</td>' +
+          '<td>' + euro(l.layerTotalMki) + '</td>' +
+          '</tr>';
+      });
+
+      html += '</tbody>';
+      html += '<tfoot><tr>' +
+        '<td colspan="3">Totaal</td>' +
+        '<td>' + num(totalTonnage, 1) + '</td>' +
+        '<td colspan="2"></td>' +
+        '<td>' + euro(totalMkiProject) + '</td>' +
+        '</tr></tfoot>';
+      html += '</table>';
+
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        ? unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;")
+        : '';
+    }
+
+    function downloadCsv() {
+      const totalArea = parseFloat(document.getElementById('totalArea').value);
+      if (isNaN(totalArea) || totalArea <= 0 || layers.length === 0) {
+        alert('Vul eerst projectoppervlak in en voeg ten minste één laag toe, en klik vervolgens op "Bereken project-MKI".');
+        return;
+      }
+
+      // Herbereken om zeker te zijn dat we actuele waarden hebben
+      calculateLCA(true);
+
+      // Bouw de layerResults opnieuw op
+      let totalMkiProject = 0;
+      let totalTonnage = 0;
+      const layerResults = layers.map(layer => {
+        const mixMkiPerTon = MIXTURE_MKI_PER_TON[layer.mixType] ?? MIXTURE_MKI_PER_TON.other;
+        const recycleFactor = RECYCLE_FACTOR[layer.recycled] ?? 1.0;
+        const thickness_m = layer.thickness_cm / 100.0;
+        const volume_m3 = totalArea * thickness_m;
+        const tonnage = volume_m3 * layer.density_t_m3;
+        const productMki = tonnage * mixMkiPerTon * recycleFactor;
+        const transportMki = tonnage * layer.materialTransportKm * TRANSPORT_MKI_PER_TON_KM;
+        const layerTotalMki = productMki + transportMki;
+        totalMkiProject += layerTotalMki;
+        totalTonnage += tonnage;
+        return {
+          ...layer,
+          tonnage,
+          productMki,
+          transportMki,
+          layerTotalMki
+        };
+      });
+      const mkiPerM2 = totalMkiProject / totalArea;
+
+      const mixLabelMap = {
+        AC11_surface: 'AC 11 deklaag',
+        DZOAB_surface: 'DZOAB deklaag',
+        AC16_binder: 'AC 16 bindlaag',
+        AC22_base: 'AC 22 onderlaag',
+        other: 'Overig mengsel'
+      };
+
+      let csv = '';
+      const sep = ';';
+
+      // Kop
+      csv += 'Project asfalt LCA;InfraImpact\n';
+      csv += 'Datum;'+ new Date().toLocaleDateString('nl-NL') + '\n\n';
+
+      csv += 'Projectparameter;Waarde;Eenheid\n';
+      csv += 'Totaal asfaltoppervlak;' + totalArea + ';m²\n';
+      csv += 'Totale tonnage asfalt;' + totalTonnage.toFixed(1).replace('.', ',') + ';t\n';
+      csv += 'Totale MKI asfalt;' + totalMkiProject.toFixed(2).replace('.', ',') + ';€/project\n';
+      csv += 'MKI per m²;' + mkiPerM2.toFixed(3).replace('.', ',') + ';€/m²\n\n';
+
+      csv += 'Laag;Mengsel;Dikte (cm);Tonnage (t);MKI product (€/proj.);MKI transport (€/proj.);MKI laag totaal (€/proj.)\n';
+
+      layerResults.forEach(l => {
+        csv += [
+          l.name,
+          mixLabelMap[l.mixType] || l.mixType,
+          l.thickness_cm.toString().replace('.', ','),
+          l.tonnage.toFixed(1).replace('.', ','),
+          l.productMki.toFixed(2).replace('.', ','),
+          l.transportMki.toFixed(2).replace('.', ','),
+          l.layerTotalMki.toFixed(2).replace('.', ',')
+        ].join(sep) + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+
+      const projName = (document.getElementById('projectName').value || 'project').replace(/[^a-z0-9\-]+/gi, '_');
+      link.setAttribute('download', 'asfalt_lca_' + projName + '.csv');
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
