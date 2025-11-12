@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Project asfalt LCA – InfraImpact</title>
-  <meta name="description" content="Stel snel een project-specifieke asfalt LCA op aan de hand van enkele projectinputs, asfaltcentrales en mengseldata. Inclusief EPD-parsing voor MKI en GWP.">
+  <meta name="description" content="Stel een project-specifieke asfalt LCA op aan de hand van projectgegevens, asfaltcentrales, mengseldata en EPD’s. Inclusief MKI- en GWP-rapportage.">
 
-  <!-- Favicons & App Icons (paden indien nodig aanpassen) -->
+  <!-- Favicons (pas paden aan als nodig) -->
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
   <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
@@ -34,7 +34,7 @@
     }
 
     header {
-      background: white;
+      background: #ffffff;
       border-bottom: 1px solid var(--ii-border);
     }
 
@@ -45,6 +45,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
     }
 
     .logo {
@@ -61,6 +62,7 @@
       display: flex;
       gap: 1rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     nav a {
@@ -88,14 +90,14 @@
 
     p.page-subtitle {
       margin: 0 0 20px;
-      max-width: 720px;
+      max-width: 760px;
       color: #4b5563;
       font-size: 0.96rem;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.45fr);
       gap: 20px;
     }
 
@@ -211,10 +213,18 @@
       border: 1px solid var(--ii-border);
     }
 
+    .btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
     .btn-danger {
       background: #fee2e2;
       color: #b91c1c;
       border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
     }
 
     .list {
@@ -271,7 +281,7 @@
   </style>
 </head>
 <body>
-  <!-- Vervang deze header desgewenst door de exacte header van je site -->
+  <!-- Je kunt deze header vervangen door de exacte header van je site -->
   <header>
     <div class="header-inner">
       <a class="logo" href="../index.html">InfraImpact</a>
@@ -281,7 +291,7 @@
           <li><a href="../projecten.html">Projecten</a></li>
           <li><a href="../epd-checker/">MKI-toetsing asfalt</a></li>
           <li><a href="./index.html" class="active">Project asfalt LCA</a></li>
-          <li><a href="../contact.html">Contact</a></li>
+          <li><a href="../over/">Over ons</a></li>
         </ul>
       </nav>
     </div>
@@ -290,16 +300,16 @@
   <main>
     <h1 class="page-title">Project asfalt LCA</h1>
     <p class="page-subtitle">
-      Voer projectgegevens, asfaltcentrales en mengseldata in. Upload EPD’s om automatisch MKI (A1–A3 + D) 
-      en CO₂ (GWP A1–A3 + D) uit te lezen. Exporteer alles als CSV en PDF voor je LCA-dossier.
+      Voer projectgegevens, asfaltcentrales en mengseldata in. Koppel EPD’s om automatisch MKI (A1–A3 en D)
+      en CO₂ (GWP A1–A3 en D) uit te lezen. Exporteer alles als CSV en PDF voor jouw LCA-rapportage.
     </p>
 
     <div class="grid">
       <div>
         <!-- Project / rapport -->
         <section class="card">
-          <h2>LCA Rapport Invoeren</h2>
-          <p class="lead">Basisgegevens van het rapport, vergelijkbaar met je LCApro-tool.</p>
+          <h2>LCA-rapport invoer</h2>
+          <p class="lead">Basisgegevens van het rapport, in lijn met je LCApro-opzet.</p>
 
           <div class="field-group">
             <div class="field-row">
@@ -321,7 +331,7 @@
                 <input type="text" id="clientName" placeholder="Bijv. Provincie X">
               </div>
               <div class="field">
-                <label for="lcaAuthor">LCA Uitvoerder</label>
+                <label for="lcaAuthor">LCA-uitvoerder</label>
                 <input type="text" id="lcaAuthor" placeholder="Bijv. Jim van der Kooij">
               </div>
             </div>
@@ -334,7 +344,7 @@
                 <input type="number" id="projectLifetime" min="1" max="200" step="1" value="50">
               </div>
               <div class="field">
-                <label for="projectLocation">Projectadres / Coördinaten</label>
+                <label for="projectLocation">Projectadres / coördinaten</label>
                 <input type="text" id="projectLocation" placeholder="Adres, plaats of X/Y-coördinaat">
               </div>
             </div>
@@ -343,8 +353,8 @@
 
         <!-- Asfaltcentrales -->
         <section class="card">
-          <h2>Asfaltcentrales &amp; Transport</h2>
-          <p class="lead">Meerdere centrales met bijbehorende transportafstand.</p>
+          <h2>Asfaltcentrales &amp; transport</h2>
+          <p class="lead">Voeg één of meerdere centrales toe met bijbehorende transportafstand.</p>
 
           <div class="field-group">
             <div class="field-row">
@@ -375,10 +385,10 @@
       <div>
         <!-- Mengsels & EPD -->
         <section class="card">
-          <h2>Mengsels &amp; Eigenschappen</h2>
+          <h2>Mengsels &amp; eigenschappen</h2>
           <p class="lead">
-            Per mengsel: code, naam, centrale, asfaltsoort (dropdown uit LCApro), brandstof, retourtransport en MKI/GWP-waarden.
-            EPD upload vult A1–A3 en D automatisch, maar blijft handmatig aanpasbaar.
+            Per mengsel: code, naam, centrale, asfaltsoort (LCApro), brandstoffen, retourtransport en MKI/GWP-waarden.
+            Een EPD-upload vult A1–A3 en D automatisch, maar blijft handmatig aanpasbaar.
           </p>
 
           <div class="field-group">
@@ -406,7 +416,7 @@
                 <label for="mixType">Asfaltsoort (LCApro)</label>
                 <select id="mixType">
                   <option value="">— kies asfaltsoort —</option>
-                  <!-- Uit lca_get_dropdown_data()['asfaltsoorten'] -->
+                  <!-- Direct overgenomen uit lca_get_dropdown_data()['asfaltsoorten'] -->
                   <option>01. AC surf zonder PR</option>
                   <option>02. AC surf met 30% PR</option>
                   <option>03. AC surf met gemodificeerd bitumen zonder PR</option>
@@ -456,7 +466,7 @@
           <div class="field-group">
             <div class="field-row">
               <div class="field">
-                <label for="constructionFuel">Aanlegbrandstof</label>
+                <label for="constructionFuel">Aanlegbrandstof (A5)</label>
                 <select id="constructionFuel">
                   <option value="">Kies brandstof</option>
                   <option value="Diesel">Diesel</option>
@@ -465,14 +475,14 @@
                 </select>
               </div>
               <div class="field">
-                <label for="epdFile">EPD Upload (PDF)</label>
+                <label for="epdFile">EPD upload (PDF)</label>
                 <input type="file" id="epdFile" accept="application/pdf">
-                <small>Bij upload worden MKI &amp; GWP A1–A3 + D uitgehaald indien mogelijk.</small>
+                <small>Bij upload worden MKI &amp; GWP A1–A3 + D uitgelezen indien mogelijk.</small>
               </div>
             </div>
           </div>
 
-          <!-- MKI / CO2 velden (met A1-3 en D) -->
+          <!-- MKI / CO₂ velden (met A1–A3 en D) -->
           <div class="field-group">
             <h3>MKI-waarden (per functionele eenheid)</h3>
             <div class="field-row">
@@ -500,7 +510,7 @@
                 <input type="number" id="co2D" step="any" placeholder="Bijv. 1,2">
               </div>
             </div>
-            <small>Ook hier: EPD-upload probeert deze velden te vullen.</small>
+            <small>EPD-upload probeert deze velden te vullen; waarden blijven aanpasbaar.</small>
           </div>
 
           <div class="btn-row">
@@ -526,7 +536,8 @@
             <button type="button" class="btn-secondary" onclick="downloadPdf()">Download PDF</button>
           </div>
           <p class="muted" style="margin-top:8px;">
-            De tool rekent niet automatisch door naar project-MKI; de MKI- en GWP-waarden zijn invoer zoals in LCApro.
+            De tool rekent MKI- en GWP-totalen per mengsel (A–D) in lijn met LCApro:
+            MKI A–D = A1–A3 + D, GWP A–D = A1–A3 + D.
           </p>
         </section>
       </div>
@@ -543,10 +554,11 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ========= HELPERS =========
+    // ========= GLOBALE DATASTRUCTUREN =========
     const asphaltPlants = [];
     const mixes = [];
 
+    // ========= ALGEMENE HELPERS =========
     function slugify(name) {
       return (name || 'lca_rapport')
         .toString()
@@ -555,28 +567,28 @@
         .replace(/^_+|_+$/g, '');
     }
 
-    function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; }
+    function normalizeMinus(s){ return s ? s.replace(/\\u2212/g,'-') : s; }
 
     function parseNumEUexp(s){
       if(!s) return NaN;
-      let str=normalizeMinus(String(s)).trim().replace(/\u202F/g,'').replace(/\s+/g,' ');
-      if (str.includes(',') && /[Ee][+\-]?\d+$/.test(str)) str=str.replace(',', '.');
-      else if (str.includes(',') && !str.includes('.')) str=str.replace(',', '.');
+      let str = normalizeMinus(String(s)).trim().replace(/\\u202F/g,'').replace(/\\s+/g,' ');
+      if (str.includes(',') && /[Ee][+\\-]?\\d+$/.test(str)) str = str.replace(',', '.');
+      else if (str.includes(',') && !str.includes('.')) str = str.replace(',', '.');
       else if (str.includes(',') && str.includes('.')) {
-        const parts=str.split(',');
-        str=parts[0].replace(/\./g,'')+'.'+parts.slice(1).join('');
+        const parts = str.split(',');
+        str = parts[0].replace(/\\./g,'') + '.' + parts.slice(1).join('');
       }
-      str=str.replace(/[^0-9eE\+\-\.]/g,'');
-      const n=Number(str);
-      return Number.isFinite(n)?n:NaN;
+      str = str.replace(/[^0-9eE+\\-\\.]/g,'');
+      const n = Number(str);
+      return Number.isFinite(n) ? n : NaN;
     }
 
     function looksNumericToken(raw){
       if(!raw) return false;
       const s = normalizeMinus(String(raw)).trim();
-      if(/[Ee][+\-]?\d+/.test(s)) return true;
-      if(/[\,\.]/.test(s)) return true;
-      if(/^\-?\d{2,}$/.test(s)) return true;
+      if(/[Ee][+\\-]?\\d+/.test(s)) return true;
+      if(/[\\,\\.]/.test(s)) return true;
+      if(/^\\-?\\d{2,}$/.test(s)) return true;
       return false;
     }
 
@@ -590,7 +602,7 @@
       for(let p=1; p<=Math.min(8,pdf.numPages); p++){
         const page = await pdf.getPage(p);
         const c = await page.getTextContent();
-        text += '\n' + c.items.map(it=>it.str).join(' ');
+        text += '\\n' + c.items.map(it=>it.str).join(' ');
       }
       return text;
     }
@@ -600,9 +612,10 @@
       return m ? m[1].trim() : '';
     }
 
+    // ========= MKI extractie helpers =========
     function extractECITable(txt){
-      const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
-      const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+      const t = txt.replace(/\\s+/g,' ').replace(/\\u00A0/g,' ').trim();
+      const re = /(ECI|MKI)\\s*euro\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)/i;
       const m = t.match(re);
       if(!m) return null;
       const a13 = m[5], d = m[6];
@@ -611,10 +624,10 @@
     }
 
     function extractLabeledMKI(txt){
-      const t = txt.replace(/\s+/g,' ');
-      const dash = '[\\-–—~]';
-      const a13m = t.match(new RegExp(`\\bA1\\s*${dash}\\s*A3\\b[^\\d\\-]*([\\-]?\\d[\\d\\.\\,]*(?:[Ee][\\+\\-]?\\d+)?)`,'i'));
-      const dm   = t.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      const t = txt.replace(/\\s+/g,' ');
+      const dash = '[\\\\-–—~]';
+      const a13m = t.match(new RegExp(`\\\\bA1\\\\s*${dash}\\\\s*A3\\\\b[^\\\\d\\\\-]*([\\\\-]?\\\\d[\\\\d\\\\.\\\\,]*(?:[Ee][\\\\+\\\\-]?\\\\d+)?)`,'i'));
+      const dm   = t.match(/\\bD\\b[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
       let a13Raw = a13m?.[1] || '';
       let dRaw   = dm?.[1]   || '';
       if(!looksNumericToken(a13Raw)) a13Raw = '';
@@ -626,11 +639,11 @@
     }
 
     function extractFromMKIResults(txt){
-      const mm = txt.match(/Resultaten[\s\S]{0,400}(?:MKI|ECI)\s+Euro([\s\S]{0,260})/i);
+      const mm = txt.match(/Resultaten[\\s\\S]{0,400}(?:MKI|ECI)\\s+Euro([\\s\\S]{0,260})/i);
       if(!mm) return null;
-      const after=mm[1].replace(/\s+/g,' ').trim();
-      const a13m = after.match(/A1\s*[–—\-~]\s*A3[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
-      const dm   = after.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      const after = mm[1].replace(/\\s+/g,' ').trim();
+      const a13m = after.match(/A1\\s*[–—\\-~]\\s*A3[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
+      const dm   = after.match(/\\bD\\b[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
       let a13Raw = a13m?.[1] || '';
       let dRaw   = dm?.[1]   || '';
       if(!looksNumericToken(a13Raw)) a13Raw='';
@@ -641,10 +654,10 @@
       return null;
     }
 
-    // GWP-extractie (A1–A3 / D) – best effort
+    // ========= GWP extractie helpers (best effort) =========
     function extractGWPTable(txt){
-      const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
-      const re = /(GWP[^A-Za-z0-9]|GWP\s*\(total\)|GWP\s*totaal)[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+      const t = txt.replace(/\\s+/g,' ').replace(/\\u00A0/g,' ').trim();
+      const re = /(GWP[^A-Za-z0-9]|GWP\\s*\\(total\\)|GWP\\s*totaal)[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)\\s+([\\-]?\\d[\\d\\.,]*(?:[Ee][+\\-]?\\d+)?)/i;
       const m = t.match(re);
       if(!m) return null;
       const a13 = m[5], d = m[6];
@@ -653,10 +666,10 @@
     }
 
     function extractLabeledGWP(txt){
-      const t = txt.replace(/\s+/g,' ');
-      const dash='[\\-–—~]';
-      const a13m = t.match(new RegExp(`GWP[^\\n]*A1\\s*${dash}\\s*A3[^\\d\\-]*([\\-]?\\d[\\d\\.\\,]*(?:[Ee][\\+\\-]?\\d+)?)`,'i'));
-      const dm   = t.match(/GWP[^A-Za-z0-9]*D[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      const t = txt.replace(/\\s+/g,' ');
+      const dash='[\\\\-–—~]';
+      const a13m = t.match(new RegExp(`GWP[^\\\\n]*A1\\\\s*${dash}\\\\s*A3[^\\\\d\\\\-]*([\\\\-]?\\\\d[\\\\d\\\\.\\\\,]*(?:[Ee][\\\\+\\\\-]?\\\\d+)?)`,'i'));
+      const dm   = t.match(/GWP[^A-Za-z0-9]*D[^\\d\\-]*([\\-]?\\d[\\d\\.,]*(?:[Ee][\\+\\-]?\\d+)?)/i);
       let a13Raw = a13m?.[1] || '';
       let dRaw   = dm?.[1]   || '';
       if(!looksNumericToken(a13Raw)) a13Raw='';
@@ -667,11 +680,12 @@
       return null;
     }
 
+    // ========= EPD parsing =========
     async function parseEpd(file){
       const text = await pdfToText(file);
-      const product = pick(/Product:\s*([^\n]+?)\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\.pdf$/i,'');
-      const pcrRaw  = pick(/PCR[:\s]+([^\n]+)$/im, text) || "";
-      const pubDate = pick(/(Datum(?:\s+van)?\s+publicatie|Issue date)[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
+      const product = pick(/Product:\\s*([^\\n]+?)\\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\\.pdf$/i,'');
+      const pcrRaw  = pick(/PCR[:\\s]+([^\\n]+)$/im, text) || "";
+      const pubDate = pick(/(Datum(?:\\s+van)?\\s+publicatie|Issue date)[:\\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
 
       // MKI
       let a13, d, a13Raw="", dRaw="";
@@ -722,19 +736,19 @@
     function parseInputPrecise(el){
       let s = (el.value ?? "").trim();
       if(!s) return NaN;
-      s = s.replace(/\u202F/g,'').replace(/\s+/g,' ');
-      if (s.includes(',') && /[Ee][+\-]?\d+$/.test(s)) s = s.replace(',', '.');
+      s = s.replace(/\\u202F/g,'').replace(/\\s+/g,' ');
+      if (s.includes(',') && /[Ee][+\\-]?\\d+$/.test(s)) s = s.replace(',', '.');
       else if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
       else if (s.includes(',') && s.includes('.')) {
         const parts=s.split(',');
-        s=parts[0].replace(/\./g,'')+'.'+parts.slice(1).join('');
+        s=parts[0].replace(/\\./g,'')+'.'+parts.slice(1).join('');
       }
-      s = s.replace(/[^0-9eE\+\-\.]/g,'');
+      s = s.replace(/[^0-9eE+\\-\\.]/g,'');
       const n = Number(s);
       return Number.isFinite(n)?n:NaN;
     }
 
-    // ========= Asfaltcentrales =========
+    // ========= ASFALTCENTRALES =========
     function addPlant() {
       const name = document.getElementById('plantName').value.trim();
       const distanceStr = document.getElementById('plantDistance').value;
@@ -838,7 +852,7 @@
       return found ? found.name : '—';
     }
 
-    // ========= Mengsels =========
+    // ========= MENGSELS =========
     async function handleEpdUpload(){
       const input = document.getElementById('epdFile');
       const file = input.files[0];
@@ -906,7 +920,7 @@
 
       mixes.push(mix);
 
-      // velden leegmaken (centrale/asfaltsoort laten staan kan ook, maar ik maak ze even schoon)
+      // inputs leegmaken (centrale/asfaltsoort blijven staan)
       document.getElementById('mixCode').value = '';
       document.getElementById('mixName').value = '';
       document.getElementById('transportFuel').value = '';
@@ -1006,7 +1020,50 @@
       });
     }
 
-    // ========= CSV =========
+    // ========= DATA HELPERS VOOR EXPORT =========
+    function collectProjectData() {
+      return {
+        projectName: document.getElementById('projectName').value || '',
+        companyName: document.getElementById('companyName').value || '',
+        clientName: document.getElementById('clientName').value || '',
+        lcaAuthor: document.getElementById('lcaAuthor').value || '',
+        projectLifetime: document.getElementById('projectLifetime').value || '',
+        projectLocation: document.getElementById('projectLocation').value || '',
+        generatedAt: new Date()
+      };
+    }
+
+    function collectPlants() {
+      return asphaltPlants.map(p => ({
+        name: p.name,
+        distanceKm: p.distanceKm
+      }));
+    }
+
+    function collectMixesWithDerived() {
+      return mixes.map(mix => {
+        const mkiTotal = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
+        const gwpTotal = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
+        return {
+          code: mix.code,
+          name: mix.name,
+          plantName: getPlantNameById(mix.plantId),
+          type: mix.type || '',
+          transportFuel: mix.transportFuel || '',
+          returnTransport: mix.returnTransport,
+          constructionFuel: mix.constructionFuel || '',
+          mkiA1A3: mix.mkiA1A3,
+          mkiD: mix.mkiD,
+          mkiTotal: isNaN(mkiTotal) ? null : mkiTotal,
+          co2A1A3: mix.co2A1A3,
+          co2D: mix.co2D,
+          co2Total: isNaN(gwpTotal) ? null : gwpTotal,
+          epdFileName: mix.epdFileName || ''
+        };
+      });
+    }
+
+    // ========= CSV EXPORT =========
     function downloadCsv() {
       if (mixes.length === 0) {
         alert('Voeg minimaal één mengsel toe voordat je exporteert.');
@@ -1016,39 +1073,36 @@
       const sep = ';';
       let csv = '';
 
-      const projectName = document.getElementById('projectName').value || '';
-      const companyName = document.getElementById('companyName').value || '';
-      const clientName = document.getElementById('clientName').value || '';
-      const lcaAuthor = document.getElementById('lcaAuthor').value || '';
-      const projectLifetime = document.getElementById('projectLifetime').value || '';
-      const projectLocation = document.getElementById('projectLocation').value || '';
+      const project = collectProjectData();
+      const plants = collectPlants();
+      const mixData = collectMixesWithDerived();
 
-      csv += 'LCA Tool;InfraImpact\n';
-      csv += 'Datum;' + new Date().toLocaleDateString('nl-NL') + '\n\n';
+      csv += 'LCA Tool;InfraImpact\\n';
+      csv += 'Datum;' + project.generatedAt.toLocaleDateString('nl-NL') + '\\n\\n';
 
-      csv += 'Sectie;Veld;Waarde;Eenheid\n';
-      csv += 'Project;Projectnaam;' + projectName + ';\n';
-      csv += 'Project;Bedrijfsnaam;' + companyName + ';\n';
-      csv += 'Project;Opdrachtgever;' + clientName + ';\n';
-      csv += 'Project;LCA Uitvoerder;' + lcaAuthor + ';\n';
-      csv += 'Project;Projectlevensduur;' + projectLifetime + ';jaar\n';
-      csv += 'Project;Projectadres/Coördinaten;' + projectLocation + ';\n\n';
+      csv += 'Sectie;Veld;Waarde;Eenheid\\n';
+      csv += 'Project;Projectnaam;' + project.projectName + ';\\n';
+      csv += 'Project;Bedrijfsnaam;' + project.companyName + ';\\n';
+      csv += 'Project;Opdrachtgever;' + project.clientName + ';\\n';
+      csv += 'Project;LCA Uitvoerder;' + project.lcaAuthor + ';\\n';
+      csv += 'Project;Projectlevensduur;' + project.projectLifetime + ';jaar\\n';
+      csv += 'Project;Projectadres/Coördinaten;' + project.projectLocation + ';\\n\\n';
 
-      csv += 'Asfaltcentrales & Transport;;;\n';
-      csv += 'Asfaltcentrale;Transportkilometers (km);;\n';
-      if (asphaltPlants.length === 0) {
-        csv += 'Geen geregistreerde asfaltcentrales;;;\n';
+      csv += 'Asfaltcentrales & Transport;;;\\n';
+      csv += 'Asfaltcentrale;Transportkilometers (km);;\\n';
+      if (plants.length === 0) {
+        csv += 'Geen geregistreerde asfaltcentrales;;;' + '\\n';
       } else {
-        asphaltPlants.forEach(p => {
+        plants.forEach(p => {
           const dist = (p.distanceKm != null)
             ? String(p.distanceKm).replace('.', ',')
             : '';
-          csv += p.name + sep + dist + sep + sep + '\n';
+          csv += p.name + sep + dist + sep + sep + '\\n';
         });
       }
-      csv += '\n';
+      csv += '\\n';
 
-      csv += 'Mengsels & Eigenschappen;;;;;;;;;;;;;\n';
+      csv += 'Mengsels & Eigenschappen;;;;;;;;;;;;;\\n';
       csv += [
         'Mengselcode',
         'Mengselnaam',
@@ -1064,38 +1118,36 @@
         'GWP D (kg CO2-eq.)',
         'GWP A-D totaal (kg CO2-eq.)',
         'EPD bestand'
-      ].join(sep) + '\n';
+      ].join(sep) + '\\n';
 
-      mixes.forEach(mix => {
-        const plantName = getPlantNameById(mix.plantId);
-        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
-        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
+      const v = (val) => (val == null || isNaN(val)) ? '' : String(val).replace('.', ',');
 
-        const v = (val) => (val == null || isNaN(val)) ? '' : String(val).replace('.', ',');
-
+      mixData.forEach(mix => {
+        const mkiTot = mix.mkiTotal;
+        const co2Tot = mix.co2Total;
         csv += [
           mix.code,
           mix.name,
-          plantName,
+          mix.plantName,
           mix.type || '',
           mix.transportFuel || '',
           mix.returnTransport != null ? v(mix.returnTransport) : '',
           mix.constructionFuel || '',
           v(mix.mkiA1A3),
           v(mix.mkiD),
-          (isNaN(mkiTot) ? '' : v(mkiTot)),
+          (mix.mkiTotal == null ? '' : v(mix.mkiTotal)),
           v(mix.co2A1A3),
           v(mix.co2D),
-          (isNaN(co2Tot) ? '' : v(co2Tot)),
+          (co2Tot == null ? '' : v(co2Tot)),
           mix.epdFileName || ''
-        ].join(sep) + '\n';
+        ].join(sep) + '\\n';
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      const fileName = 'lca_tool_' + slugify(projectName) + '.csv';
+      const fileName = 'lca_tool_' + slugify(project.projectName) + '.csv';
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
@@ -1103,7 +1155,7 @@
       URL.revokeObjectURL(url);
     }
 
-    // ========= PDF =========
+    // ========= PDF EXPORT (structuur in lijn met LCApro) =========
     function downloadPdf() {
       if (mixes.length === 0) {
         alert('Voeg minimaal één mengsel toe voordat je exporteert.');
@@ -1113,12 +1165,9 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      const projectName = document.getElementById('projectName').value || '';
-      const companyName = document.getElementById('companyName').value || '';
-      const clientName = document.getElementById('clientName').value || '';
-      const lcaAuthor = document.getElementById('lcaAuthor').value || '';
-      const projectLifetime = document.getElementById('projectLifetime').value || '';
-      const projectLocation = document.getElementById('projectLocation').value || '';
+      const project = collectProjectData();
+      const plants = collectPlants();
+      const mixData = collectMixesWithDerived();
 
       let y = 15;
       const left = 15;
@@ -1138,62 +1187,181 @@
         });
       }
 
-      addLine('LCA Tool – InfraImpact', 14, true);
-      addLine('LCA Rapport – ' + (projectName || 'onbenoemd project'), 12, true);
-      y += 2;
-
-      addLine('Projectgegevens', 11, true);
-      addLine('Projectnaam: ' + (projectName || '-'));
-      addLine('Bedrijfsnaam: ' + (companyName || '-'));
-      addLine('Opdrachtgever: ' + (clientName || '-'));
-      addLine('LCA Uitvoerder: ' + (lcaAuthor || '-'));
-      addLine('Projectlevensduur: ' + (projectLifetime || '-') + ' jaar');
-      addLine('Projectadres/Coördinaten: ' + (projectLocation || '-'));
-      y += 3;
-
-      addLine('Asfaltcentrales & Transport', 11, true);
-      if (asphaltPlants.length === 0) {
-        addLine('Geen asfaltcentrales geregistreerd.');
-      } else {
-        asphaltPlants.forEach(p => {
-          const distText = (p.distanceKm != null) ? p.distanceKm + ' km' : 'n.v.t.';
-          addLine('- ' + p.name + ' – transport: ' + distText);
-        });
-      }
-      y += 3;
-
-      addLine('Mengsels & Eigenschappen', 11, true);
-      mixes.forEach((mix, index) => {
-        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
-        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
-
-        addLine('Mengsel ' + (index + 1), 10, true);
-        addLine('Code / naam: ' + mix.code + ' – ' + mix.name);
-        addLine('Asfaltcentrale: ' + getPlantNameById(mix.plantId));
-        addLine('Asfaltsoort: ' + (mix.type || 'n.v.t.'));
-        addLine('Transportbrandstof: ' + (mix.transportFuel || 'n.v.t.'));
-        addLine('Retourtransport: ' + (mix.returnTransport != null ? mix.returnTransport + ' %' : 'n.v.t.'));
-        addLine('Aanlegbrandstof: ' + (mix.constructionFuel || 'n.v.t.'));
-        addLine('MKI A1–A3: ' + (mix.mkiA1A3 != null ? mix.mkiA1A3 : 'n.v.t.') +
-                ' · MKI D: ' + (mix.mkiD != null ? mix.mkiD : 'n.v.t.') +
-                ' · MKI A–D: ' + (isNaN(mkiTot) ? 'n.v.t.' : mkiTot));
-        addLine('GWP A1–A3: ' + (mix.co2A1A3 != null ? mix.co2A1A3 : 'n.v.t.') +
-                ' · GWP D: ' + (mix.co2D != null ? mix.co2D : 'n.v.t.') +
-                ' · GWP A–D: ' + (isNaN(co2Tot) ? 'n.v.t.' : co2Tot));
-        addLine('EPD (bestand): ' + (mix.epdFileName || 'geen gekoppeld'));
+      function addSectionTitle(title) {
         y += 2;
-      });
+        addLine(title, 11, true);
+        y += 1;
+      }
 
-      y += 4;
-      addLine('Let op: alle MKI- en GWP-waarden zijn gebruikersinput of afkomstig uit EPD’s.', 8);
-      addLine('Gebruik gevalideerde brondata (NMD/EPD) voor definitieve rapportage.', 8);
+      function addTable(headers, rows) {
+        const colWidths = [30, 40, 40, 30, 30, 30, 30, 30, 30, 40];
+        const startX = left;
+        let currentY = y;
 
-      const fileName = 'lca_rapport_' + slugify(projectName) + '.pdf';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+
+        if (currentY > 270) {
+          doc.addPage();
+          currentY = 15;
+        }
+        let x = startX;
+        headers.forEach((h, i) => {
+          const w = colWidths[i] || 30;
+          doc.text(doc.splitTextToSize(h, w - 2), x, currentY);
+          x += w;
+        });
+        currentY += 5;
+
+        doc.setFont('helvetica', 'normal');
+
+        rows.forEach(row => {
+          if (currentY > 270) {
+            doc.addPage();
+            currentY = 15;
+            let xh = startX;
+            doc.setFont('helvetica', 'bold');
+            headers.forEach((h, i) => {
+              const w = colWidths[i] || 30;
+              doc.text(doc.splitTextToSize(h, w - 2), xh, currentY);
+              xh += w;
+            });
+            doc.setFont('helvetica', 'normal');
+            currentY += 5;
+          }
+          let xRow = startX;
+          row.forEach((cell, i) => {
+            const w = colWidths[i] || 30;
+            const txt = cell == null ? '' : String(cell);
+            const lines = doc.splitTextToSize(txt, w - 2);
+            lines.forEach((line, idx) => {
+              doc.text(line, xRow, currentY + idx * 4);
+            });
+            xRow += w;
+          });
+          currentY += 6;
+        });
+
+        y = currentY + 2;
+      }
+
+      function fmt(num) {
+        if (num == null || isNaN(num)) return 'n.v.t.';
+        return Number(num).toFixed(3).replace('.', ',');
+      }
+
+      // 1. Voorblad
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('LCA-rapport asfalt – InfraImpact', left, y);
+      y += 8;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      const projTitel = project.projectName || 'Onbenoemd project';
+      doc.text('Project: ' + projTitel, left, y); y += 6;
+      doc.text('Opdrachtgever: ' + (project.clientName || '-'), left, y); y += 6;
+      doc.text('LCA-uitvoerder: ' + (project.lcaAuthor || '-'), left, y); y += 6;
+      doc.text('Bedrijf: ' + (project.companyName || '-'), left, y); y += 6;
+      doc.text('Projectlevensduur: ' + (project.projectLifetime || '-') + ' jaar', left, y); y += 6;
+      doc.text('Locatie: ' + (project.projectLocation || '-'), left, y); y += 6;
+      doc.text('Rapportdatum: ' + project.generatedAt.toLocaleDateString('nl-NL'), left, y); y += 10;
+
+      addLine(
+        'Dit rapport is opgesteld op basis van ingevoerde mengselgegevens en EPD’s. ' +
+        'MKI- en GWP-waarden (A1–A3 en D) zijn rechtstreeks overgenomen uit de brondata ' +
+        'of handmatige invoer in de LCA-tool.',
+        9
+      );
+
+      // Nieuwe pagina voor inhoud
+      doc.addPage();
+      y = 15;
+
+      // 2. Projectgegevens
+      addSectionTitle('1. Projectgegevens');
+      addLine('Projectnaam: ' + (project.projectName || '-'), 10);
+      addLine('Opdrachtgever: ' + (project.clientName || '-'), 10);
+      addLine('LCA-uitvoerder: ' + (project.lcaAuthor || '-'), 10);
+      addLine('Bedrijf: ' + (project.companyName || '-'), 10);
+      addLine('Projectlevensduur: ' + (project.projectLifetime || '-') + ' jaar', 10);
+      addLine('Projectlocatie: ' + (project.projectLocation || '-'), 10);
+
+      // 3. Asfaltcentrales
+      addSectionTitle('2. Asfaltcentrales en transport');
+      if (!plants.length) {
+        addLine('Er zijn geen asfaltcentrales geregistreerd in de tool.', 9);
+      } else {
+        const plantRows = plants.map(p => [
+          p.name,
+          p.distanceKm != null ? (p.distanceKm + ' km') : 'n.v.t.'
+        ]);
+        addTable(['Asfaltcentrale', 'Transportafstand (km)'], plantRows);
+      }
+
+      // 4. Mengsels en indicatoren
+      addSectionTitle('3. Mengsels en milieu-indicatoren');
+
+      addLine(
+        'Onderstaande tabel toont per asfaltmengsel de toegepaste centrales, asfaltsoort, ' +
+        'transport- en aanlegparameters en de MKI- en GWP-waarden. De MKI A–D en GWP A–D zijn steeds A1–A3 + D.',
+        9
+      );
+
+      const mixRows = mixData.map(m => [
+        m.code + ' – ' + m.name,
+        m.plantName,
+        m.type || '',
+        fmt(m.mkiA1A3),
+        fmt(m.mkiD),
+        fmt(m.mkiTotal),
+        fmt(m.co2A1A3),
+        fmt(m.co2D),
+        fmt(m.co2Total),
+        m.epdFileName || ''
+      ]);
+
+      if (!mixRows.length) {
+        addLine('Er zijn geen mengsels geregistreerd.', 9);
+      } else {
+        addTable(
+          [
+            'Mengsel',
+            'Asfaltcentrale',
+            'Asfaltsoort',
+            'MKI A1–A3',
+            'MKI D',
+            'MKI A–D',
+            'GWP A1–A3',
+            'GWP D',
+            'GWP A–D',
+            'EPD-bestand'
+          ],
+          mixRows
+        );
+      }
+
+      // 5. Toelichting berekeningen
+      addSectionTitle('4. Toelichting berekeningen (MKI / GWP)');
+      addLine('Voor elk mengsel geldt in dit rapport:', 9);
+      addLine('• MKI A–D = MKI A1–A3 + MKI D', 9);
+      addLine('• GWP A–D = GWP A1–A3 + GWP D (kg CO₂-eq.)', 9);
+      addLine(
+        'De functionele eenheid (bijvoorbeeld per ton asfalt of per m²) is gelijk aan de eenheid uit de gebruikte EPD’s of invoer.',
+        9
+      );
+      addLine(
+        'Gebruik dit rapport als input voor aanbestedingsdossiers en interne sturing, maar ' +
+        'toets altijd aan de actuele PCR- en NMD-richtlijnen.',
+        9
+      );
+
+      const fileName = 'lca_rapport_' + slugify(project.projectName) + '.pdf';
       doc.save(fileName);
     }
   </script>
 
-  <!-- pdf.js loader (zoals bij EPD-checker) -->
+  <!-- pdf.js loader (zoals bij de EPD-checker) -->
   <script type="module">
     import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
