@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LCA Tool – InfraImpact</title>
-  <meta name="description" content="Voer project-, asfaltcentrale- en mengselgegevens in en exporteer een LCA-rapport als CSV en PDF. Een tool van InfraImpact.">
+  <title>Project asfalt LCA – InfraImpact</title>
+  <meta name="description" content="Stel snel een project-specifieke asfalt LCA op aan de hand van enkele projectinputs, asfaltcentrales en mengseldata. Inclusief EPD-parsing voor MKI en GWP.">
 
-  <!-- Favicons - pad eventueel aanpassen -->
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
-  <link rel="icon" type="image/webp" sizes="32x32" href="assets/favicon.webp">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <!-- Favicons & App Icons (paden indien nodig aanpassen) -->
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
   <meta name="theme-color" content="#2F3B52">
 
   <style>
@@ -24,9 +24,7 @@
       --ii-radius: 10px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -36,7 +34,7 @@
     }
 
     header {
-      background: #ffffff;
+      background: white;
       border-bottom: 1px solid var(--ii-border);
     }
 
@@ -102,9 +100,7 @@
     }
 
     @media (max-width: 960px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+      .grid { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -135,9 +131,7 @@
       color: #6b7280;
     }
 
-    .field-group {
-      margin-bottom: 10px;
-    }
+    .field-group { margin-bottom: 10px; }
 
     .field-row {
       display: flex;
@@ -266,25 +260,6 @@
       color: #9ca3af;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-      margin-top: 8px;
-    }
-
-    th, td {
-      padding: 4px 3px;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    th {
-      font-weight: 600;
-      font-size: 0.78rem;
-      color: #4b5563;
-    }
-
     footer {
       border-top: 1px solid var(--ii-border);
       padding: 14px 16px 18px;
@@ -296,35 +271,35 @@
   </style>
 </head>
 <body>
-  <!-- Vervang deze header indien gewenst met je bestaande header -->
+  <!-- Vervang deze header desgewenst door de exacte header van je site -->
   <header>
     <div class="header-inner">
-      <a class="logo" href="index.html">InfraImpact</a>
+      <a class="logo" href="../index.html">InfraImpact</a>
       <nav>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="projecten.html">Projecten</a></li>
-          <li><a href="epd-checker.html">MKI-toetsing asfalt</a></li>
-          <li><a href="lca-tool.html" class="active">LCA Tool</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../projecten.html">Projecten</a></li>
+          <li><a href="../epd-checker/">MKI-toetsing asfalt</a></li>
+          <li><a href="./index.html" class="active">Project asfalt LCA</a></li>
+          <li><a href="../contact.html">Contact</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <h1 class="page-title">LCA Tool</h1>
+    <h1 class="page-title">Project asfalt LCA</h1>
     <p class="page-subtitle">
-      Voer de basisgegevens van het LCA-rapport in, inclusief asfaltcentrales en mengselgegevens (incl. EPD’s). 
-      Exporteer vervolgens het overzicht als CSV én PDF voor dossiervorming of rapportage.
+      Voer projectgegevens, asfaltcentrales en mengseldata in. Upload EPD’s om automatisch MKI (A1–A3 + D) 
+      en CO₂ (GWP A1–A3 + D) uit te lezen. Exporteer alles als CSV en PDF voor je LCA-dossier.
     </p>
 
     <div class="grid">
       <div>
-        <!-- LCA Rapport Invoeren -->
+        <!-- Project / rapport -->
         <section class="card">
           <h2>LCA Rapport Invoeren</h2>
-          <p class="lead">Deze sectie volgt de structuur van de LCApro-tool: projectgegevens, opdrachtgever en uitvoerder.</p>
+          <p class="lead">Basisgegevens van het rapport, vergelijkbaar met je LCApro-tool.</p>
 
           <div class="field-group">
             <div class="field-row">
@@ -366,10 +341,10 @@
           </div>
         </section>
 
-        <!-- Asfaltcentrales & Transport -->
+        <!-- Asfaltcentrales -->
         <section class="card">
           <h2>Asfaltcentrales &amp; Transport</h2>
-          <p class="lead">Voeg één of meerdere asfaltcentrales toe met bijbehorende transportafstand in km.</p>
+          <p class="lead">Meerdere centrales met bijbehorende transportafstand.</p>
 
           <div class="field-group">
             <div class="field-row">
@@ -398,12 +373,12 @@
       </div>
 
       <div>
-        <!-- Mengsels & Eigenschappen -->
+        <!-- Mengsels & EPD -->
         <section class="card">
           <h2>Mengsels &amp; Eigenschappen</h2>
           <p class="lead">
-            Vul per asfaltmengsel de code, naam, centrale, asfaltsoort, brandstof, retourtransport en MKI/CO₂ in – 
-            net als in de LCApro-tool. EPD’s kun je als PDF koppelen.
+            Per mengsel: code, naam, centrale, asfaltsoort (dropdown uit LCApro), brandstof, retourtransport en MKI/GWP-waarden.
+            EPD upload vult A1–A3 en D automatisch, maar blijft handmatig aanpasbaar.
           </p>
 
           <div class="field-group">
@@ -428,8 +403,33 @@
                 </select>
               </div>
               <div class="field">
-                <label for="mixType">Asfaltsoort</label>
-                <input type="text" id="mixType" placeholder="Bijv. DZOAB, AC, SMA">
+                <label for="mixType">Asfaltsoort (LCApro)</label>
+                <select id="mixType">
+                  <option value="">— kies asfaltsoort —</option>
+                  <!-- Uit lca_get_dropdown_data()['asfaltsoorten'] -->
+                  <option>01. AC surf zonder PR</option>
+                  <option>02. AC surf met 30% PR</option>
+                  <option>03. AC surf met gemodificeerd bitumen zonder PR</option>
+                  <option>04. AC surf met gemodificeerd bitumen met 30% PR</option>
+                  <option>05. AC surf rood, met penbitumen</option>
+                  <option>06. AC surf rood, met blank bindmiddel</option>
+                  <option>07. AC bin/base 50% PR</option>
+                  <option>08. AC bin/base 50% PR met gemodificeerd bitumen</option>
+                  <option>09. ZOAB Regulier</option>
+                  <option>10. DZOAB</option>
+                  <option>11. DZOAB 30% PR</option>
+                  <option>12. 2L-ZOAB toplaag met gemodificeerd bitumen</option>
+                  <option>13. 2L-ZOAB onderlaag</option>
+                  <option>14. 2L-ZOAB onderlaag 30% PR</option>
+                  <option>15. SMA 8-11</option>
+                  <option>16. SMA 8-11 met gemodificeerd</option>
+                  <option>17. SMA 5</option>
+                  <option>18. Geluidsreducerende SMA deklaag (obv 8G+)</option>
+                  <option>19. Waterbouwasfaltbeton</option>
+                  <option>20. Open steenasfalt</option>
+                  <option>21. Gietasfalt, waterbouw</option>
+                  <option>22. Asfaltmastiek, waterbouw</option>
+                </select>
               </div>
             </div>
           </div>
@@ -463,41 +463,48 @@
                   <option value="HVO">HVO</option>
                   <option value="Elektrisch">Elektrisch</option>
                 </select>
-                <small>Zoals in de LCApro-tool (Diesel / HVO / Elektrisch).</small>
               </div>
-              <div class="field">
-                <label for="a1a3">A1-A3 D (MKI)</label>
-                <input type="number" id="a1a3" step="0.001" placeholder="Bijv. 0,85">
-                <small>Eventuele opgesplitste A1-A3(+D)-waarde (optioneel).</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
-              <div class="field">
-                <label for="mkiValue">MKI waarde</label>
-                <input type="number" id="mkiValue" step="0.001" placeholder="Bijv. 1,23">
-              </div>
-              <div class="field">
-                <label for="co2Value">CO₂ waarde (kg CO₂-eq.)</label>
-                <input type="number" id="co2Value" step="0.001" placeholder="Bijv. 10,5">
-              </div>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-row">
               <div class="field">
                 <label for="epdFile">EPD Upload (PDF)</label>
                 <input type="file" id="epdFile" accept="application/pdf">
-                <small>Bestandsnaam wordt meegenomen in CSV/PDF (inhoud wordt niet geüpload).</small>
+                <small>Bij upload worden MKI &amp; GWP A1–A3 + D uitgehaald indien mogelijk.</small>
               </div>
             </div>
+          </div>
 
-            <div class="btn-row">
-              <button type="button" class="btn-secondary" onclick="addMix()">Extra mengsel</button>
+          <!-- MKI / CO2 velden (met A1-3 en D) -->
+          <div class="field-group">
+            <h3>MKI-waarden (per functionele eenheid)</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="mkiA1A3">MKI A1–A3</label>
+                <input type="number" id="mkiA1A3" step="any" placeholder="Bijv. 0,85">
+              </div>
+              <div class="field">
+                <label for="mkiD">MKI D</label>
+                <input type="number" id="mkiD" step="any" placeholder="Bijv. 0,15">
+              </div>
             </div>
+            <small>Wordt bij EPD-upload automatisch ingevuld; altijd handmatig aanpasbaar.</small>
+          </div>
+
+          <div class="field-group">
+            <h3>CO₂ / GWP-waarden (kg CO₂-eq.)</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="co2A1A3">GWP A1–A3 (kg CO₂-eq.)</label>
+                <input type="number" id="co2A1A3" step="any" placeholder="Bijv. 10,5">
+              </div>
+              <div class="field">
+                <label for="co2D">GWP D (kg CO₂-eq.)</label>
+                <input type="number" id="co2D" step="any" placeholder="Bijv. 1,2">
+              </div>
+            </div>
+            <small>Ook hier: EPD-upload probeert deze velden te vullen.</small>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-secondary" onclick="addMix()">Extra mengsel</button>
           </div>
 
           <div class="field-group">
@@ -512,15 +519,14 @@
         <section class="card">
           <h2>Exporteren</h2>
           <p class="lead">
-            Exporteer alle ingevoerde gegevens naar CSV of PDF als basis voor je LCA-rapport of aanbestedingsdossier.
+            Exporteer alle ingevoerde gegevens naar CSV en PDF voor jouw LCA-rapport of aanbestedingsdossier.
           </p>
           <div class="btn-row">
             <button type="button" class="btn-primary" onclick="downloadCsv()">Download CSV</button>
             <button type="button" class="btn-secondary" onclick="downloadPdf()">Download PDF</button>
           </div>
           <p class="muted" style="margin-top:8px;">
-            De tool doet geen automatische MKI-berekeningen; alle MKI- en CO₂-waarden zijn invoervelden, 
-            net zoals in je bestaande LCApro-tool.
+            De tool rekent niet automatisch door naar project-MKI; de MKI- en GWP-waarden zijn invoer zoals in LCApro.
           </p>
         </section>
       </div>
@@ -537,7 +543,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ====== Data-structuren ======
+    // ========= HELPERS =========
     const asphaltPlants = [];
     const mixes = [];
 
@@ -549,7 +555,186 @@
         .replace(/^_+|_+$/g, '');
     }
 
-    // ====== Asfaltcentrales ======
+    function normalizeMinus(s){ return s ? s.replace(/\u2212/g,'-') : s; }
+
+    function parseNumEUexp(s){
+      if(!s) return NaN;
+      let str=normalizeMinus(String(s)).trim().replace(/\u202F/g,'').replace(/\s+/g,' ');
+      if (str.includes(',') && /[Ee][+\-]?\d+$/.test(str)) str=str.replace(',', '.');
+      else if (str.includes(',') && !str.includes('.')) str=str.replace(',', '.');
+      else if (str.includes(',') && str.includes('.')) {
+        const parts=str.split(',');
+        str=parts[0].replace(/\./g,'')+'.'+parts.slice(1).join('');
+      }
+      str=str.replace(/[^0-9eE\+\-\.]/g,'');
+      const n=Number(str);
+      return Number.isFinite(n)?n:NaN;
+    }
+
+    function looksNumericToken(raw){
+      if(!raw) return false;
+      const s = normalizeMinus(String(raw)).trim();
+      if(/[Ee][+\-]?\d+/.test(s)) return true;
+      if(/[\,\.]/.test(s)) return true;
+      if(/^\-?\d{2,}$/.test(s)) return true;
+      return false;
+    }
+
+    async function waitPdf(){ while(!window.pdfjsLib){ await new Promise(r=>setTimeout(r,100)); } }
+
+    async function pdfToText(file){
+      await waitPdf();
+      const buf = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({data:buf}).promise;
+      let text = '';
+      for(let p=1; p<=Math.min(8,pdf.numPages); p++){
+        const page = await pdf.getPage(p);
+        const c = await page.getTextContent();
+        text += '\n' + c.items.map(it=>it.str).join(' ');
+      }
+      return text;
+    }
+
+    function pick(re,txt){
+      const m = txt.match(re);
+      return m ? m[1].trim() : '';
+    }
+
+    function extractECITable(txt){
+      const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
+      const re = /(ECI|MKI)\s*euro\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+      const m = t.match(re);
+      if(!m) return null;
+      const a13 = m[5], d = m[6];
+      if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
+      return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
+    }
+
+    function extractLabeledMKI(txt){
+      const t = txt.replace(/\s+/g,' ');
+      const dash = '[\\-–—~]';
+      const a13m = t.match(new RegExp(`\\bA1\\s*${dash}\\s*A3\\b[^\\d\\-]*([\\-]?\\d[\\d\\.\\,]*(?:[Ee][\\+\\-]?\\d+)?)`,'i'));
+      const dm   = t.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      let a13Raw = a13m?.[1] || '';
+      let dRaw   = dm?.[1]   || '';
+      if(!looksNumericToken(a13Raw)) a13Raw = '';
+      if(!looksNumericToken(dRaw))   dRaw   = '';
+      const a13 = a13Raw ? parseNumEUexp(a13Raw) : NaN;
+      const d   = dRaw   ? parseNumEUexp(dRaw)   : NaN;
+      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
+      return null;
+    }
+
+    function extractFromMKIResults(txt){
+      const mm = txt.match(/Resultaten[\s\S]{0,400}(?:MKI|ECI)\s+Euro([\s\S]{0,260})/i);
+      if(!mm) return null;
+      const after=mm[1].replace(/\s+/g,' ').trim();
+      const a13m = after.match(/A1\s*[–—\-~]\s*A3[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      const dm   = after.match(/\bD\b[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      let a13Raw = a13m?.[1] || '';
+      let dRaw   = dm?.[1]   || '';
+      if(!looksNumericToken(a13Raw)) a13Raw='';
+      if(!looksNumericToken(dRaw))   dRaw='';
+      const a13 = a13Raw?parseNumEUexp(a13Raw):NaN;
+      const d   = dRaw  ?parseNumEUexp(dRaw)  :NaN;
+      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
+      return null;
+    }
+
+    // GWP-extractie (A1–A3 / D) – best effort
+    function extractGWPTable(txt){
+      const t = txt.replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim();
+      const re = /(GWP[^A-Za-z0-9]|GWP\s*\(total\)|GWP\s*totaal)[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)\s+([\-]?\d[\d\.\,]*(?:[Ee][+\-]?\d+)?)/i;
+      const m = t.match(re);
+      if(!m) return null;
+      const a13 = m[5], d = m[6];
+      if(!looksNumericToken(a13) || !looksNumericToken(d)) return null;
+      return { a13Raw:a13, dRaw:d, a13:parseNumEUexp(a13), d:parseNumEUexp(d) };
+    }
+
+    function extractLabeledGWP(txt){
+      const t = txt.replace(/\s+/g,' ');
+      const dash='[\\-–—~]';
+      const a13m = t.match(new RegExp(`GWP[^\\n]*A1\\s*${dash}\\s*A3[^\\d\\-]*([\\-]?\\d[\\d\\.\\,]*(?:[Ee][\\+\\-]?\\d+)?)`,'i'));
+      const dm   = t.match(/GWP[^A-Za-z0-9]*D[^\d\-]*([\-]?\d[\d\.\,]*(?:[Ee][\+\-]?\d+)?)/i);
+      let a13Raw = a13m?.[1] || '';
+      let dRaw   = dm?.[1]   || '';
+      if(!looksNumericToken(a13Raw)) a13Raw='';
+      if(!looksNumericToken(dRaw))   dRaw='';
+      const a13 = a13Raw?parseNumEUexp(a13Raw):NaN;
+      const d   = dRaw  ?parseNumEUexp(dRaw)  :NaN;
+      if(!isNaN(a13) || !isNaN(d)) return {a13,d,a13Raw,dRaw};
+      return null;
+    }
+
+    async function parseEpd(file){
+      const text = await pdfToText(file);
+      const product = pick(/Product:\s*([^\n]+?)\s+(?:Eenheid|Unit|Producer|Producent)/i, text) || file.name.replace(/\.pdf$/i,'');
+      const pcrRaw  = pick(/PCR[:\s]+([^\n]+)$/im, text) || "";
+      const pubDate = pick(/(Datum(?:\s+van)?\s+publicatie|Issue date)[:\s]+([0-9]{2}-[0-9]{2}-[0-9]{4})/i, text) || '';
+
+      // MKI
+      let a13, d, a13Raw="", dRaw="";
+      const eci = extractECITable(text);
+      if(eci){ a13=eci.a13; d=eci.d; a13Raw=eci.a13Raw; dRaw=eci.dRaw; }
+      if(isNaN(a13) || isNaN(d)){
+        const lab = extractLabeledMKI(text);
+        if(lab){
+          if(isNaN(a13)){ a13=lab.a13; a13Raw=lab.a13Raw||a13Raw; }
+          if(isNaN(d)){ d=lab.d; dRaw=lab.dRaw||dRaw; }
+        }
+      }
+      if((isNaN(a13) && isNaN(d)) || (!looksNumericToken(a13Raw)&&!looksNumericToken(dRaw))){
+        const res = extractFromMKIResults(text);
+        if(res){
+          if(isNaN(a13)){ a13=res.a13; a13Raw=res.a13Raw; }
+          if(isNaN(d)){ d=res.d; dRaw=res.dRaw; }
+        }
+      }
+
+      // GWP
+      let gwpA13, gwpD, gwpA13Raw="", gwpDRaw="";
+      const gwpTab = extractGWPTable(text);
+      if(gwpTab){ gwpA13=gwpTab.a13; gwpD=gwpTab.d; gwpA13Raw=gwpTab.a13Raw; gwpDRaw=gwpTab.dRaw; }
+      if(isNaN(gwpA13) || isNaN(gwpD)){
+        const gwpLab = extractLabeledGWP(text);
+        if(gwpLab){
+          if(isNaN(gwpA13)){ gwpA13=gwpLab.a13; gwpA13Raw=gwpLab.a13Raw || gwpA13Raw; }
+          if(isNaN(gwpD)){ gwpD=gwpLab.d; gwpDRaw=gwpLab.dRaw || gwpDRaw; }
+        }
+      }
+
+      return {
+        product,
+        pcr: pcrRaw || "NL-PCR Asfalt 2.0",
+        pubDate,
+        mkiA1A3:a13,
+        mkiD:d,
+        mkiA1A3Raw:a13Raw,
+        mkiDRaw:dRaw,
+        gwpA1A3:gwpA13,
+        gwpD:gwpD,
+        gwpA1A3Raw:gwpA13Raw,
+        gwpDRaw:gwpDRaw
+      };
+    }
+
+    function parseInputPrecise(el){
+      let s = (el.value ?? "").trim();
+      if(!s) return NaN;
+      s = s.replace(/\u202F/g,'').replace(/\s+/g,' ');
+      if (s.includes(',') && /[Ee][+\-]?\d+$/.test(s)) s = s.replace(',', '.');
+      else if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
+      else if (s.includes(',') && s.includes('.')) {
+        const parts=s.split(',');
+        s=parts[0].replace(/\./g,'')+'.'+parts.slice(1).join('');
+      }
+      s = s.replace(/[^0-9eE\+\-\.]/g,'');
+      const n = Number(s);
+      return Number.isFinite(n)?n:NaN;
+    }
+
+    // ========= Asfaltcentrales =========
     function addPlant() {
       const name = document.getElementById('plantName').value.trim();
       const distanceStr = document.getElementById('plantDistance').value;
@@ -653,22 +838,43 @@
       return found ? found.name : '—';
     }
 
-    // ====== Mengsels ======
+    // ========= Mengsels =========
+    async function handleEpdUpload(){
+      const input = document.getElementById('epdFile');
+      const file = input.files[0];
+      if (!file) return;
+      try {
+        const parsed = await parseEpd(file);
+        if(!isNaN(parsed.mkiA1A3)) document.getElementById('mkiA1A3').value = parsed.mkiA1A3;
+        if(!isNaN(parsed.mkiD))    document.getElementById('mkiD').value    = parsed.mkiD;
+        if(!isNaN(parsed.gwpA1A3)) document.getElementById('co2A1A3').value = parsed.gwpA1A3;
+        if(!isNaN(parsed.gwpD))    document.getElementById('co2D').value    = parsed.gwpD;
+      } catch(e){
+        console.warn('EPD lezen mislukt', e);
+        alert('Kon MKI/GWP niet automatisch uit de EPD halen. Je kunt de waarden handmatig invullen.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const epdInput = document.getElementById('epdFile');
+      if (epdInput) {
+        epdInput.addEventListener('change', handleEpdUpload);
+      }
+    });
+
     function addMix() {
       const code = document.getElementById('mixCode').value.trim();
       const name = document.getElementById('mixName').value.trim();
       const plantId = document.getElementById('mixPlant').value;
-      const type = document.getElementById('mixType').value.trim();
+      const type = document.getElementById('mixType').value;
       const transportFuel = document.getElementById('transportFuel').value;
       const returnTransportStr = document.getElementById('returnTransport').value;
       const returnTransport = returnTransportStr === '' ? null : parseFloat(returnTransportStr);
       const constructionFuel = document.getElementById('constructionFuel').value;
-      const a1a3Str = document.getElementById('a1a3').value;
-      const a1a3 = a1a3Str === '' ? null : parseFloat(a1a3Str);
-      const mkiStr = document.getElementById('mkiValue').value;
-      const mki = mkiStr === '' ? null : parseFloat(mkiStr);
-      const co2Str = document.getElementById('co2Value').value;
-      const co2 = co2Str === '' ? null : parseFloat(co2Str);
+      const mkiA1A3 = parseInputPrecise(document.getElementById('mkiA1A3'));
+      const mkiD    = parseInputPrecise(document.getElementById('mkiD'));
+      const co2A1A3 = parseInputPrecise(document.getElementById('co2A1A3'));
+      const co2D    = parseInputPrecise(document.getElementById('co2D'));
       const epdInput = document.getElementById('epdFile');
       const epdFile = epdInput.files[0] || null;
       const epdFileName = epdFile ? epdFile.name : '';
@@ -681,10 +887,6 @@
         alert('Selecteer een asfaltcentrale voor dit mengsel.');
         return;
       }
-      if (mki == null || isNaN(mki)) {
-        alert('Vul een geldige MKI-waarde in voor het mengsel.');
-        return;
-      }
 
       const mix = {
         id: Date.now() + '_' + Math.random().toString(16).slice(2),
@@ -695,24 +897,25 @@
         transportFuel,
         returnTransport: isNaN(returnTransport) ? null : returnTransport,
         constructionFuel,
-        a1a3: isNaN(a1a3) ? null : a1a3,
-        mki,
-        co2: (co2 == null || isNaN(co2)) ? null : co2,
+        mkiA1A3: isNaN(mkiA1A3) ? null : mkiA1A3,
+        mkiD:    isNaN(mkiD)    ? null : mkiD,
+        co2A1A3: isNaN(co2A1A3) ? null : co2A1A3,
+        co2D:    isNaN(co2D)    ? null : co2D,
         epdFileName
       };
 
       mixes.push(mix);
 
-      // velden leegmaken (centrale laten staan is soms handig)
+      // velden leegmaken (centrale/asfaltsoort laten staan kan ook, maar ik maak ze even schoon)
       document.getElementById('mixCode').value = '';
       document.getElementById('mixName').value = '';
-      document.getElementById('mixType').value = '';
       document.getElementById('transportFuel').value = '';
       document.getElementById('returnTransport').value = '0';
       document.getElementById('constructionFuel').value = '';
-      document.getElementById('a1a3').value = '';
-      document.getElementById('mkiValue').value = '';
-      document.getElementById('co2Value').value = '';
+      document.getElementById('mkiA1A3').value = '';
+      document.getElementById('mkiD').value = '';
+      document.getElementById('co2A1A3').value = '';
+      document.getElementById('co2D').value = '';
       document.getElementById('epdFile').value = '';
 
       renderMixes();
@@ -759,9 +962,6 @@
         const sub2 = document.createElement('div');
         sub2.className = 'list-sub';
         const rt = mix.returnTransport != null ? mix.returnTransport + ' % retour' : 'Retourtransport: n.v.t.';
-        const a1a3 = mix.a1a3 != null ? 'A1-A3 D: ' + mix.a1a3 : 'A1-A3 D: n.v.t.';
-        const co2 = mix.co2 != null ? 'CO₂: ' + mix.co2 + ' kg' : 'CO₂: n.v.t.';
-        const epd = mix.epdFileName ? 'EPD: ' + mix.epdFileName : 'EPD: geen gekoppeld';
         sub2.textContent =
           'Transp.: ' + (mix.transportFuel || 'n.v.t.') +
           ' · Aanleg: ' + (mix.constructionFuel || 'n.v.t.') +
@@ -769,13 +969,25 @@
 
         const sub3 = document.createElement('div');
         sub3.className = 'list-sub';
+        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
+        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
         sub3.textContent =
-          a1a3 + ' · MKI: ' + mix.mki + ' · ' + co2 + ' · ' + epd;
+          'MKI A1–A3: ' + (mix.mkiA1A3 ?? 'n.v.t.') +
+          ' · MKI D: ' + (mix.mkiD ?? 'n.v.t.') +
+          ' · MKI A–D: ' + (isNaN(mkiTot) ? 'n.v.t.' : mkiTot) +
+          ' · GWP A1–A3: ' + (mix.co2A1A3 ?? 'n.v.t.') +
+          ' · GWP D: ' + (mix.co2D ?? 'n.v.t.') +
+          ' · GWP A–D: ' + (isNaN(co2Tot) ? 'n.v.t.' : co2Tot);
+
+        const sub4 = document.createElement('div');
+        sub4.className = 'list-sub';
+        sub4.textContent = 'EPD: ' + (mix.epdFileName || 'geen gekoppeld');
 
         meta.appendChild(title);
         meta.appendChild(sub1);
         meta.appendChild(sub2);
         meta.appendChild(sub3);
+        meta.appendChild(sub4);
 
         const actions = document.createElement('div');
 
@@ -794,7 +1006,7 @@
       });
     }
 
-    // ====== CSV EXPORT ======
+    // ========= CSV =========
     function downloadCsv() {
       if (mixes.length === 0) {
         alert('Voeg minimaal één mengsel toe voordat je exporteert.');
@@ -811,7 +1023,6 @@
       const projectLifetime = document.getElementById('projectLifetime').value || '';
       const projectLocation = document.getElementById('projectLocation').value || '';
 
-      // kop
       csv += 'LCA Tool;InfraImpact\n';
       csv += 'Datum;' + new Date().toLocaleDateString('nl-NL') + '\n\n';
 
@@ -823,23 +1034,21 @@
       csv += 'Project;Projectlevensduur;' + projectLifetime + ';jaar\n';
       csv += 'Project;Projectadres/Coördinaten;' + projectLocation + ';\n\n';
 
-      // centrales
       csv += 'Asfaltcentrales & Transport;;;\n';
       csv += 'Asfaltcentrale;Transportkilometers (km);;\n';
       if (asphaltPlants.length === 0) {
-        csv += 'Geen geregistreerde asfaltcentrales;;;\\n';
+        csv += 'Geen geregistreerde asfaltcentrales;;;\n';
       } else {
         asphaltPlants.forEach(p => {
           const dist = (p.distanceKm != null)
             ? String(p.distanceKm).replace('.', ',')
             : '';
-          csv += p.name + sep + dist + sep + sep + '\\n';
+          csv += p.name + sep + dist + sep + sep + '\n';
         });
       }
       csv += '\n';
 
-      // mengsels
-      csv += 'Mengsels & Eigenschappen;;;;;;;;;;\n';
+      csv += 'Mengsels & Eigenschappen;;;;;;;;;;;;;\n';
       csv += [
         'Mengselcode',
         'Mengselnaam',
@@ -848,18 +1057,21 @@
         'Transportbrandstof',
         'Retourtransport (%)',
         'Aanlegbrandstof',
-        'A1-A3 D',
-        'MKI waarde',
-        'CO2 waarde (kg CO2-eq.)',
+        'MKI A1-A3',
+        'MKI D',
+        'MKI A-D totaal',
+        'GWP A1-A3 (kg CO2-eq.)',
+        'GWP D (kg CO2-eq.)',
+        'GWP A-D totaal (kg CO2-eq.)',
         'EPD bestand'
-      ].join(sep) + '\\n';
+      ].join(sep) + '\n';
 
       mixes.forEach(mix => {
         const plantName = getPlantNameById(mix.plantId);
-        const rt = mix.returnTransport != null ? String(mix.returnTransport).replace('.', ',') : '';
-        const a1a3 = mix.a1a3 != null ? String(mix.a1a3).replace('.', ',') : '';
-        const mki = mix.mki != null ? String(mix.mki).replace('.', ',') : '';
-        const co2 = mix.co2 != null ? String(mix.co2).replace('.', ',') : '';
+        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
+        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
+
+        const v = (val) => (val == null || isNaN(val)) ? '' : String(val).replace('.', ',');
 
         csv += [
           mix.code,
@@ -867,13 +1079,16 @@
           plantName,
           mix.type || '',
           mix.transportFuel || '',
-          rt,
+          mix.returnTransport != null ? v(mix.returnTransport) : '',
           mix.constructionFuel || '',
-          a1a3,
-          mki,
-          co2,
+          v(mix.mkiA1A3),
+          v(mix.mkiD),
+          (isNaN(mkiTot) ? '' : v(mkiTot)),
+          v(mix.co2A1A3),
+          v(mix.co2D),
+          (isNaN(co2Tot) ? '' : v(co2Tot)),
           mix.epdFileName || ''
-        ].join(sep) + '\\n';
+        ].join(sep) + '\n';
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -888,8 +1103,8 @@
       URL.revokeObjectURL(url);
     }
 
-    // ====== PDF EXPORT ======
-    async function downloadPdf() {
+    // ========= PDF =========
+    function downloadPdf() {
       if (mixes.length === 0) {
         alert('Voeg minimaal één mengsel toe voordat je exporteert.');
         return;
@@ -949,6 +1164,9 @@
 
       addLine('Mengsels & Eigenschappen', 11, true);
       mixes.forEach((mix, index) => {
+        const mkiTot = (mix.mkiA1A3 ?? 0) + (mix.mkiD ?? 0);
+        const co2Tot = (mix.co2A1A3 ?? 0) + (mix.co2D ?? 0);
+
         addLine('Mengsel ' + (index + 1), 10, true);
         addLine('Code / naam: ' + mix.code + ' – ' + mix.name);
         addLine('Asfaltcentrale: ' + getPlantNameById(mix.plantId));
@@ -956,20 +1174,30 @@
         addLine('Transportbrandstof: ' + (mix.transportFuel || 'n.v.t.'));
         addLine('Retourtransport: ' + (mix.returnTransport != null ? mix.returnTransport + ' %' : 'n.v.t.'));
         addLine('Aanlegbrandstof: ' + (mix.constructionFuel || 'n.v.t.'));
-        addLine('A1-A3 D: ' + (mix.a1a3 != null ? mix.a1a3 : 'n.v.t.'));
-        addLine('MKI waarde: ' + (mix.mki != null ? mix.mki : 'n.v.t.'));
-        addLine('CO₂ waarde: ' + (mix.co2 != null ? mix.co2 + ' kg CO₂-eq.' : 'n.v.t.'));
+        addLine('MKI A1–A3: ' + (mix.mkiA1A3 != null ? mix.mkiA1A3 : 'n.v.t.') +
+                ' · MKI D: ' + (mix.mkiD != null ? mix.mkiD : 'n.v.t.') +
+                ' · MKI A–D: ' + (isNaN(mkiTot) ? 'n.v.t.' : mkiTot));
+        addLine('GWP A1–A3: ' + (mix.co2A1A3 != null ? mix.co2A1A3 : 'n.v.t.') +
+                ' · GWP D: ' + (mix.co2D != null ? mix.co2D : 'n.v.t.') +
+                ' · GWP A–D: ' + (isNaN(co2Tot) ? 'n.v.t.' : co2Tot));
         addLine('EPD (bestand): ' + (mix.epdFileName || 'geen gekoppeld'));
         y += 2;
       });
 
       y += 4;
-      addLine('Let op: alle MKI- en CO₂-waarden zijn gebruikersinput.', 8);
-      addLine('Gebruik gevalideerde brondata (bijv. NMD/EPD) voor definitieve rapportage.', 8);
+      addLine('Let op: alle MKI- en GWP-waarden zijn gebruikersinput of afkomstig uit EPD’s.', 8);
+      addLine('Gebruik gevalideerde brondata (NMD/EPD) voor definitieve rapportage.', 8);
 
       const fileName = 'lca_rapport_' + slugify(projectName) + '.pdf';
       doc.save(fileName);
     }
+  </script>
+
+  <!-- pdf.js loader (zoals bij EPD-checker) -->
+  <script type="module">
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
+    window.pdfjsLib = pdfjsLib;
   </script>
 </body>
 </html>
