@@ -1,82 +1,216 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Algemene Voorwaarden | InfraImpact</title>
-<meta name="description" content="Algemene Voorwaarden InfraImpact – adviesdiensten (DNR 2011) en gebruik van de EPD-checker.">
-<link rel="canonical" href="https://infraimpact.nl/algemene-voorwaarden.html"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-<style>main{max-width:860px;margin:0 auto;padding:2rem 1.25rem}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algemene Voorwaarden | InfraImpact</title>
+  <meta name="description" content="Algemene Voorwaarden InfraImpact – adviesdiensten (DNR 2011) en gebruik van de EPD-checker.">
+
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/algemene-voorwaarden/"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/algemene-voorwaarden/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%; animation: bgMove 60s ease infinite;
+      color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient { background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  </style>
 </head>
-<body class="text-gray-800">
-<main class="prose prose-green">
-<h1>Algemene Voorwaarden</h1>
-<p><strong>Versie:</strong> 4 november 2025</p>
 
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
+        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="../over/" class="hover:text-green-700">Over ons</a>
+        <a href="#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
+        <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        <a href="../over/" class="block py-2">Over</a>
+        <a href="#contact" class="block py-2">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
 
-<h2>1. Toepasselijkheid</h2>
-<p>Deze voorwaarden zijn van toepassing op alle aanbiedingen en overeenkomsten van InfraImpact B.V. betreffende adviesdiensten (LCA/MKI) en het gebruik van de EPD‑checker (de “Tool”). Op adviesdiensten is, voor zover niet in strijd met onderstaande bepalingen, <em>DNR 2011 (eerste herziening juli 2013)</em> van toepassing.</p>
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">InfraImpact</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient mb-4">Algemene voorwaarden</h1>
+      <p class="text-lg text-gray-700">De juridische basis voor onze adviesdiensten en het gebruik van de EPD-checker.</p>
+      <p class="text-sm text-gray-500 mt-2"><strong>Versie:</strong> 4 november 2025</p>
+    </header>
 
+    <section class="bg-white border border-gray-100 rounded-2xl shadow-sm p-8 space-y-6">
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">1. Toepasselijkheid</h2>
+        <p class="text-gray-700">Deze voorwaarden zijn van toepassing op alle aanbiedingen en overeenkomsten van InfraImpact B.V. betreffende adviesdiensten (LCA/MKI) en het gebruik van de EPD‑checker (de “Tool”). Op adviesdiensten is, voor zover niet in strijd met onderstaande bepalingen, <em>DNR 2011 (eerste herziening juli 2013)</em> van toepassing.</p>
+      </div>
 
-<h2>2. Definities</h2>
-<p>Account, Klant, Gebruiker, EPD, Resultaten, Verwerkersovereenkomst (DPA), Dataverlies, Onderhoud.</p>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">2. Definities</h2>
+        <p class="text-gray-700">Account, Klant, Gebruiker, EPD, Resultaten, Verwerkersovereenkomst (DPA), Dataverlies, Onderhoud.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">3. Aanbiedingen en prijzen</h2>
+        <p class="text-gray-700">Offertes zijn 30 dagen geldig, exclusief btw en externe kosten (o.a. NMD‑invoer, externe toetsing).</p>
+      </div>
 
-<h2>3. Aanbiedingen en prijzen</h2>
-<p>Offertes zijn 30 dagen geldig, exclusief btw en externe kosten (o.a. NMD‑invoer, externe toetsing).</p>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">4. Gebruik van de Tool (licentie)</h2>
+        <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+          <li>Niet‑exclusieve, niet‑overdraagbare licentie voor interne doeleinden.</li>
+          <li>Geen (onder)verhuur, verkoop of reverse engineering.</li>
+          <li>InfraImpact mag functionaliteit wijzigen; wezenlijke wijzigingen worden tijdig aangekondigd.</li>
+        </ol>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">5. EPD‑uploads en data</h2>
+        <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+          <li>Klant blijft eigenaar van EPD’s en van de daaruit voortvloeiende Resultaten.</li>
+          <li>Klant zorgt voor rechten en juistheid van aangeleverde EPD’s en vrijwaart InfraImpact voor aanspraken van derden.</li>
+          <li>InfraImpact mag geanonimiseerde/geaggregeerde data gebruiken voor kwaliteitsverbetering en benchmarking.</li>
+        </ol>
+      </div>
 
-<h2>4. Gebruik van de Tool (licentie)</h2>
-<ol>
-<li>Niet‑exclusieve, niet‑overdraagbare licentie voor interne doeleinden.</li>
-<li>Geen (onder)verhuur, verkoop of reverse engineering.</li>
-<li>InfraImpact mag functionaliteit wijzigen; wezenlijke wijzigingen worden tijdig aangekondigd.</li>
-</ol>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">6. Verwerkersovereenkomst</h2>
+        <p class="text-gray-700">Op verzoek sluiten partijen een DPA. InfraImpact verwerkt persoonsgegevens uitsluitend volgens instructies van de Klant en binnen de AVG.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">7. Beschikbaarheid en onderhoud</h2>
+        <p class="text-gray-700">InfraImpact streeft naar hoge beschikbaarheid van de Tool, maar kan tijdelijk onderhoud of updates uitvoeren. Onderhoud wordt, waar mogelijk, tijdig aangekondigd.</p>
+      </div>
 
-<h2>5. EPD‑uploads en data</h2>
-<ol>
-<li>Klant blijft eigenaar van EPD’s en van de daaruit voortvloeiende Resultaten.</li>
-<li>Klant staat in voor rechtmatigheid en juistheid van aangeleverde EPD’s.</li>
-<li>InfraImpact mag geanonimiseerde, geaggregeerde informatie gebruiken voor verbeteringen en rapportages.</li>
-</ol>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">8. Aansprakelijkheid en vrijwaring</h2>
+        <p class="text-gray-700">Aansprakelijkheid van InfraImpact is beperkt tot het factuurbedrag van de laatste drie maanden (advies) of de jaarlijkse licentievergoeding (Tool). Indirecte schade, gevolgschade en gederfde winst zijn uitgesloten, tenzij sprake is van opzet of bewuste roekeloosheid.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">9. Betaling</h2>
+        <p class="text-gray-700">Betalingstermijn 30 dagen na factuurdatum, tenzij anders overeengekomen. Bij te late betaling kan toegang tot de Tool worden opgeschort.</p>
+      </div>
 
-<h2>6. Bewaren & verwijderen</h2>
-<p>Standaardretentie: zolang het account actief is + 24 maanden na laatste activiteit. Op schriftelijk verzoek verwijderen of anonimiseren wij binnen 30 dagen; back‑ups worden binnen 90 dagen overschreven.</p>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">10. Intellectueel eigendom</h2>
+        <p class="text-gray-700">Alle IP op analyses, rapporten, code en tooling blijft bij InfraImpact, tenzij schriftelijk anders overeengekomen. De Klant krijgt een gebruiksrecht voor interne doeleinden.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">11. Privacy en beveiliging</h2>
+        <p class="text-gray-700">InfraImpact neemt passende technische en organisatorische maatregelen. Het privacybeleid is van toepassing op persoonsgegevens; zie <a href="../privacy/" class="text-green-700 underline">privacyverklaring</a>. Cookievoorkeuren kun je aanpassen via <a href="#" id="openCookieSettings" class="text-green-700 underline">Cookie‑instellingen</a>.</p>
+      </div>
 
-<h2>7. Ondersteuning en beschikbaarheid</h2>
-<p>Best‑efforts beschikbaarheid; gepland onderhoud bij voorkeur buiten kantooruren; incidentafhandeling op werkdagen 09:00–17:00 CET.</p>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">12. Beëindiging</h2>
+        <p class="text-gray-700">Opzegging schriftelijk met inachtneming van de afgesproken opzegtermijn. Na beëindiging kan Klant binnen 30 dagen export van eigen data opvragen; daarna worden data verwijderd of geanonimiseerd.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">13. Toepasselijk recht</h2>
+        <p class="text-gray-700">Nederlands recht is van toepassing. Geschillen worden bij voorkeur in overleg opgelost; bij gebrek daaraan is de rechtbank Rotterdam bevoegd.</p>
+      </div>
+    </section>
+  </main>
 
-<h2>8. Aansprakelijkheid en vrijwaring</h2>
-<p>Voor adviesdiensten gelden de beperkingen uit DNR 2011. Voor de Tool is de totale aansprakelijkheid per jaar beperkt tot het lagere van (i) de in dat jaar betaalde vergoeding of (ii) €100.000, met uitsluiting van gevolgschade, behoudens opzet of bewuste roekeloosheid. Klant vrijwaart InfraImpact voor claims i.v.m. onrechtmatige EPD‑inhoud.</p>
+  <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-20 pb-12">
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient">Kennismaken?</h2>
+      <p class="text-gray-700">
+        Ben jij opdrachtgever, aannemer of leverancier en wil je concreet sturen op MKI? We denken dezelfde werkdag met je mee.
+      </p>
+      <div class="space-y-2 text-gray-600">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div>
+        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium cta">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-500 text-sm">
+        <a href="../privacy/" class="underline">Privacy</a> ·
+        <a href="../cookies/" class="underline">Cookiebeleid</a> ·
+        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a> ·
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+      <p class="text-gray-500 text-sm">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
 
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-<h2>9. Intellectuele eigendom</h2>
-<p>Alle rechten op de Tool en onderliggende code blijven bij InfraImpact. Voor advieswerken gelden de DNR‑bepalingen.</p>
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu){
+      btn.addEventListener('click',()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a=>{
+        a.addEventListener('click',()=>{
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        });
+      });
+      document.addEventListener('keydown',(e)=>{
+        if (e.key==='Escape' && !menu.classList.contains('hidden')){
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
 
-
-<h2>10. Privacy & beveiliging</h2>
-<p>Partijen sluiten een Verwerkersovereenkomst (DPA) indien InfraImpact als verwerker optreedt.</p>
-
-
-<h2>11. Overmacht</h2>
-<p>Storingen buiten redelijke invloed (o.a. cloud/ISP) gelden als overmacht.</p>
-
-
-<h2>12. Duur en opzegging</h2>
-<p>Licentie maandelijks opzegbaar; openstaande vergoedingen blijven verschuldigd. Bij verzuim kan InfraImpact toegang opschorten of ontbinden na ingebrekestelling.</p>
-
-
-<h2>13. Recht en forum</h2>
-<p>Nederlands recht; rechtbank Rotterdam is bevoegd, behoudens dwingend recht.</p>
-
-
-<hr>
-<p>Op verzoek verstrekken wij de tekst van <em>DNR 2011 (eerste herziening juli 2013)</em>.</p>
-</main>
+    document.getElementById('openCookieSettings')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+    document.getElementById('cookieSettingsLink')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+  </script>
 </body>
 </html>

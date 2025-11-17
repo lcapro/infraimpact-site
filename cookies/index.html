@@ -1,39 +1,182 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cookiebeleid | InfraImpact</title>
-<meta name="description" content="Cookiebeleid InfraImpact: uitleg over noodzakelijke, statistiek en marketingcookies en hoe je voorkeuren beheert.">
-<link rel="canonical" href="https://infraimpact.nl/cookies.html"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-<style>main{max-width:860px;margin:0 auto;padding:2rem 1.25rem}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookiebeleid | InfraImpact</title>
+  <meta name="description" content="Cookiebeleid InfraImpact: uitleg over noodzakelijke, statistiek en marketingcookies en hoe je voorkeuren beheert.">
+
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/cookies/"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/cookies/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%; animation: bgMove 60s ease infinite;
+      color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient { background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  </style>
 </head>
-<body class="text-gray-800">
-<main class="prose prose-green">
-<h1>Cookiebeleid</h1>
 
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
+        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="../over/" class="hover:text-green-700">Over ons</a>
+        <a href="#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
+        <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        <a href="../over/" class="block py-2">Over</a>
+        <a href="#contact" class="block py-2">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
 
-<h2>Categorieën</h2>
-<ul>
-<li><strong>Noodzakelijk</strong> – functionele en beveiligingscookies (altijd actief; geen toestemming vereist).</li>
-<li><strong>Statistiek</strong> – Google Analytics (alleen met jouw toestemming; Consent Mode v2 toegepast).</li>
-</ul>
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">InfraImpact</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient mb-4">Cookiebeleid</h1>
+      <p class="text-lg text-gray-700">Meer informatie over welke cookies we gebruiken, waarom we dat doen en hoe je je voorkeuren beheert.</p>
+    </header>
 
+    <section class="bg-white border border-gray-100 rounded-2xl shadow-sm p-8 space-y-6">
+      <h2 class="text-2xl font-bold text-gray-900">Categorieën</h2>
+      <ul class="list-disc pl-5 space-y-2 text-gray-700">
+        <li><strong>Noodzakelijk</strong> – functionele en beveiligingscookies (altijd actief; geen toestemming vereist).</li>
+        <li><strong>Statistiek</strong> – Google Analytics (alleen met jouw toestemming; Consent Mode v2 toegepast).</li>
+      </ul>
 
-<h2>Cookieoverzicht (voorbeeld)</h2>
-<table>
-<thead><tr><th>Categorie</th><th>Naam</th><th>Doel</th><th>Bewaartermijn</th><th>Provider</th></tr></thead>
-<tbody>
-<tr><td>Noodzakelijk</td><td>cookie_consent</td><td>Onthoudt uw keuze</td><td>6–12 maanden</td><td>InfraImpact</td></tr>
-<tr><td>Statistiek</td><td>_ga, _gid (pas na toestemming)</td><td>Bezoekstatistiek</td><td>max. 14 maanden</td><td>Google LLC</td></tr>
-</tbody>
-</table>
+      <h2 class="text-2xl font-bold text-gray-900 pt-4">Cookieoverzicht (voorbeeld)</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm text-gray-800 border border-gray-200 rounded-lg">
+          <thead class="bg-gray-50 text-gray-600">
+            <tr>
+              <th class="px-4 py-3">Categorie</th>
+              <th class="px-4 py-3">Naam</th>
+              <th class="px-4 py-3">Doel</th>
+              <th class="px-4 py-3">Bewaartermijn</th>
+              <th class="px-4 py-3">Provider</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="px-4 py-3">Noodzakelijk</td>
+              <td class="px-4 py-3">cookie_consent</td>
+              <td class="px-4 py-3">Onthoudt uw keuze</td>
+              <td class="px-4 py-3">6–12 maanden</td>
+              <td class="px-4 py-3">InfraImpact</td>
+            </tr>
+            <tr class="border-t">
+              <td class="px-4 py-3">Statistiek</td>
+              <td class="px-4 py-3">_ga, _gid (pas na toestemming)</td>
+              <td class="px-4 py-3">Bezoekstatistiek</td>
+              <td class="px-4 py-3">max. 14 maanden</td>
+              <td class="px-4 py-3">Google LLC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
+      <h2 class="text-2xl font-bold text-gray-900 pt-4">Voorkeuren wijzigen</h2>
+      <p class="text-gray-700">Open <a href="#" id="openCookieSettings" class="text-green-700 underline">Cookie-instellingen</a> om je keuzes bij te werken.</p>
+    </section>
+  </main>
 
-<h2>Voorkeuren wijzigen</h2>
-<p>Open <a href="#" id="openCookieSettings">Cookie‑instellingen</a> om je keuzes bij te werken.</p>
-</main>
-<script>document.getElementById('openCookieSettings')?.addEventListener('click',e=>{e.preventDefault();window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));});</script>
+  <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-20 pb-12">
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient">Kennismaken?</h2>
+      <p class="text-gray-700">
+        Ben jij opdrachtgever, aannemer of leverancier en wil je concreet sturen op MKI? We denken dezelfde werkdag met je mee.
+      </p>
+      <div class="space-y-2 text-gray-600">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div>
+        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium cta">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-500 text-sm">
+        <a href="../privacy/" class="underline">Privacy</a> ·
+        <a href="../cookies/" class="underline">Cookiebeleid</a> ·
+        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a> ·
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+      <p class="text-gray-500 text-sm">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu){
+      btn.addEventListener('click',()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a=>{
+        a.addEventListener('click',()=>{
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        });
+      });
+      document.addEventListener('keydown',(e)=>{
+        if (e.key==='Escape' && !menu.classList.contains('hidden')){
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
+
+    document.getElementById('openCookieSettings')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+    document.getElementById('cookieSettingsLink')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+  </script>
 </body>
 </html>
