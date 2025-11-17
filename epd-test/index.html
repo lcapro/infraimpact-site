@@ -38,7 +38,14 @@
     :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
     body { background: linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7); background-size: 400% 400%; animation: bgMove 60s ease infinite; color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .text-gradient { background: linear-gradient(90deg, var(--brand-green), var(--brand-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      padding-bottom: 0.2em;
+      overflow: visible;
+    }
     nav { position: sticky; top: 0; background-color: #ffffffcc; backdrop-filter: blur(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; z-index: 50; }
     .scroll-down { transform: translateY(-100%); } .scroll-up { transform: translateY(0); }
     :focus-visible { outline:3px solid var(--brand-green); outline-offset:3px } html { scroll-behavior: smooth; }
