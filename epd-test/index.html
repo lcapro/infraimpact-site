@@ -803,8 +803,7 @@
       <div class="p-5 border-b"><h2 class="text-lg font-semibold">Cookie-instellingen</h2></div>
       <div class="p-5 space-y-4 text-sm">
         <label class="flex items-start gap-3"><input type="checkbox" checked disabled><span><strong>Noodzakelijk</strong> – altijd actief voor werking en beveiliging.</span></label>
-        <label class="flex items-start gap-3"><input id="ci-stat" type="checkbox"><span><strong>Statistiek</strong> – Google Analytics, helpt ons de site te verbeteren.</span></label>
-        <label class="flex items-start gap-3 opacity-60"><input type="checkbox" disabled><span><strong>Marketing</strong> – momenteel niet actief.</span></label>
+        <label class="flex items-start gap-3"><input id="ci-stat" type="checkbox" checked><span><strong>Statistiek</strong> – Google Analytics, helpt ons de site te verbeteren.</span></label>
       </div>
       <div class="p-5 border-t flex justify-end gap-2">
         <button id="ci-cancel" class="px-3 py-2 rounded-lg border">Annuleren</button>
@@ -824,7 +823,7 @@
     btn('ci-accept').addEventListener('click', ()=>{ const consent={ necessary:true, statistics:true, ts:Date.now() }; save(consent); apply(consent); hideBanner(); });
     btn('ci-preferences').addEventListener('click', openModal); btn('ci-cancel').addEventListener('click', closeModal);
     btn('ci-save').addEventListener('click', ()=>{ const consent={ necessary:true, statistics:$stat.checked, ts:Date.now() }; save(consent); apply(consent); closeModal(); hideBanner(); });
-    const existing = read(); if (!('statistics' in existing)){ $stat.checked=false; showBanner(); } else { apply(existing); }
+    const existing = read(); if (!('statistics' in existing)){ $stat.checked=true; showBanner(); } else { apply(existing); }
   })();
   </script>
 </body>
