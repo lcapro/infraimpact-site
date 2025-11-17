@@ -27,7 +27,14 @@
       color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     }
     @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .text-gradient { background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .text-gradient {
+      background: linear-gradient(90deg,var(--brand-green),var(--brand-blue));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      display: inline-block;
+      padding-bottom: 0.2em;
+      overflow: visible;
+    }
   </style>
 </head>
 
