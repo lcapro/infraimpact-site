@@ -1,66 +1,208 @@
-!doctype html>
-<style>main{max-width:860px;margin:0 auto;padding:2rem 1.25rem}</style>
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacyverklaring | InfraImpact</title>
+  <meta name="description" content="Privacyverklaring InfraImpact: welke gegevens we verwerken, waarom en hoe je je rechten uitoefent.">
+
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/privacy/"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/privacy/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%; animation: bgMove 60s ease infinite;
+      color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient { background: linear-gradient(90deg,var(--brand-green),var(--brand-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  </style>
 </head>
-<body class="text-gray-800">
-<main class="prose prose-green">
-<h1>Privacyverklaring</h1>
-<p><strong>Versie:</strong> 4 november 2025</p>
 
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
+        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
+        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="../over/" class="hover:text-green-700">Over ons</a>
+        <a href="#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
+        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
+        <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        <a href="../over/" class="block py-2">Over</a>
+        <a href="#contact" class="block py-2">Contact</a>
+        <a href="mailto:info@infraimpact.nl" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
 
-<h2>Wie zijn wij?</h2>
-<p>
-InfraImpact B.V. (KVK 98323377) – Westzeedijk 639, 3024 PJ Rotterdam.<br>
-E: <a href="mailto:info@infraimpact.nl">info@infraimpact.nl</a> · T: +31 (0)6 2135 0805
-</p>
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">InfraImpact</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient mb-4">Privacyverklaring</h1>
+      <p class="text-lg text-gray-700">Hoe we persoonsgegevens verwerken, waarom we dat doen en hoe je jouw rechten uitoefent.</p>
+      <p class="text-sm text-gray-500 mt-2"><strong>Versie:</strong> 4 november 2025</p>
+    </header>
 
+    <section class="bg-white border border-gray-100 rounded-2xl shadow-sm p-8 space-y-6">
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Wie zijn wij?</h2>
+        <p class="text-gray-700">
+          InfraImpact B.V. (KVK 98323377) – Westzeedijk 639, 3024 PJ Rotterdam.<br>
+          E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a> · T: +31 (0)6 2135 0805
+        </p>
+      </div>
 
-<h2>Toepassing</h2>
-<p>Deze verklaring geldt voor infraimpact.nl en de <strong>MKI-toetsing asfalt</strong> (EPD-checker), inclusief EPD-uploads.</p>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Toepassing</h2>
+        <p class="text-gray-700">Deze verklaring geldt voor infraimpact.nl en de <strong>MKI-toetsing asfalt</strong> (EPD-checker), inclusief EPD-uploads.</p>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">Welke gegevens verwerken we en waarom?</h2>
+        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+          <li><strong>Websitebezoek</strong>: IP (geanonimiseerd), user agent, bezochte pagina’s en events (alleen na toestemming voor Statistiek-cookies). <em>Doel:</em> statistiek en optimalisatie.</li>
+          <li><strong>Contact</strong>: naam, e‑mail, telefoon, inhoud bericht. <em>Doel:</em> beantwoording en opvolging.</li>
+          <li><strong>EPD‑uploads</strong>: EPD-bestanden (inhoud + bestandsnaam), upload-metadata, resultaten van de MKI‑toets. <em>Doel:</em> uitvoeren van de check, herhaaltoetsing, kwaliteitsborging en audit‑trail.</li>
+        </ul>
+      </div>
 
-<h2>Welke gegevens verwerken we en waarom?</h2>
-<ul>
-<li><strong>Websitebezoek</strong>: IP (geanonimiseerd), user agent, bezochte pagina’s en events (alleen na toestemming voor Statistiek-cookies). <em>Doel:</em> statistiek en optimalisatie.</li>
-<li><strong>Contact</strong>: naam, e‑mail, telefoon, inhoud bericht. <em>Doel:</em> beantwoording en opvolging.</li>
-<li><strong>EPD‑uploads</strong>: EPD-bestanden (inhoud + bestandsnaam), upload-metadata, resultaten van de MKI‑toets. <em>Doel:</em> uitvoeren van de check, herhaaltoetsing, kwaliteitsborging en audit‑trail.</li>
-</ul>
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">Rechtsgrond</h2>
+        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+          <li><strong>Overeenkomst</strong> (art. 6(1)(b) AVG) voor gebruik van de tool en uitvoering van opdrachten.</li>
+          <li><strong>Gerechtvaardigd belang</strong> (art. 6(1)(f) AVG) voor beveiliging, misbruikpreventie en verbetering van de tool (met belangenafweging).</li>
+          <li><strong>Toestemming</strong> (art. 6(1)(a) AVG) voor analytische/marketingcookies en (optioneel) langer bewaren dan de standaardtermijn.</li>
+        </ul>
+      </div>
 
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold text-gray-900">Bewaartermijnen</h2>
+        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+          <li><strong>Contactgegevens</strong>: maximaal 24 maanden na laatste contact.</li>
+          <li><strong>EPD’s en toetsresultaten</strong>: zolang het klantaccount actief is <em>plus</em> 24 maanden na de laatste activiteit. Op verzoek verwijderen of anonimiseren wij binnen 30 dagen (back‑ups worden uiterlijk binnen 90 dagen overschreven).</li>
+          <li><strong>Beveiligings-/logdata</strong>: tot 12 maanden.</li>
+        </ul>
+      </div>
 
-<h2>Rechtsgrond</h2>
-<ul>
-<li><strong>Overeenkomst</strong> (art. 6(1)(b) AVG) voor gebruik van de tool en uitvoering van opdrachten.</li>
-<li><strong>Gerechtvaardigd belang</strong> (art. 6(1)(f) AVG) voor beveiliging, misbruikpreventie en verbetering van de tool (met belangenafweging).</li>
-<li><strong>Toestemming</strong> (art. 6(1)(a) AVG) voor analytische/marketingcookies en (optioneel) langer bewaren dan de standaardtermijn.</li>
-</ul>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Delen met derden (verwerkers)</h2>
+        <p class="text-gray-700">Hosting binnen de EU, e‑mailprovider, onderhoudspartners en – na toestemming – analytics/tag‑diensten. Met alle verwerkers sluiten wij een verwerkersovereenkomst. Doorgifte buiten de EER vermijden wij; als dit toch nodig is, hanteren we passende waarborgen (SCC’s) en dataminimalisatie.</p>
+      </div>
 
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Beveiliging</h2>
+        <p class="text-gray-700">TLS/HTTPS, beperkte toegangsrechten (need‑to‑know), versleutelde opslag waar mogelijk, audit‑logging, back‑ups, patches.</p>
+      </div>
 
-<h2>Bewaartermijnen</h2>
-<ul>
-<li><strong>Contactgegevens</strong>: maximaal 24 maanden na laatste contact.</li>
-<li><strong>EPD’s en toetsresultaten</strong>: zolang het klantaccount actief is <em>plus</em> 24 maanden na de laatste activiteit. Op verzoek verwijderen of anonimiseren wij binnen 30 dagen (back‑ups worden uiterlijk binnen 90 dagen overschreven).</li>
-<li><strong>Beveiligings-/logdata</strong>: tot 12 maanden.</li>
-</ul>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Jouw rechten</h2>
+        <p class="text-gray-700">Je hebt recht op inzage, rectificatie, verwijdering, beperking, overdraagbaarheid en bezwaar. Mail ons via <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a>. Cookievoorkeuren kun je aanpassen via <a href="#" id="openCookieSettings" class="text-green-700 underline">Cookie‑instellingen</a>.</p>
+      </div>
 
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Klachten</h2>
+        <p class="text-gray-700">Heb je een klacht? Neem contact op met ons of dien een klacht in bij de Autoriteit Persoonsgegevens.</p>
+      </div>
 
-<h2>Delen met derden (verwerkers)</h2>
-<p>Hosting binnen de EU, e‑mailprovider, onderhoudspartners en – na toestemming – analytics/tag‑diensten. Met alle verwerkers sluiten wij een verwerkersovereenkomst. Doorgifte buiten de EER vermijden wij; als dit toch nodig is, hanteren we passende waarborgen (SCC’s) en dataminimalisatie.</p>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Wijzigingen</h2>
+        <p class="text-gray-700">We kunnen deze verklaring wijzigen. Kijk daarom regelmatig of er een nieuwe versie is.</p>
+      </div>
+    </section>
+  </main>
 
+  <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-20 pb-12">
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient">Kennismaken?</h2>
+      <p class="text-gray-700">
+        Ben jij opdrachtgever, aannemer of leverancier en wil je concreet sturen op MKI? We denken dezelfde werkdag met je mee.
+      </p>
+      <div class="space-y-2 text-gray-600">
+        <p><strong>InfraImpact B.V.</strong></p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-700 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-700 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div>
+        <a href="mailto:info@infraimpact.nl" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium cta">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-500 text-sm">
+        <a href="../privacy/" class="underline">Privacy</a> ·
+        <a href="../cookies/" class="underline">Cookiebeleid</a> ·
+        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a> ·
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+      <p class="text-gray-500 text-sm">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
 
-<h2>Beveiliging</h2>
-<p>TLS/HTTPS, beperkte toegangsrechten (need‑to‑know), versleutelde opslag waar mogelijk, audit‑logging, back‑ups, patches.</p>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
 
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu){
+      btn.addEventListener('click',()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a=>{
+        a.addEventListener('click',()=>{
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        });
+      });
+      document.addEventListener('keydown',(e)=>{
+        if (e.key==='Escape' && !menu.classList.contains('hidden')){
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+        }
+      });
+    }
 
-<h2>Jouw rechten</h2>
-<p>Je hebt recht op inzage, rectificatie, verwijdering, beperking, overdraagbaarheid en bezwaar. Mail ons via <a href="mailto:info@infraimpact.nl">info@infraimpact.nl</a>. Cookievoorkeuren kun je aanpassen via <a href="#" id="openCookieSettings">Cookie‑instellingen</a>.</p>
-
-
-<h2>Klachten</h2>
-<p>Heb je een klacht? Neem contact op met ons of dien een klacht in bij de Autoriteit Persoonsgegevens.</p>
-
-
-<h2>Wijzigingen</h2>
-<p>We kunnen deze verklaring wijzigen. Kijk daarom regelmatig of er een nieuwe versie is.</p>
-</main>
-<script>document.getElementById('openCookieSettings')?.addEventListener('click',e=>{e.preventDefault();window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));});</script>
+    document.getElementById('openCookieSettings')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+    document.getElementById('cookieSettingsLink')?.addEventListener('click',e=>{
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('infraimpact:openCookieSettings'));
+    });
+  </script>
 </body>
 </html>
