@@ -363,12 +363,8 @@
           <span><strong>Noodzakelijk</strong> – altijd actief voor werking en beveiliging.</span>
         </label>
         <label class="flex items-start gap-3">
-          <input id="ci-stat" type="checkbox">
+          <input id="ci-stat" type="checkbox" checked>
           <span><strong>Statistiek</strong> – Google Analytics, helpt ons de site te verbeteren.</span>
-        </label>
-        <label class="flex items-start gap-3 opacity-60">
-          <input type="checkbox" disabled>
-          <span><strong>Marketing</strong> – momenteel niet actief.</span>
         </label>
       </div>
       <div class="p-5 border-t flex justify-end gap-2">
@@ -417,7 +413,7 @@
 
     const existing = read();
     if (!('statistics' in existing)){
-      $stat.checked = false;
+      $stat.checked = true;
       showBanner();
     } else {
       apply(existing);
