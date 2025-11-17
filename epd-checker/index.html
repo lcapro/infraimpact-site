@@ -914,9 +914,8 @@
         <a href="/cookies/" class="underline">Meer info</a>
       </div>
       <div class="flex gap-2 ml-auto">
-        <button id="ci-decline" class="px-3 py-2 rounded-lg border">Weigeren</button>
-        <button id="ci-preferences" class="px-3 py-2 rounded-lg border">Kies voorkeuren</button>
-        <button id="ci-accept" class="px-3 py-2 rounded-lg bg-green-600 text-white">Accepteren</button>
+        <button id="ci-preferences" class="px-3 py-2 rounded-lg border">Zelf instellen</button>
+        <button id="ci-accept" class="px-3 py-2 rounded-lg bg-green-600 text-white">Alle cookies accepteren</button>
       </div>
     </div>
   </div>
@@ -968,16 +967,13 @@
 
     function apply(consent){
       const stat = !!consent.statistics;
+      $stat.checked = stat;
       if (stat && typeof enableAnalytics === 'function') enableAnalytics();
       if (typeof gtag === 'function') gtag('consent','update',{ analytics_storage: stat?'granted':'denied' });
     }
 
     btn('ci-accept').addEventListener('click', ()=>{
       const consent={ necessary:true, statistics:true, ts:Date.now() };
-      save(consent); apply(consent); hideBanner();
-    });
-    btn('ci-decline').addEventListener('click', ()=>{
-      const consent={ necessary:true, statistics:false, ts:Date.now() };
       save(consent); apply(consent); hideBanner();
     });
     btn('ci-preferences').addEventListener('click', openModal);
@@ -988,7 +984,12 @@
     });
 
     const existing = read();
-    if (!('statistics' in existing)) showBanner(); else apply(existing);
+    if (!('statistics' in existing)){
+      $stat.checked = false;
+      showBanner();
+    } else {
+      apply(existing);
+    }
   })();
   </script>
   <!-- /COOKIEBANNER -->

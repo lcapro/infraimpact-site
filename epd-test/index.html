@@ -793,9 +793,8 @@
     <div class="max-w-screen-lg mx-auto p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
       <div class="text-sm text-gray-800"><strong>Cookies bij InfraImpact</strong> – We gebruiken noodzakelijke cookies om de site goed te laten werken. Met jouw toestemming zetten we ook <em>analytische</em> cookies aan om het gebruik van de site te verbeteren. <a href="/cookies/" class="underline">Meer info</a></div>
       <div class="flex gap-2 ml-auto">
-        <button id="ci-decline" class="px-3 py-2 rounded-lg border">Weigeren</button>
-        <button id="ci-preferences" class="px-3 py-2 rounded-lg border">Kies voorkeuren</button>
-        <button id="ci-accept" class="px-3 py-2 rounded-lg bg-green-600 text-white">Accepteren</button>
+        <button id="ci-preferences" class="px-3 py-2 rounded-lg border">Zelf instellen</button>
+        <button id="ci-accept" class="px-3 py-2 rounded-lg bg-green-600 text-white">Alle cookies accepteren</button>
       </div>
     </div>
   </div>
@@ -821,12 +820,11 @@
     function openModal(){ $modal.classList.remove('hidden'); $modal.setAttribute('aria-hidden','false'); }
     function closeModal(){ $modal.classList.add('hidden'); $modal.setAttribute('aria-hidden','true'); }
     window.addEventListener('infraimpact:openCookieSettings', openModal); document.getElementById('cookieSettingsLink')?.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
-    function apply(consent){ const stat = !!consent.statistics; if (stat && typeof enableAnalytics === 'function') enableAnalytics(); if (typeof gtag === 'function') gtag('consent','update',{ analytics_storage: stat?'granted':'denied' }); }
+    function apply(consent){ const stat = !!consent.statistics; $stat.checked = stat; if (stat && typeof enableAnalytics === 'function') enableAnalytics(); if (typeof gtag === 'function') gtag('consent','update',{ analytics_storage: stat?'granted':'denied' }); }
     btn('ci-accept').addEventListener('click', ()=>{ const consent={ necessary:true, statistics:true, ts:Date.now() }; save(consent); apply(consent); hideBanner(); });
-    btn('ci-decline').addEventListener('click', ()=>{ const consent={ necessary:true, statistics:false, ts:Date.now() }; save(consent); apply(consent); hideBanner(); });
     btn('ci-preferences').addEventListener('click', openModal); btn('ci-cancel').addEventListener('click', closeModal);
     btn('ci-save').addEventListener('click', ()=>{ const consent={ necessary:true, statistics:$stat.checked, ts:Date.now() }; save(consent); apply(consent); closeModal(); hideBanner(); });
-    const existing = read(); if (!('statistics' in existing)) showBanner(); else apply(existing);
+    const existing = read(); if (!('statistics' in existing)){ $stat.checked=false; showBanner(); } else { apply(existing); }
   })();
   </script>
 </body>
