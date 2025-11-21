@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LCA-project-tool | InfraImpact</title>
+  <meta name="description" content="Maak accounts aan, lees EPD's in en volg per levenscyclusfase de MKI- en CO2-waarden van materialen voor je projecten." />
+
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
+  <link rel="icon" type="image/webp" sizes="32x32" href="../assets/favicon.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
+  <meta name="theme-color" content="#2F6F65">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- pdf.js voor EPD parsing -->
+  <script type="module">
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
+    window.pdfjsLib = pdfjsLib;
+  </script>
+
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#1f2937; }
+    body {
+      background: radial-gradient(circle at 20% 20%, #e5efed 0, transparent 35%),
+                  radial-gradient(circle at 80% 0, #eaf3f7 0, transparent 30%),
+                  linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 160% 160%;
+      animation: bgMove 36s ease infinite;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    .card {
+      border-radius: 1.25rem;
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+      border: 1px solid #ecf1f0;
+    }
+    .grid-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  </style>
+</head>
+<body class="text-gray-800">
+  <nav class="bg-white/90 backdrop-blur border-b border-gray-100 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
+      <a href="/" class="flex items-center gap-2">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-9 w-auto">
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="../asfalt-lca-tool/" class="hover:text-green-700">Asfalt LCA-tool</a>
+        <span class="text-green-700">LCA-project-tool</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <header class="space-y-3">
+      <p class="text-green-700 font-semibold uppercase tracking-wide">Making sustainability count</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">LCA-project-tool</h1>
+      <p class="max-w-3xl text-lg text-gray-700">
+        Maak accounts aan voor werkvoorbereiders en teams, lees EPD's in, vul handmatig aan waar nodig
+        en hou per werk bij hoeveel materiaal is toegepast, wat de MKI/ECI en CO<sub>2</sub> (GWP) is
+        per levenscyclusfase. Default transportprofielen zijn ingericht op vrachtwagens Diesel Euro 5 en aanleg op diesel.
+      </p>
+    </header>
+
+    <section class="card p-6 space-y-4">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <h2 class="text-xl font-semibold">Accountbeheer</h2>
+        <div id="activeUser" class="text-sm text-green-700 font-semibold hidden"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h3 class="font-semibold">Registreren</h3>
+          <p class="text-sm text-gray-600">Maak een account aan voor aannemers, werkvoorbereiders of leveranciers.</p>
+          <div class="grid gap-3">
+            <label class="space-y-1">
+              <span class="grid-label">Naam</span>
+              <input id="registerName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Voor- en achternaam" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">E-mail</span>
+              <input id="registerEmail" type="email" class="w-full border rounded-xl px-3 py-2" placeholder="naam@bedrijf.nl" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Wachtwoord</span>
+              <input id="registerPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="Minimaal 8 tekens" />
+            </label>
+            <button id="registerBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Account aanmaken</button>
+            <p class="text-xs text-gray-500">Gegevens worden lokaal opgeslagen (demo). Voeg per gebruiker eigen projecten en materialen toe.</p>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <h3 class="font-semibold">Inloggen</h3>
+          <p class="text-sm text-gray-600">Log in om je projecten, materialen en EPD-profielen te beheren.</p>
+          <div class="grid gap-3">
+            <label class="space-y-1">
+              <span class="grid-label">E-mail</span>
+              <input id="loginEmail" type="email" class="w-full border rounded-xl px-3 py-2" placeholder="naam@bedrijf.nl" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Wachtwoord</span>
+              <input id="loginPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="••••••••" />
+            </label>
+            <button id="loginBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Inloggen</button>
+            <button id="logoutBtn" class="hidden inline-flex justify-center px-4 py-2 rounded-xl bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300">Uitloggen</button>
+          </div>
+        </div>
+      </div>
+      <div id="authMessage" class="text-sm font-semibold"></div>
+    </section>
+
+    <section class="card p-6 space-y-6" id="projectArea">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-semibold">Project- en materiaalbeheer</h2>
+          <p class="text-sm text-gray-600">Koppel EPD's aan fasen A1-A3 en D, vul handmatig aan en registreer transport/aanleg-profielen.</p>
+        </div>
+        <div class="text-xs text-gray-500">Alle berekeningen vinden lokaal plaats.</div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <h3 class="font-semibold">EPD inlezen</h3>
+          <p class="text-sm text-gray-600">Sleep een EPD (PDF) hierheen. We lezen automatische indicatoren zoals MKI/ECI (€) en GWP (CO<sub>2</sub>)
+            met synoniemen zoals "GWP total", "GWP-t" en per fase labels zoals A1-A3 of D.</p>
+          <label class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-gray-400 transition dropzone">
+            <input type="file" id="epdUpload" accept="application/pdf" class="hidden" />
+            <div class="space-y-2">
+              <p class="font-semibold">Upload EPD (PDF)</p>
+              <p class="text-sm text-gray-600">Automatisch vullen met detectie van MKI/ECI en GWP per fase. Handmatige aanpassing blijft mogelijk.</p>
+            </div>
+          </label>
+          <div id="epdResult" class="text-sm text-gray-700 bg-gray-50 border border-dashed border-gray-200 rounded-xl p-4 hidden"></div>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="font-semibold">Nieuw materiaal toevoegen</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="space-y-1 col-span-2">
+              <span class="grid-label">Werk / project</span>
+              <input id="projectName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Verbreding N210" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Materiaal</span>
+              <input id="materialName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Asfalt AC 16" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Leverancier</span>
+              <input id="supplier" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Leverancier" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Hoeveelheid</span>
+              <input id="quantity" type="number" min="0" step="0.01" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Eenheid</span>
+              <input id="unit" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="ton, m3, m2" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Transportafstand (km)</span>
+              <input id="distance" type="number" min="0" step="0.1" class="w-full border rounded-xl px-3 py-2" placeholder="0" value="0" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Vervoersmiddel</span>
+              <select id="transportMode" class="w-full border rounded-xl px-3 py-2">
+                <option>Vrachtwagen - Diesel Euro 5</option>
+                <option>Vrachtwagen - Elektrisch</option>
+                <option>Vrachtschip - Diesel</option>
+                <option>Trein - Elektrisch</option>
+              </select>
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Brandstof transport</span>
+              <input id="transportFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel Euro 5" />
+            </label>
+            <label class="space-y-1">
+              <span class="grid-label">Brandstof aanleg</span>
+              <input id="installationFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel" />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-4">
+        <h3 class="font-semibold">MKI en CO<sub>2</sub> per levenscyclusfase (per eenheid)</h3>
+        <div class="grid md:grid-cols-4 gap-3">
+          <div class="border rounded-xl p-3 space-y-2">
+            <p class="font-semibold">Fase A1</p>
+            <label class="space-y-1 block">
+              <span class="text-sm">MKI / ECI (€)</span>
+              <input type="number" step="0.0001" id="a1Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
+              <input type="number" step="0.0001" id="a1Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+          </div>
+          <div class="border rounded-xl p-3 space-y-2">
+            <p class="font-semibold">Fase A2</p>
+            <label class="space-y-1 block">
+              <span class="text-sm">MKI / ECI (€)</span>
+              <input type="number" step="0.0001" id="a2Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
+              <input type="number" step="0.0001" id="a2Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+          </div>
+          <div class="border rounded-xl p-3 space-y-2">
+            <p class="font-semibold">Fase A3</p>
+            <label class="space-y-1 block">
+              <span class="text-sm">MKI / ECI (€)</span>
+              <input type="number" step="0.0001" id="a3Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
+              <input type="number" step="0.0001" id="a3Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+          </div>
+          <div class="border rounded-xl p-3 space-y-2">
+            <p class="font-semibold">Fase D</p>
+            <label class="space-y-1 block">
+              <span class="text-sm">MKI / ECI (€)</span>
+              <input type="number" step="0.0001" id="dMki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
+              <input type="number" step="0.0001" id="dGwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="addMaterial" class="px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Materiaal registreren</button>
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <span class="font-semibold">Aangepaste kolom:</span>
+            <input id="customColumnName" type="text" class="border rounded-xl px-3 py-2" placeholder="Bijv. Herkomst" />
+            <select id="customColumnType" class="border rounded-xl px-3 py-2 text-sm">
+              <option value="text">Tekst</option>
+              <option value="number">Getal</option>
+            </select>
+            <button id="addColumn" class="px-3 py-2 rounded-xl bg-blue-700 text-white text-sm hover:bg-blue-600">Kolom toevoegen</button>
+          </div>
+          <div id="formMessage" class="text-sm font-semibold text-green-700"></div>
+        </div>
+      </div>
+
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm" id="materialsTable">
+          <thead class="bg-gray-50">
+            <tr class="text-left">
+              <th class="px-3 py-2">Project</th>
+              <th class="px-3 py-2">Materiaal</th>
+              <th class="px-3 py-2">Leverancier</th>
+              <th class="px-3 py-2">Hoeveelheid</th>
+              <th class="px-3 py-2">Transport</th>
+              <th class="px-3 py-2">Aanleg</th>
+              <th class="px-3 py-2">A1 MKI / GWP</th>
+              <th class="px-3 py-2">A2 MKI / GWP</th>
+              <th class="px-3 py-2">A3 MKI / GWP</th>
+              <th class="px-3 py-2">D MKI / GWP</th>
+              <th class="px-3 py-2">Totaal MKI</th>
+              <th class="px-3 py-2">Opties</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      currentUser: null,
+      users: JSON.parse(localStorage.getItem('lcaUsers') || '{}')
+    };
+
+    const authMessage = document.getElementById('authMessage');
+    const activeUser = document.getElementById('activeUser');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const formMessage = document.getElementById('formMessage');
+
+    function saveUsers() {
+      localStorage.setItem('lcaUsers', JSON.stringify(state.users));
+    }
+
+    function setMessage(el, msg, color = 'text-green-700') {
+      el.className = `text-sm font-semibold ${color}`;
+      el.textContent = msg;
+      if (msg) setTimeout(() => { el.textContent = ''; }, 5000);
+    }
+
+    function updateAuthUI() {
+      if (state.currentUser) {
+        activeUser.textContent = `Ingelogd als ${state.currentUser}`;
+        activeUser.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+      } else {
+        activeUser.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+      }
+      renderTable();
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', () => {
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const password = document.getElementById('registerPassword').value;
+      if (!name || !email || password.length < 8) {
+        setMessage(authMessage, 'Vul naam, e-mail en een wachtwoord van minimaal 8 tekens in.', 'text-red-700');
+        return;
+      }
+      if (state.users[email]) {
+        setMessage(authMessage, 'Dit e-mailadres is al geregistreerd.', 'text-red-700');
+        return;
+      }
+      state.users[email] = { name, password, materials: [], customColumns: [] };
+      saveUsers();
+      setMessage(authMessage, 'Account succesvol aangemaakt. Log nu in.');
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const user = state.users[email];
+      if (!user || user.password !== password) {
+        setMessage(authMessage, 'Onjuiste combinatie van e-mail en wachtwoord.', 'text-red-700');
+        return;
+      }
+      state.currentUser = email;
+      setMessage(authMessage, `Welkom terug, ${user.name}!`);
+      updateAuthUI();
+      loadCustomColumns();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      state.currentUser = null;
+      setMessage(authMessage, 'Je bent uitgelogd.');
+      updateAuthUI();
+    });
+
+    function ensureUser() {
+      if (!state.currentUser) {
+        setMessage(formMessage, 'Log in of maak een account aan om materialen te registreren.', 'text-red-700');
+        return false;
+      }
+      return true;
+    }
+
+    function loadCustomColumns() {
+      const table = document.getElementById('materialsTable');
+      const existing = table.querySelectorAll('.custom-header');
+      existing.forEach((th) => th.remove());
+
+      if (!state.currentUser) return;
+      const cols = state.users[state.currentUser].customColumns || [];
+      const headerRow = table.querySelector('thead tr');
+      const optionsHeader = headerRow.querySelector('th:last-child');
+      cols.forEach((c) => {
+        const th = document.createElement('th');
+        th.textContent = c.label;
+        th.className = 'px-3 py-2 custom-header';
+        headerRow.insertBefore(th, optionsHeader);
+      });
+      renderTable();
+    }
+
+    document.getElementById('addColumn').addEventListener('click', () => {
+      if (!ensureUser()) return;
+      const name = document.getElementById('customColumnName').value.trim();
+      const type = document.getElementById('customColumnType').value;
+      if (!name) return setMessage(formMessage, 'Geef een naam op voor de kolom.', 'text-red-700');
+      const user = state.users[state.currentUser];
+      user.customColumns.push({ label: name, type });
+      saveUsers();
+      loadCustomColumns();
+      document.getElementById('customColumnName').value = '';
+      setMessage(formMessage, `Kolom "${name}" toegevoegd.`);
+    });
+
+    document.getElementById('addMaterial').addEventListener('click', () => {
+      if (!ensureUser()) return;
+      const user = state.users[state.currentUser];
+      const material = {
+        project: document.getElementById('projectName').value.trim(),
+        material: document.getElementById('materialName').value.trim(),
+        supplier: document.getElementById('supplier').value.trim(),
+        quantity: parseFloat(document.getElementById('quantity').value) || 0,
+        unit: document.getElementById('unit').value.trim(),
+        distance: parseFloat(document.getElementById('distance').value) || 0,
+        transportMode: document.getElementById('transportMode').value,
+        transportFuel: document.getElementById('transportFuel').value.trim() || 'Diesel Euro 5',
+        installationFuel: document.getElementById('installationFuel').value.trim() || 'Diesel',
+        phases: {
+          A1: { mki: parseFloat(document.getElementById('a1Mki').value) || 0, gwp: parseFloat(document.getElementById('a1Gwp').value) || 0 },
+          A2: { mki: parseFloat(document.getElementById('a2Mki').value) || 0, gwp: parseFloat(document.getElementById('a2Gwp').value) || 0 },
+          A3: { mki: parseFloat(document.getElementById('a3Mki').value) || 0, gwp: parseFloat(document.getElementById('a3Gwp').value) || 0 },
+          D:  { mki: parseFloat(document.getElementById('dMki').value) || 0, gwp: parseFloat(document.getElementById('dGwp').value) || 0 },
+        },
+        custom: {}
+      };
+
+      (user.customColumns || []).forEach((c) => {
+        const value = prompt(`Waarde voor kolom \"${c.label}\" (${c.type})?`) || '';
+        material.custom[c.label] = c.type === 'number' ? Number(value) || 0 : value;
+      });
+
+      user.materials.push(material);
+      saveUsers();
+      renderTable();
+      setMessage(formMessage, 'Materiaal opgeslagen en berekend.');
+    });
+
+    function calcTotalMki(entry) {
+      const phaseTotal = ['A1','A2','A3','D'].reduce((sum, phase) => sum + (entry.phases[phase].mki || 0), 0);
+      return phaseTotal * (entry.quantity || 0);
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!state.currentUser) return;
+      const user = state.users[state.currentUser];
+      (user.materials || []).forEach((entry, idx) => {
+        const tr = document.createElement('tr');
+        const totalMki = calcTotalMki(entry);
+        const cols = [
+          entry.project || '–',
+          entry.material || '–',
+          entry.supplier || '–',
+          `${entry.quantity || 0} ${entry.unit || ''}`,
+          `${entry.distance || 0} km • ${entry.transportMode} (${entry.transportFuel})`,
+          entry.installationFuel || 'Diesel',
+          `${entry.phases.A1.mki} / ${entry.phases.A1.gwp} kg`,
+          `${entry.phases.A2.mki} / ${entry.phases.A2.gwp} kg`,
+          `${entry.phases.A3.mki} / ${entry.phases.A3.gwp} kg`,
+          `${entry.phases.D.mki} / ${entry.phases.D.gwp} kg`,
+          totalMki.toFixed(4)
+        ];
+
+        cols.forEach((c) => {
+          const td = document.createElement('td');
+          td.className = 'px-3 py-2 align-top';
+          td.textContent = c;
+          tr.appendChild(td);
+        });
+
+        (user.customColumns || []).forEach((c) => {
+          const td = document.createElement('td');
+          td.className = 'px-3 py-2 align-top';
+          td.textContent = entry.custom?.[c.label] ?? '';
+          tr.insertBefore(td, tr.lastChild);
+        });
+
+        const tdActions = document.createElement('td');
+        tdActions.className = 'px-3 py-2';
+        const del = document.createElement('button');
+        del.textContent = 'Verwijderen';
+        del.className = 'text-red-700 hover:underline text-sm';
+        del.addEventListener('click', () => {
+          user.materials.splice(idx, 1);
+          saveUsers();
+          renderTable();
+        });
+        tdActions.appendChild(del);
+        tr.appendChild(tdActions);
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function parsePdf(file) {
+      const pdf = await window.pdfjsLib.getDocument(await file.arrayBuffer()).promise;
+      let text = '';
+      for (let i = 0; i < pdf.numPages; i++) {
+        const page = await pdf.getPage(i + 1);
+        const content = await page.getTextContent();
+        text += content.items.map((c) => c.str).join(' ') + '\n';
+      }
+      return text;
+    }
+
+    function findIndicator(text, phaseLabel, indicators) {
+      for (const indicator of indicators) {
+        const pattern = new RegExp(`${phaseLabel}[^\n]{0,60}?${indicator}[^\d-]*([-+]?[\d.,]+)`, 'i');
+        const match = text.match(pattern);
+        if (match) return parseFloat(match[1].replace(',', '.'));
+      }
+      return null;
+    }
+
+    function extractEpd(text) {
+      const mkiIndicators = ['MKI', 'ECI', '€'];
+      const gwpIndicators = ['GWP total', 'GWP-t', 'GWP t', 'GWP'];
+      const phases = ['A1', 'A2', 'A3', 'A1-A3', 'D'];
+      const data = { A1:{}, A2:{}, A3:{}, D:{} };
+
+      phases.forEach((phase) => {
+        const mki = findIndicator(text, phase, mkiIndicators);
+        const gwp = findIndicator(text, phase, gwpIndicators);
+        if (phase === 'A1-A3') {
+          ['A1','A2','A3'].forEach((p) => {
+            if (mki !== null && data[p].mki == null) data[p].mki = mki;
+            if (gwp !== null && data[p].gwp == null) data[p].gwp = gwp;
+          });
+        } else {
+          if (mki !== null) data[phase].mki = mki;
+          if (gwp !== null) data[phase].gwp = gwp;
+        }
+      });
+
+      return data;
+    }
+
+    document.getElementById('epdUpload').addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const resultBox = document.getElementById('epdResult');
+      resultBox.classList.add('hidden');
+      resultBox.textContent = 'Lezen...';
+      try {
+        const text = await parsePdf(file);
+        const data = extractEpd(text);
+        const fields = {
+          a1Mki: data.A1.mki,
+          a1Gwp: data.A1.gwp,
+          a2Mki: data.A2.mki,
+          a2Gwp: data.A2.gwp,
+          a3Mki: data.A3.mki,
+          a3Gwp: data.A3.gwp,
+          dMki: data.D.mki,
+          dGwp: data.D.gwp
+        };
+
+        let filled = 0;
+        Object.entries(fields).forEach(([id, value]) => {
+          if (value !== undefined && value !== null && !Number.isNaN(value)) {
+            document.getElementById(id).value = value;
+            filled++;
+          }
+        });
+
+        resultBox.innerHTML = `<div class="font-semibold mb-1">EPD gelezen</div>
+          <div class="text-sm text-gray-700">Herkenningsresultaat: ${filled} velden gevuld op basis van indicatoren
+          (MKI/ECI of GWP). Pas handmatig aan waar nodig.</div>`;
+        resultBox.classList.remove('hidden');
+      } catch (err) {
+        resultBox.textContent = 'Kon EPD niet lezen. Probeer het opnieuw of vul handmatig in.';
+        resultBox.classList.remove('hidden');
+        console.error(err);
+      }
+    });
+
+    // Init
+    loadCustomColumns();
+    updateAuthUI();
+  </script>
+</body>
+</html>
