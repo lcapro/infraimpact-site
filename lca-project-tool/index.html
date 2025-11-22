@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LCA-project-tool | InfraImpact</title>
-  <meta name="description" content="Maak accounts aan, lees EPD's in en volg per levenscyclusfase de MKI- en CO2-waarden van materialen voor je projecten." />
+  <meta name="description" content="Maak accounts aan, lees EPD's in en volg per levenscyclusfase de MKI- en CO2-waarden van materialen per project." />
 
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
@@ -13,14 +13,11 @@
   <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.webp">
   <meta name="theme-color" content="#2F6F65">
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- pdf.js voor EPD parsing -->
   <script type="module">
     import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.mjs";
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs";
     window.pdfjsLib = pdfjsLib;
   </script>
 
@@ -52,11 +49,9 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.05);
       border: 1px solid #ecf1f0;
     }
-    .grid-label {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
+    .grid-label { font-size: 0.9rem; font-weight: 600; }
     .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .hidden { display: none; }
   </style>
 </head>
 <body class="text-gray-800">
@@ -79,21 +74,23 @@
       <p class="text-green-700 font-semibold uppercase tracking-wide">Making sustainability count</p>
       <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">LCA-project-tool</h1>
       <p class="max-w-3xl text-lg text-gray-700">
-        Maak accounts aan voor werkvoorbereiders en teams, lees EPD's in, vul handmatig aan waar nodig
-        en hou per werk bij hoeveel materiaal is toegepast, wat de MKI/ECI en CO<sub>2</sub> (GWP) is
-        per levenscyclusfase. Default transportprofielen zijn ingericht op vrachtwagens Diesel Euro 5 en aanleg op diesel.
+        Maak accounts aan voor aannemers en werkvoorbereiders (tot minstens 100 gebruikers), lees EPD's in, vul handmatig aan waar nodig
+        en beheer per project de materialen, MKI/ECI en CO<sub>2</sub> (GWP) per levenscyclusfase. Default transportprofielen zijn ingericht op vrachtwagens Diesel Euro 5 en aanleg op diesel.
       </p>
     </header>
 
-    <section class="card p-6 space-y-4">
-      <div class="flex items-center justify-between gap-4 flex-wrap">
-        <h2 class="text-xl font-semibold">Accountbeheer</h2>
-        <div id="activeUser" class="text-sm text-green-700 font-semibold hidden"></div>
+    <section id="authPage" class="card p-6 space-y-6">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h2 class="text-xl font-semibold">Registreren of inloggen</h2>
+          <p class="text-sm text-gray-600">Na aanmelden kom je in je persoonlijke omgeving met instellingen en projectenoverzicht.</p>
+        </div>
+        <div id="authMessage" class="text-sm font-semibold"></div>
       </div>
       <div class="grid md:grid-cols-2 gap-6">
         <div class="space-y-3">
-          <h3 class="font-semibold">Registreren</h3>
-          <p class="text-sm text-gray-600">Maak een account aan voor aannemers, werkvoorbereiders of leveranciers.</p>
+          <h3 class="font-semibold">Nieuw account</h3>
+          <p class="text-sm text-gray-600">Registreer tot maximaal 100 gebruikers. Projecten en materialen blijven per gebruiker gescheiden.</p>
           <div class="grid gap-3">
             <label class="space-y-1">
               <span class="grid-label">Naam</span>
@@ -108,12 +105,12 @@
               <input id="registerPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="Minimaal 8 tekens" />
             </label>
             <button id="registerBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Account aanmaken</button>
-            <p class="text-xs text-gray-500">Gegevens worden lokaal opgeslagen (demo). Voeg per gebruiker eigen projecten en materialen toe.</p>
+            <p class="text-xs text-gray-500">Gegevens worden lokaal opgeslagen voor demo-doeleinden. Na registratie ga je direct naar je persoonlijke omgeving.</p>
           </div>
         </div>
         <div class="space-y-3">
-          <h3 class="font-semibold">Inloggen</h3>
-          <p class="text-sm text-gray-600">Log in om je projecten, materialen en EPD-profielen te beheren.</p>
+          <h3 class="font-semibold">Aanmelden</h3>
+          <p class="text-sm text-gray-600">Log in om je persoonlijke instellingen en projectoverzicht te openen.</p>
           <div class="grid gap-3">
             <label class="space-y-1">
               <span class="grid-label">E-mail</span>
@@ -123,187 +120,253 @@
               <span class="grid-label">Wachtwoord</span>
               <input id="loginPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="••••••••" />
             </label>
-            <button id="loginBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Inloggen</button>
-            <button id="logoutBtn" class="hidden inline-flex justify-center px-4 py-2 rounded-xl bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300">Uitloggen</button>
+            <div class="flex flex-wrap gap-3">
+              <button id="loginBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Inloggen</button>
+              <button id="logoutBtn" class="hidden inline-flex justify-center px-4 py-2 rounded-xl bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300">Uitloggen</button>
+            </div>
           </div>
         </div>
       </div>
-      <div id="authMessage" class="text-sm font-semibold"></div>
     </section>
 
-    <section class="card p-6 space-y-6" id="projectArea">
+    <section id="workspacePage" class="card p-6 space-y-8 hidden">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-semibold">Project- en materiaalbeheer</h2>
-          <p class="text-sm text-gray-600">Koppel EPD's aan fasen A1-A3 en D, vul handmatig aan en registreer transport/aanleg-profielen.</p>
+          <h2 class="text-xl font-semibold">Persoonlijke omgeving</h2>
+          <p class="text-sm text-gray-600">Beheer je instellingen en projecten. Elke gebruiker heeft zijn eigen projectdatabase.</p>
         </div>
-        <div class="text-xs text-gray-500">Alle berekeningen vinden lokaal plaats.</div>
+        <div class="text-sm text-green-700 font-semibold" id="activeUser"></div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <h3 class="font-semibold">EPD inlezen</h3>
-          <p class="text-sm text-gray-600">Sleep een EPD (PDF) hierheen. We lezen automatische indicatoren zoals MKI/ECI (€) en GWP (CO<sub>2</sub>)
-            met synoniemen zoals "GWP total", "GWP-t" en per fase labels zoals A1-A3 of D.</p>
-          <label class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-gray-400 transition dropzone">
-            <input type="file" id="epdUpload" accept="application/pdf" class="hidden" />
-            <div class="space-y-2">
-              <p class="font-semibold">Upload EPD (PDF)</p>
-              <p class="text-sm text-gray-600">Automatisch vullen met detectie van MKI/ECI en GWP per fase. Handmatige aanpassing blijft mogelijk.</p>
-            </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 space-y-3">
+          <h3 class="font-semibold">Persoonlijke instellingen</h3>
+          <label class="space-y-1 block">
+            <span class="grid-label">Naam</span>
+            <input id="settingsName" class="w-full border rounded-xl px-3 py-2" />
           </label>
-          <div id="epdResult" class="text-sm text-gray-700 bg-gray-50 border border-dashed border-gray-200 rounded-xl p-4 hidden"></div>
+          <label class="space-y-1 block">
+            <span class="grid-label">E-mail (alleen lezen)</span>
+            <input id="settingsEmail" class="w-full border rounded-xl px-3 py-2 bg-gray-100" readonly />
+          </label>
+          <label class="space-y-1 block">
+            <span class="grid-label">Functie / rol</span>
+            <input id="settingsRole" class="w-full border rounded-xl px-3 py-2" placeholder="Werkvoorbereider, aannemer..." />
+          </label>
+          <label class="space-y-1 block">
+            <span class="grid-label">Voorkeurseenheid</span>
+            <input id="settingsUnit" class="w-full border rounded-xl px-3 py-2" placeholder="ton, m3, m2" />
+          </label>
+          <button id="saveSettings" class="inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Instellingen opslaan</button>
+          <div id="settingsMessage" class="text-sm font-semibold"></div>
         </div>
 
-        <div class="space-y-4">
-          <h3 class="font-semibold">Nieuw materiaal toevoegen</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="space-y-1 col-span-2">
-              <span class="grid-label">Werk / project</span>
-              <input id="projectName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Verbreding N210" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Materiaal</span>
-              <input id="materialName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Asfalt AC 16" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Leverancier</span>
-              <input id="supplier" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Leverancier" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Hoeveelheid</span>
-              <input id="quantity" type="number" min="0" step="0.01" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Eenheid</span>
-              <input id="unit" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="ton, m3, m2" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Transportafstand (km)</span>
-              <input id="distance" type="number" min="0" step="0.1" class="w-full border rounded-xl px-3 py-2" placeholder="0" value="0" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Vervoersmiddel</span>
-              <select id="transportMode" class="w-full border rounded-xl px-3 py-2">
-                <option>Vrachtwagen - Diesel Euro 5</option>
-                <option>Vrachtwagen - Elektrisch</option>
-                <option>Vrachtschip - Diesel</option>
-                <option>Trein - Elektrisch</option>
-              </select>
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Brandstof transport</span>
-              <input id="transportFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel Euro 5" />
-            </label>
-            <label class="space-y-1">
-              <span class="grid-label">Brandstof aanleg</span>
-              <input id="installationFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel" />
-            </label>
+        <div class="md:col-span-2 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <h3 class="font-semibold">Projectenoverzicht</h3>
+              <p class="text-sm text-gray-600">Maak meerdere projecten aan en wissel per project van materiaaladministratie.</p>
+            </div>
+            <div class="text-xs text-gray-500" id="projectCount"></div>
           </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="space-y-1 block">
+              <span class="grid-label">Projectnaam</span>
+              <input id="projectName" class="w-full border rounded-xl px-3 py-2" placeholder="Bijv. Verbreding N210" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="grid-label">Beschrijving</span>
+              <input id="projectDescription" class="w-full border rounded-xl px-3 py-2" placeholder="Fase, opdrachtgever..." />
+            </label>
+            <button id="addProject" class="md:col-span-2 inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Project toevoegen</button>
+            <div id="projectMessage" class="text-sm font-semibold md:col-span-2"></div>
+          </div>
+
+          <div class="grid gap-3" id="projectList"></div>
         </div>
       </div>
 
-      <div class="grid gap-4">
-        <h3 class="font-semibold">MKI en CO<sub>2</sub> per levenscyclusfase (per eenheid)</h3>
-        <div class="grid md:grid-cols-4 gap-3">
-          <div class="border rounded-xl p-3 space-y-2">
-            <p class="font-semibold">Fase A1</p>
-            <label class="space-y-1 block">
-              <span class="text-sm">MKI / ECI (€)</span>
-              <input type="number" step="0.0001" id="a1Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
-            <label class="space-y-1 block">
-              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
-              <input type="number" step="0.0001" id="a1Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
+      <div class="border-t pt-6 space-y-6" id="projectWorkArea">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h3 class="font-semibold">Projectadministratie</h3>
+            <p class="text-sm text-gray-600">Koppel EPD's aan fasen A1-A3 en D, vul handmatig aan en registreer transport/aanleg-profielen per project.</p>
           </div>
-          <div class="border rounded-xl p-3 space-y-2">
-            <p class="font-semibold">Fase A2</p>
-            <label class="space-y-1 block">
-              <span class="text-sm">MKI / ECI (€)</span>
-              <input type="number" step="0.0001" id="a2Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+          <div class="text-xs text-gray-500">Alles wordt lokaal opgeslagen per gebruiker en per project.</div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <h4 class="font-semibold">EPD inlezen</h4>
+            <p class="text-sm text-gray-600">Sleep een EPD (PDF) hierheen. We detecteren indicatoren zoals MKI/ECI (€) en GWP (CO<sub>2</sub>) met synoniemen zoals "GWP total" of "GWP-t" en fasen A1-A3 of D.</p>
+            <label class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-gray-400 transition dropzone">
+              <input type="file" id="epdUpload" accept="application/pdf" class="hidden" />
+              <div class="space-y-2">
+                <p class="font-semibold">Upload EPD (PDF)</p>
+                <p class="text-sm text-gray-600">Automatisch vullen met detectie van MKI/ECI en GWP per fase. Handmatige aanpassing blijft mogelijk.</p>
+              </div>
             </label>
-            <label class="space-y-1 block">
-              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
-              <input type="number" step="0.0001" id="a2Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
+            <div id="epdResult" class="text-sm text-gray-700 bg-gray-50 border border-dashed border-gray-200 rounded-xl p-4 hidden"></div>
           </div>
-          <div class="border rounded-xl p-3 space-y-2">
-            <p class="font-semibold">Fase A3</p>
-            <label class="space-y-1 block">
-              <span class="text-sm">MKI / ECI (€)</span>
-              <input type="number" step="0.0001" id="a3Mki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
-            <label class="space-y-1 block">
-              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
-              <input type="number" step="0.0001" id="a3Gwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
-          </div>
-          <div class="border rounded-xl p-3 space-y-2">
-            <p class="font-semibold">Fase D</p>
-            <label class="space-y-1 block">
-              <span class="text-sm">MKI / ECI (€)</span>
-              <input type="number" step="0.0001" id="dMki" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
-            <label class="space-y-1 block">
-              <span class="text-sm">CO<sub>2</sub> / GWP (kg)</span>
-              <input type="number" step="0.0001" id="dGwp" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
-            </label>
+
+          <div class="space-y-4">
+            <h4 class="font-semibold">Product toevoegen aan project</h4>
+            <div class="grid grid-cols-2 gap-3" id="materialForm">
+              <label class="space-y-1 col-span-2">
+                <span class="grid-label">Actief project</span>
+                <select id="activeProjectSelect" class="w-full border rounded-xl px-3 py-2"></select>
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Materiaal</span>
+                <input id="materialName" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Asfalt AC 16" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Leverancier (herkomst)</span>
+                <input id="supplier" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="Leverancier" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Hoeveelheid</span>
+                <input id="quantity" type="number" min="0" step="0.01" class="w-full border rounded-xl px-3 py-2" placeholder="0" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Eenheid</span>
+                <input id="unit" type="text" class="w-full border rounded-xl px-3 py-2" placeholder="ton, m3, m2" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Transportafstand (km)</span>
+                <input id="distance" type="number" min="0" step="0.1" class="w-full border rounded-xl px-3 py-2" placeholder="0" value="0" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Vervoersmiddel</span>
+                <select id="transportMode" class="w-full border rounded-xl px-3 py-2">
+                  <option>Vrachtwagen - Diesel Euro 5</option>
+                  <option>Vrachtwagen - Elektrisch</option>
+                  <option>Vrachtschip - Diesel</option>
+                  <option>Trein - Elektrisch</option>
+                </select>
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Brandstof transport</span>
+                <input id="transportFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel Euro 5" />
+              </label>
+              <label class="space-y-1">
+                <span class="grid-label">Brandstof aanleg</span>
+                <input id="installationFuel" type="text" class="w-full border rounded-xl px-3 py-2" value="Diesel" />
+              </label>
+              <div class="col-span-2 grid grid-cols-2 gap-3 bg-gray-50 border rounded-xl p-3">
+                <div class="font-semibold col-span-2">Fasewaarden (MKI / CO<sub>2</sub>) per eenheid</div>
+                <label class="space-y-1">
+                  <span class="grid-label">A1</span>
+                  <div class="flex gap-2">
+                    <input id="a1Mki" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="MKI" />
+                    <input id="a1Gwp" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="CO2" />
+                  </div>
+                </label>
+                <label class="space-y-1">
+                  <span class="grid-label">A2</span>
+                  <div class="flex gap-2">
+                    <input id="a2Mki" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="MKI" />
+                    <input id="a2Gwp" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="CO2" />
+                  </div>
+                </label>
+                <label class="space-y-1">
+                  <span class="grid-label">A3</span>
+                  <div class="flex gap-2">
+                    <input id="a3Mki" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="MKI" />
+                    <input id="a3Gwp" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="CO2" />
+                  </div>
+                </label>
+                <label class="space-y-1">
+                  <span class="grid-label">D</span>
+                  <div class="flex gap-2">
+                    <input id="dMki" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="MKI" />
+                    <input id="dGwp" type="number" step="0.0001" class="w-1/2 border rounded-xl px-3 py-2" placeholder="CO2" />
+                  </div>
+                </label>
+              </div>
+              <div class="col-span-2 space-y-2">
+                <div class="flex flex-wrap items-center gap-3">
+                  <h5 class="font-semibold">Eigen kolommen per project</h5>
+                  <div class="text-xs text-gray-500">Worden als velden in het formulier en in de tabel getoond.</div>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                  <input id="customColumnName" type="text" class="border rounded-xl px-3 py-2 text-sm" placeholder="Kolomnaam" />
+                  <select id="customColumnType" class="border rounded-xl px-3 py-2 text-sm">
+                    <option value="text">Tekst</option>
+                    <option value="number">Getal</option>
+                  </select>
+                  <button id="addColumn" class="px-3 py-2 rounded-xl bg-blue-700 text-white text-sm hover:bg-blue-600">Kolom toevoegen</button>
+                </div>
+                <div id="customFields" class="grid grid-cols-2 gap-3"></div>
+              </div>
+              <button id="addMaterial" class="col-span-2 inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Product opslaan in project</button>
+              <div id="formMessage" class="text-sm font-semibold col-span-2"></div>
+            </div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-          <button id="addMaterial" class="px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Materiaal registreren</button>
-          <div class="flex items-center gap-2 text-sm text-gray-600">
-            <span class="font-semibold">Aangepaste kolom:</span>
-            <input id="customColumnName" type="text" class="border rounded-xl px-3 py-2" placeholder="Bijv. Herkomst" />
-            <select id="customColumnType" class="border rounded-xl px-3 py-2 text-sm">
-              <option value="text">Tekst</option>
-              <option value="number">Getal</option>
-            </select>
-            <button id="addColumn" class="px-3 py-2 rounded-xl bg-blue-700 text-white text-sm hover:bg-blue-600">Kolom toevoegen</button>
-          </div>
-          <div id="formMessage" class="text-sm font-semibold text-green-700"></div>
+        <div class="overflow-auto">
+          <table class="min-w-full text-sm" id="materialsTable">
+            <thead class="bg-gray-50">
+              <tr class="text-left" id="tableHeaderRow">
+                <th class="px-3 py-2">Project</th>
+                <th class="px-3 py-2">Materiaal</th>
+                <th class="px-3 py-2">Leverancier</th>
+                <th class="px-3 py-2">Hoeveelheid</th>
+                <th class="px-3 py-2">Transport</th>
+                <th class="px-3 py-2">Aanleg</th>
+                <th class="px-3 py-2">A1 MKI / GWP</th>
+                <th class="px-3 py-2">A2 MKI / GWP</th>
+                <th class="px-3 py-2">A3 MKI / GWP</th>
+                <th class="px-3 py-2">D MKI / GWP</th>
+                <th class="px-3 py-2">Totaal MKI</th>
+                <th class="px-3 py-2">Opties</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
+          </table>
         </div>
-      </div>
-
-      <div class="overflow-auto">
-        <table class="min-w-full text-sm" id="materialsTable">
-          <thead class="bg-gray-50">
-            <tr class="text-left">
-              <th class="px-3 py-2">Project</th>
-              <th class="px-3 py-2">Materiaal</th>
-              <th class="px-3 py-2">Leverancier</th>
-              <th class="px-3 py-2">Hoeveelheid</th>
-              <th class="px-3 py-2">Transport</th>
-              <th class="px-3 py-2">Aanleg</th>
-              <th class="px-3 py-2">A1 MKI / GWP</th>
-              <th class="px-3 py-2">A2 MKI / GWP</th>
-              <th class="px-3 py-2">A3 MKI / GWP</th>
-              <th class="px-3 py-2">D MKI / GWP</th>
-              <th class="px-3 py-2">Totaal MKI</th>
-              <th class="px-3 py-2">Opties</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
-        </table>
       </div>
     </section>
   </main>
 
   <script>
+    const STORAGE_KEY = 'lcaUsersV2';
+    const SESSION_KEY = 'lcaCurrentUser';
+    const MAX_USERS = 100;
+
     const state = {
-      currentUser: null,
-      users: JSON.parse(localStorage.getItem('lcaUsers') || '{}')
+      users: [],
+      currentUserEmail: null,
     };
 
     const authMessage = document.getElementById('authMessage');
     const activeUser = document.getElementById('activeUser');
     const logoutBtn = document.getElementById('logoutBtn');
     const formMessage = document.getElementById('formMessage');
+    const settingsMessage = document.getElementById('settingsMessage');
+    const projectMessage = document.getElementById('projectMessage');
+
+    function loadState() {
+      try {
+        state.users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {
+        state.users = [];
+      }
+      state.currentUserEmail = localStorage.getItem(SESSION_KEY) || null;
+    }
 
     function saveUsers() {
-      localStorage.setItem('lcaUsers', JSON.stringify(state.users));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.users));
+    }
+
+    function setCurrentUser(email) {
+      state.currentUserEmail = email;
+      if (email) localStorage.setItem(SESSION_KEY, email); else localStorage.removeItem(SESSION_KEY);
+    }
+
+    function findUser(email) {
+      return state.users.find((u) => u.email === email) || null;
     }
 
     function setMessage(el, msg, color = 'text-green-700') {
@@ -312,142 +375,135 @@
       if (msg) setTimeout(() => { el.textContent = ''; }, 5000);
     }
 
-    function updateAuthUI() {
-      if (state.currentUser) {
-        activeUser.textContent = `Ingelogd als ${state.currentUser}`;
-        activeUser.classList.remove('hidden');
-        logoutBtn.classList.remove('hidden');
-      } else {
-        activeUser.classList.add('hidden');
-        logoutBtn.classList.add('hidden');
+    function showPage(isWorkspace) {
+      document.getElementById('authPage').classList.toggle('hidden', isWorkspace);
+      document.getElementById('workspacePage').classList.toggle('hidden', !isWorkspace);
+    }
+
+    function ensureActiveProject(user) {
+      if (!user) return;
+      if (!user.projects) user.projects = [];
+      if (!user.activeProjectId && user.projects.length > 0) {
+        user.activeProjectId = user.projects[0].id;
       }
+    }
+
+    function renderSettings(user) {
+      document.getElementById('settingsName').value = user.name || '';
+      document.getElementById('settingsEmail').value = user.email;
+      document.getElementById('settingsRole').value = user.settings?.role || '';
+      document.getElementById('settingsUnit').value = user.settings?.preferredUnit || '';
+    }
+
+    function renderProjects(user) {
+      ensureActiveProject(user);
+      const list = document.getElementById('projectList');
+      list.innerHTML = '';
+      const count = document.getElementById('projectCount');
+      count.textContent = `${user.projects.length} projecten • capaciteit voor ${MAX_USERS} gebruikers beschikbaar.`;
+
+      if (user.projects.length === 0) {
+        list.innerHTML = '<div class="text-sm text-gray-600">Nog geen projecten. Voeg er hierboven een toe.</div>';
+      } else {
+        user.projects.forEach((project) => {
+          const card = document.createElement('div');
+          card.className = 'border rounded-xl p-3 flex items-start gap-3 justify-between';
+          const text = document.createElement('div');
+          text.innerHTML = `<div class="font-semibold">${project.name}</div><div class="text-sm text-gray-600">${project.description || 'Geen beschrijving'}</div>`;
+          const actions = document.createElement('div');
+          actions.className = 'flex gap-2';
+
+          const activate = document.createElement('button');
+          activate.textContent = project.id === user.activeProjectId ? 'Actief' : 'Openen';
+          activate.className = `px-3 py-1 rounded-xl text-sm ${project.id === user.activeProjectId ? 'bg-green-100 text-green-800' : 'bg-blue-700 text-white hover:bg-blue-600'}`;
+          activate.addEventListener('click', () => {
+            user.activeProjectId = project.id;
+            saveUsers();
+            renderWorkspace();
+          });
+
+          const remove = document.createElement('button');
+          remove.textContent = 'Verwijderen';
+          remove.className = 'px-3 py-1 rounded-xl text-sm bg-red-50 text-red-700 hover:bg-red-100';
+          remove.addEventListener('click', () => {
+            if (!confirm('Weet je zeker dat je dit project wilt verwijderen?')) return;
+            user.projects = user.projects.filter((p) => p.id !== project.id);
+            if (user.activeProjectId === project.id) user.activeProjectId = user.projects[0]?.id || null;
+            saveUsers();
+            renderWorkspace();
+          });
+
+          actions.appendChild(activate);
+          actions.appendChild(remove);
+          card.appendChild(text);
+          card.appendChild(actions);
+          list.appendChild(card);
+        });
+      }
+
+      renderProjectSelector(user);
+    }
+
+    function renderProjectSelector(user) {
+      const select = document.getElementById('activeProjectSelect');
+      select.innerHTML = '';
+      user.projects.forEach((project) => {
+        const opt = document.createElement('option');
+        opt.value = project.id;
+        opt.textContent = project.name;
+        if (project.id === user.activeProjectId) opt.selected = true;
+        select.appendChild(opt);
+      });
+      const disabled = user.projects.length === 0;
+      select.disabled = disabled;
+      document.getElementById('projectWorkArea').classList.toggle('hidden', disabled);
+      if (!disabled) renderCustomColumns(user);
       renderTable();
     }
 
-    document.getElementById('registerBtn').addEventListener('click', () => {
-      const name = document.getElementById('registerName').value.trim();
-      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
-      const password = document.getElementById('registerPassword').value;
-      if (!name || !email || password.length < 8) {
-        setMessage(authMessage, 'Vul naam, e-mail en een wachtwoord van minimaal 8 tekens in.', 'text-red-700');
-        return;
-      }
-      if (state.users[email]) {
-        setMessage(authMessage, 'Dit e-mailadres is al geregistreerd.', 'text-red-700');
-        return;
-      }
-      state.users[email] = { name, password, materials: [], customColumns: [] };
-      saveUsers();
-      setMessage(authMessage, 'Account succesvol aangemaakt. Log nu in.');
-    });
+    function renderCustomColumns(user) {
+      const activeProject = user.projects.find((p) => p.id === user.activeProjectId);
+      if (!activeProject) return;
+      if (!activeProject.customColumns) activeProject.customColumns = [];
 
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
-      const user = state.users[email];
-      if (!user || user.password !== password) {
-        setMessage(authMessage, 'Onjuiste combinatie van e-mail en wachtwoord.', 'text-red-700');
-        return;
-      }
-      state.currentUser = email;
-      setMessage(authMessage, `Welkom terug, ${user.name}!`);
-      updateAuthUI();
-      loadCustomColumns();
-    });
+      const customFields = document.getElementById('customFields');
+      customFields.innerHTML = '';
+      activeProject.customColumns.forEach((c) => {
+        const label = document.createElement('label');
+        label.className = 'space-y-1';
+        label.innerHTML = `<span class="grid-label">${c.label}</span>`;
+        const input = document.createElement('input');
+        input.type = c.type === 'number' ? 'number' : 'text';
+        input.id = `custom-${c.id}`;
+        input.className = 'w-full border rounded-xl px-3 py-2';
+        label.appendChild(input);
+        customFields.appendChild(label);
+      });
 
-    logoutBtn.addEventListener('click', () => {
-      state.currentUser = null;
-      setMessage(authMessage, 'Je bent uitgelogd.');
-      updateAuthUI();
-    });
-
-    function ensureUser() {
-      if (!state.currentUser) {
-        setMessage(formMessage, 'Log in of maak een account aan om materialen te registreren.', 'text-red-700');
-        return false;
-      }
-      return true;
-    }
-
-    function loadCustomColumns() {
-      const table = document.getElementById('materialsTable');
-      const existing = table.querySelectorAll('.custom-header');
-      existing.forEach((th) => th.remove());
-
-      if (!state.currentUser) return;
-      const cols = state.users[state.currentUser].customColumns || [];
-      const headerRow = table.querySelector('thead tr');
+      const headerRow = document.getElementById('tableHeaderRow');
+      headerRow.querySelectorAll('.custom-header').forEach((th) => th.remove());
       const optionsHeader = headerRow.querySelector('th:last-child');
-      cols.forEach((c) => {
+      activeProject.customColumns.forEach((c) => {
         const th = document.createElement('th');
-        th.textContent = c.label;
         th.className = 'px-3 py-2 custom-header';
+        th.textContent = c.label;
         headerRow.insertBefore(th, optionsHeader);
       });
-      renderTable();
-    }
-
-    document.getElementById('addColumn').addEventListener('click', () => {
-      if (!ensureUser()) return;
-      const name = document.getElementById('customColumnName').value.trim();
-      const type = document.getElementById('customColumnType').value;
-      if (!name) return setMessage(formMessage, 'Geef een naam op voor de kolom.', 'text-red-700');
-      const user = state.users[state.currentUser];
-      user.customColumns.push({ label: name, type });
-      saveUsers();
-      loadCustomColumns();
-      document.getElementById('customColumnName').value = '';
-      setMessage(formMessage, `Kolom "${name}" toegevoegd.`);
-    });
-
-    document.getElementById('addMaterial').addEventListener('click', () => {
-      if (!ensureUser()) return;
-      const user = state.users[state.currentUser];
-      const material = {
-        project: document.getElementById('projectName').value.trim(),
-        material: document.getElementById('materialName').value.trim(),
-        supplier: document.getElementById('supplier').value.trim(),
-        quantity: parseFloat(document.getElementById('quantity').value) || 0,
-        unit: document.getElementById('unit').value.trim(),
-        distance: parseFloat(document.getElementById('distance').value) || 0,
-        transportMode: document.getElementById('transportMode').value,
-        transportFuel: document.getElementById('transportFuel').value.trim() || 'Diesel Euro 5',
-        installationFuel: document.getElementById('installationFuel').value.trim() || 'Diesel',
-        phases: {
-          A1: { mki: parseFloat(document.getElementById('a1Mki').value) || 0, gwp: parseFloat(document.getElementById('a1Gwp').value) || 0 },
-          A2: { mki: parseFloat(document.getElementById('a2Mki').value) || 0, gwp: parseFloat(document.getElementById('a2Gwp').value) || 0 },
-          A3: { mki: parseFloat(document.getElementById('a3Mki').value) || 0, gwp: parseFloat(document.getElementById('a3Gwp').value) || 0 },
-          D:  { mki: parseFloat(document.getElementById('dMki').value) || 0, gwp: parseFloat(document.getElementById('dGwp').value) || 0 },
-        },
-        custom: {}
-      };
-
-      (user.customColumns || []).forEach((c) => {
-        const value = prompt(`Waarde voor kolom \"${c.label}\" (${c.type})?`) || '';
-        material.custom[c.label] = c.type === 'number' ? Number(value) || 0 : value;
-      });
-
-      user.materials.push(material);
-      saveUsers();
-      renderTable();
-      setMessage(formMessage, 'Materiaal opgeslagen en berekend.');
-    });
-
-    function calcTotalMki(entry) {
-      const phaseTotal = ['A1','A2','A3','D'].reduce((sum, phase) => sum + (entry.phases[phase].mki || 0), 0);
-      return phaseTotal * (entry.quantity || 0);
     }
 
     function renderTable() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
-      if (!state.currentUser) return;
-      const user = state.users[state.currentUser];
-      (user.materials || []).forEach((entry, idx) => {
+      const user = findUser(state.currentUserEmail);
+      if (!user || user.projects.length === 0) return;
+      const activeProject = user.projects.find((p) => p.id === user.activeProjectId);
+      if (!activeProject) return;
+
+      activeProject.materials?.forEach((entry, idx) => {
         const tr = document.createElement('tr');
         const totalMki = calcTotalMki(entry);
         const cols = [
-          entry.project || '–',
+          activeProject.name || '–',
           entry.material || '–',
           entry.supplier || '–',
           `${entry.quantity || 0} ${entry.unit || ''}`,
@@ -467,10 +523,10 @@
           tr.appendChild(td);
         });
 
-        (user.customColumns || []).forEach((c) => {
+        (activeProject.customColumns || []).forEach((c) => {
           const td = document.createElement('td');
           td.className = 'px-3 py-2 align-top';
-          td.textContent = entry.custom?.[c.label] ?? '';
+          td.textContent = entry.custom?.[c.id] ?? '';
           tr.insertBefore(td, tr.lastChild);
         });
 
@@ -480,7 +536,7 @@
         del.textContent = 'Verwijderen';
         del.className = 'text-red-700 hover:underline text-sm';
         del.addEventListener('click', () => {
-          user.materials.splice(idx, 1);
+          activeProject.materials.splice(idx, 1);
           saveUsers();
           renderTable();
         });
@@ -489,6 +545,165 @@
         tbody.appendChild(tr);
       });
     }
+
+    function calcTotalMki(entry) {
+      const phaseTotal = ['A1','A2','A3','D'].reduce((sum, phase) => sum + (entry.phases[phase].mki || 0), 0);
+      return phaseTotal * (entry.quantity || 0);
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', () => {
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const password = document.getElementById('registerPassword').value;
+
+      if (!name || !email || password.length < 8) {
+        setMessage(authMessage, 'Vul naam, e-mail en een wachtwoord van minimaal 8 tekens in.', 'text-red-700');
+        return;
+      }
+      if (state.users.length >= MAX_USERS) {
+        setMessage(authMessage, 'Maximum van 100 gebruikers bereikt. Verwijder een gebruiker of meld een beheerder.', 'text-red-700');
+        return;
+      }
+      if (findUser(email)) {
+        setMessage(authMessage, 'Dit e-mailadres is al geregistreerd.', 'text-red-700');
+        return;
+      }
+
+      const newUser = {
+        name,
+        email,
+        password,
+        settings: { role: '', preferredUnit: '' },
+        projects: [],
+        activeProjectId: null,
+      };
+      state.users.push(newUser);
+      saveUsers();
+      setCurrentUser(email);
+      setMessage(authMessage, 'Account succesvol aangemaakt. Je wordt doorgestuurd naar je persoonlijke omgeving.');
+      renderWorkspace();
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const user = findUser(email);
+      if (!user || user.password !== password) {
+        setMessage(authMessage, 'Onjuiste combinatie van e-mail en wachtwoord.', 'text-red-700');
+        return;
+      }
+      setCurrentUser(email);
+      setMessage(authMessage, `Welkom terug, ${user.name}!`);
+      renderWorkspace();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      setCurrentUser(null);
+      setMessage(authMessage, 'Je bent uitgelogd.');
+      activeUser.textContent = '';
+      showPage(false);
+    });
+
+    document.getElementById('saveSettings').addEventListener('click', () => {
+      const user = findUser(state.currentUserEmail);
+      if (!user) return;
+      user.name = document.getElementById('settingsName').value.trim();
+      user.settings = {
+        role: document.getElementById('settingsRole').value.trim(),
+        preferredUnit: document.getElementById('settingsUnit').value.trim(),
+      };
+      saveUsers();
+      setMessage(settingsMessage, 'Instellingen opgeslagen.');
+      renderWorkspace();
+    });
+
+    document.getElementById('addProject').addEventListener('click', () => {
+      const user = findUser(state.currentUserEmail);
+      if (!user) {
+        setMessage(projectMessage, 'Log in of registreer eerst.', 'text-red-700');
+        return;
+      }
+      const name = document.getElementById('projectName').value.trim();
+      const description = document.getElementById('projectDescription').value.trim();
+      if (!name) {
+        setMessage(projectMessage, 'Voer een projectnaam in.', 'text-red-700');
+        return;
+      }
+      const project = {
+        id: `project-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name,
+        description,
+        materials: [],
+        customColumns: [],
+      };
+      user.projects.push(project);
+      user.activeProjectId = project.id;
+      saveUsers();
+      setMessage(projectMessage, 'Project toegevoegd en geactiveerd.');
+      document.getElementById('projectName').value = '';
+      document.getElementById('projectDescription').value = '';
+      renderWorkspace();
+    });
+
+    document.getElementById('addColumn').addEventListener('click', () => {
+      const user = findUser(state.currentUserEmail);
+      if (!user) return;
+      const activeProject = user.projects.find((p) => p.id === user.activeProjectId);
+      if (!activeProject) return;
+      const label = document.getElementById('customColumnName').value.trim();
+      const type = document.getElementById('customColumnType').value;
+      if (!label) return setMessage(formMessage, 'Voeg een kolomnaam toe.', 'text-red-700');
+      const id = `col-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      activeProject.customColumns.push({ id, label, type });
+      saveUsers();
+      document.getElementById('customColumnName').value = '';
+      renderCustomColumns(user);
+      setMessage(formMessage, `Kolom "${label}" toegevoegd aan project.`);
+    });
+
+    document.getElementById('activeProjectSelect').addEventListener('change', (e) => {
+      const user = findUser(state.currentUserEmail);
+      if (!user) return;
+      user.activeProjectId = e.target.value;
+      saveUsers();
+      renderWorkspace();
+    });
+
+    document.getElementById('addMaterial').addEventListener('click', () => {
+      const user = findUser(state.currentUserEmail);
+      if (!user) return setMessage(formMessage, 'Log in of registreer om materialen te registreren.', 'text-red-700');
+      const activeProject = user.projects.find((p) => p.id === user.activeProjectId);
+      if (!activeProject) return setMessage(formMessage, 'Voeg eerst een project toe.', 'text-red-700');
+
+      const material = {
+        material: document.getElementById('materialName').value.trim(),
+        supplier: document.getElementById('supplier').value.trim(),
+        quantity: parseFloat(document.getElementById('quantity').value) || 0,
+        unit: document.getElementById('unit').value.trim() || user.settings?.preferredUnit || '',
+        distance: parseFloat(document.getElementById('distance').value) || 0,
+        transportMode: document.getElementById('transportMode').value,
+        transportFuel: document.getElementById('transportFuel').value.trim() || 'Diesel Euro 5',
+        installationFuel: document.getElementById('installationFuel').value.trim() || 'Diesel',
+        phases: {
+          A1: { mki: parseFloat(document.getElementById('a1Mki').value) || 0, gwp: parseFloat(document.getElementById('a1Gwp').value) || 0 },
+          A2: { mki: parseFloat(document.getElementById('a2Mki').value) || 0, gwp: parseFloat(document.getElementById('a2Gwp').value) || 0 },
+          A3: { mki: parseFloat(document.getElementById('a3Mki').value) || 0, gwp: parseFloat(document.getElementById('a3Gwp').value) || 0 },
+          D:  { mki: parseFloat(document.getElementById('dMki').value) || 0, gwp: parseFloat(document.getElementById('dGwp').value) || 0 },
+        },
+        custom: {},
+      };
+
+      activeProject.customColumns.forEach((c) => {
+        const input = document.getElementById(`custom-${c.id}`);
+        const value = input?.value ?? '';
+        material.custom[c.id] = c.type === 'number' ? Number(value) || 0 : value;
+      });
+
+      activeProject.materials.push(material);
+      saveUsers();
+      renderTable();
+      setMessage(formMessage, 'Materiaal opgeslagen in het actieve project.');
+    });
 
     async function parsePdf(file) {
       const pdf = await window.pdfjsLib.getDocument(await file.arrayBuffer()).promise;
@@ -562,8 +777,7 @@
         });
 
         resultBox.innerHTML = `<div class="font-semibold mb-1">EPD gelezen</div>
-          <div class="text-sm text-gray-700">Herkenningsresultaat: ${filled} velden gevuld op basis van indicatoren
-          (MKI/ECI of GWP). Pas handmatig aan waar nodig.</div>`;
+          <div class="text-sm text-gray-700">Herkenningsresultaat: ${filled} velden gevuld op basis van indicatoren (MKI/ECI of GWP). Pas handmatig aan waar nodig.</div>`;
         resultBox.classList.remove('hidden');
       } catch (err) {
         resultBox.textContent = 'Kon EPD niet lezen. Probeer het opnieuw of vul handmatig in.';
@@ -572,9 +786,19 @@
       }
     });
 
-    // Init
-    loadCustomColumns();
-    updateAuthUI();
+    function renderWorkspace() {
+      const user = findUser(state.currentUserEmail);
+      const loggedIn = Boolean(user);
+      showPage(loggedIn);
+      if (!loggedIn) return;
+
+      activeUser.textContent = `Ingelogd als ${user.name} (${user.email})`;
+      renderSettings(user);
+      renderProjects(user);
+    }
+
+    loadState();
+    renderWorkspace();
   </script>
 </body>
 </html>
