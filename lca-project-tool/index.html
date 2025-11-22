@@ -74,7 +74,7 @@
       <p class="text-green-700 font-semibold uppercase tracking-wide">Making sustainability count</p>
       <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">LCA-project-tool</h1>
       <p class="max-w-3xl text-lg text-gray-700">
-        Maak accounts aan voor aannemers en werkvoorbereiders (tot minstens 100 gebruikers), lees EPD's in, vul handmatig aan waar nodig
+        Maak accounts aan voor aannemers en werkvoorbereiders, lees EPD's in, vul handmatig aan waar nodig
         en beheer per project de materialen, MKI/ECI en CO<sub>2</sub> (GWP) per levenscyclusfase. Default transportprofielen zijn ingericht op vrachtwagens Diesel Euro 5 en aanleg op diesel.
       </p>
     </header>
@@ -83,14 +83,14 @@
       <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 class="text-xl font-semibold">Registreren of inloggen</h2>
-          <p class="text-sm text-gray-600">Na aanmelden kom je in je persoonlijke omgeving met instellingen en projectenoverzicht.</p>
+          <p class="text-sm text-gray-600">Toegang voor GWW-teams met e-mailverificatie en herstel voor wachtwoordbeheer.</p>
         </div>
         <div id="authMessage" class="text-sm font-semibold"></div>
       </div>
       <div class="grid md:grid-cols-2 gap-6">
         <div class="space-y-3">
           <h3 class="font-semibold">Nieuw account</h3>
-          <p class="text-sm text-gray-600">Registreer tot maximaal 100 gebruikers. Projecten en materialen blijven per gebruiker gescheiden.</p>
+          <p class="text-sm text-gray-600">Registratie op e-mailbasis. Verifieer via de ontvangen link voor volledige toegang.</p>
           <div class="grid gap-3">
             <label class="space-y-1">
               <span class="grid-label">Naam</span>
@@ -105,12 +105,12 @@
               <input id="registerPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="Minimaal 8 tekens" />
             </label>
             <button id="registerBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Account aanmaken</button>
-            <p class="text-xs text-gray-500">Gegevens worden lokaal opgeslagen voor demo-doeleinden. Na registratie ga je direct naar je persoonlijke omgeving.</p>
+            <p class="text-xs text-gray-500">Gegevens worden lokaal opgeslagen voor demo-doeleinden. Verificatie per e-mail is vereist voordat je kunt inloggen.</p>
           </div>
         </div>
         <div class="space-y-3">
           <h3 class="font-semibold">Aanmelden</h3>
-          <p class="text-sm text-gray-600">Log in om je persoonlijke instellingen en projectoverzicht te openen.</p>
+          <p class="text-sm text-gray-600">Log in met een geverifieerd account om je persoonlijke omgeving te openen.</p>
           <div class="grid gap-3">
             <label class="space-y-1">
               <span class="grid-label">E-mail</span>
@@ -120,11 +120,49 @@
               <span class="grid-label">Wachtwoord</span>
               <input id="loginPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="••••••••" />
             </label>
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-3 items-center">
               <button id="loginBtn" class="inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Inloggen</button>
               <button id="logoutBtn" class="hidden inline-flex justify-center px-4 py-2 rounded-xl bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300">Uitloggen</button>
+              <button id="forgotLink" type="button" class="text-sm text-blue-700 hover:underline">Wachtwoord vergeten?</button>
             </div>
+            <button id="resendVerification" type="button" class="text-sm text-amber-700 hover:underline hidden">Verificatiemail opnieuw versturen</button>
           </div>
+        </div>
+      </div>
+
+      <div class="border-t pt-4 grid md:grid-cols-3 gap-6">
+        <div class="space-y-3 md:col-span-1">
+          <h3 class="font-semibold">Beveiligde toegang</h3>
+          <p class="text-sm text-gray-600">Verifieer je e-mailadres of herstel je wachtwoord. Deze acties zijn gericht op teams in de GWW-sector en worden hieronder als demo-mail getoond.</p>
+          <div id="resetRequest" class="space-y-2 hidden">
+            <label class="space-y-1 block">
+              <span class="grid-label">E-mail voor herstel</span>
+              <input id="resetEmail" type="email" class="w-full border rounded-xl px-3 py-2" placeholder="naam@bedrijf.nl" />
+            </label>
+            <button id="requestReset" class="inline-flex justify-center px-4 py-2 rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-600">Verstuur herstel-link</button>
+          </div>
+          <div id="resetForm" class="space-y-2 hidden">
+            <div class="text-sm text-gray-700" id="resetContext"></div>
+            <label class="space-y-1 block">
+              <span class="grid-label">Nieuw wachtwoord</span>
+              <input id="newPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="Minimaal 8 tekens" />
+            </label>
+            <label class="space-y-1 block">
+              <span class="grid-label">Herhaal wachtwoord</span>
+              <input id="confirmPassword" type="password" class="w-full border rounded-xl px-3 py-2" placeholder="Bevestig wachtwoord" />
+            </label>
+            <button id="submitReset" class="inline-flex justify-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500">Wachtwoord opslaan</button>
+          </div>
+        </div>
+        <div class="md:col-span-2 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold">Bevestigingsmail (demo)</h3>
+              <p class="text-sm text-gray-600">Verificatie- en herstelmails verschijnen hieronder zodat je ze direct kunt openen.</p>
+            </div>
+            <span class="text-xs text-gray-500">Alleen zichtbaar in deze demo</span>
+          </div>
+          <div id="mailbox" class="grid gap-3"></div>
         </div>
       </div>
     </section>
@@ -334,11 +372,15 @@
     const STORAGE_KEY = 'lcaUsersV2';
     const SESSION_KEY = 'lcaCurrentUser';
     const MAX_USERS = 100;
+    const MAILBOX_LIMIT = 8;
 
     const state = {
       users: [],
       currentUserEmail: null,
     };
+
+    const mailbox = [];
+    let activeResetToken = null;
 
     const authMessage = document.getElementById('authMessage');
     const activeUser = document.getElementById('activeUser');
@@ -346,10 +388,21 @@
     const formMessage = document.getElementById('formMessage');
     const settingsMessage = document.getElementById('settingsMessage');
     const projectMessage = document.getElementById('projectMessage');
+    const resendVerificationBtn = document.getElementById('resendVerification');
+    const forgotLink = document.getElementById('forgotLink');
+    const resetRequest = document.getElementById('resetRequest');
+    const resetEmail = document.getElementById('resetEmail');
+    const requestResetBtn = document.getElementById('requestReset');
+    const resetForm = document.getElementById('resetForm');
+    const resetContext = document.getElementById('resetContext');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const submitResetBtn = document.getElementById('submitReset');
+    const mailboxContainer = document.getElementById('mailbox');
 
     function loadState() {
       try {
-        state.users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        state.users = (JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []).map(ensureUserShape);
       } catch (e) {
         state.users = [];
       }
@@ -375,9 +428,98 @@
       if (msg) setTimeout(() => { el.textContent = ''; }, 5000);
     }
 
+    function generateToken() {
+      return Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    function ensureUserShape(user) {
+      return {
+        ...user,
+        verified: user.verified !== false,
+        verificationToken: user.verificationToken || null,
+        passwordReset: user.passwordReset || null,
+      };
+    }
+
+    function addMail(type, email, token) {
+      const entry = { id: `${type}-${Date.now()}`, type, email, token, createdAt: new Date() };
+      mailbox.unshift(entry);
+      if (mailbox.length > MAILBOX_LIMIT) mailbox.pop();
+      renderMailbox();
+      return entry;
+    }
+
+    function renderMailbox() {
+      mailboxContainer.innerHTML = '';
+      if (mailbox.length === 0) {
+        mailboxContainer.innerHTML = '<div class="text-sm text-gray-600">Nog geen mails verzonden.</div>';
+        return;
+      }
+      mailbox.forEach((mail) => {
+        const card = document.createElement('div');
+        card.className = 'border rounded-xl p-3 bg-white shadow-sm flex items-center justify-between gap-3 flex-wrap';
+        const text = document.createElement('div');
+        const title = mail.type === 'verify' ? 'Verificatie' : 'Wachtwoordherstel';
+        text.innerHTML = `<div class="font-semibold">${title} voor ${mail.email}</div><div class="text-xs text-gray-600">${mail.createdAt.toLocaleString('nl-NL')}</div>`;
+        const action = document.createElement('button');
+        action.className = 'px-3 py-2 rounded-xl text-sm bg-blue-700 text-white hover:bg-blue-600';
+        if (mail.type === 'verify') {
+          action.textContent = 'Verifieer e-mail';
+          action.addEventListener('click', () => handleVerification(mail.token));
+        } else {
+          action.textContent = 'Stel wachtwoord in';
+          action.addEventListener('click', () => openResetFromMail(mail));
+        }
+        card.appendChild(text);
+        card.appendChild(action);
+        mailboxContainer.appendChild(card);
+      });
+    }
+
     function showPage(isWorkspace) {
       document.getElementById('authPage').classList.toggle('hidden', isWorkspace);
       document.getElementById('workspacePage').classList.toggle('hidden', !isWorkspace);
+    }
+
+    function handleVerification(token) {
+      const user = state.users.find((u) => u.verificationToken === token);
+      if (!user) {
+        setMessage(authMessage, 'Deze verificatielink is ongeldig of verlopen.', 'text-red-700');
+        return;
+      }
+      user.verified = true;
+      user.verificationToken = null;
+      saveUsers();
+      setCurrentUser(user.email);
+      setMessage(authMessage, 'E-mail bevestigd. Je bent nu ingelogd.');
+      renderWorkspace();
+    }
+
+    function sendVerificationEmail(user) {
+      user.verificationToken = generateToken();
+      addMail('verify', user.email, user.verificationToken);
+      saveUsers();
+      resendVerificationBtn.dataset.email = user.email;
+      resendVerificationBtn.classList.remove('hidden');
+      setMessage(authMessage, 'Verificatiemail verzonden. Controleer je inbox en volg de link.');
+    }
+
+    function sendResetEmail(user) {
+      const token = generateToken();
+      user.passwordReset = { token, expires: Date.now() + 1000 * 60 * 30 };
+      saveUsers();
+      addMail('reset', user.email, token);
+      setMessage(authMessage, 'Als het e-mailadres bekend is, is een herstel-link verstuurd.', 'text-blue-700');
+    }
+
+    function openResetFromMail(mail) {
+      resetRequest.classList.add('hidden');
+      resetForm.classList.remove('hidden');
+      activeResetToken = mail.token;
+      resetContext.textContent = `Nieuw wachtwoord instellen voor ${mail.email}.`;
+      newPasswordInput.value = '';
+      confirmPasswordInput.value = '';
+      resetForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function ensureActiveProject(user) {
@@ -400,7 +542,7 @@
       const list = document.getElementById('projectList');
       list.innerHTML = '';
       const count = document.getElementById('projectCount');
-      count.textContent = `${user.projects.length} projecten • capaciteit voor ${MAX_USERS} gebruikers beschikbaar.`;
+      count.textContent = `${user.projects.length} projecten in beheer.`;
 
       if (user.projects.length === 0) {
         list.innerHTML = '<div class="text-sm text-gray-600">Nog geen projecten. Voeg er hierboven een toe.</div>';
@@ -561,7 +703,7 @@
         return;
       }
       if (state.users.length >= MAX_USERS) {
-        setMessage(authMessage, 'Maximum van 100 gebruikers bereikt. Verwijder een gebruiker of meld een beheerder.', 'text-red-700');
+        setMessage(authMessage, 'Registratie is tijdelijk niet beschikbaar. Neem contact op met de beheerder.', 'text-red-700');
         return;
       }
       if (findUser(email)) {
@@ -573,15 +715,15 @@
         name,
         email,
         password,
+        verified: false,
+        verificationToken: null,
+        passwordReset: null,
         settings: { role: '', preferredUnit: '' },
         projects: [],
         activeProjectId: null,
       };
       state.users.push(newUser);
-      saveUsers();
-      setCurrentUser(email);
-      setMessage(authMessage, 'Account succesvol aangemaakt. Je wordt doorgestuurd naar je persoonlijke omgeving.');
-      renderWorkspace();
+      sendVerificationEmail(newUser);
     });
 
     document.getElementById('loginBtn').addEventListener('click', () => {
@@ -590,6 +732,12 @@
       const user = findUser(email);
       if (!user || user.password !== password) {
         setMessage(authMessage, 'Onjuiste combinatie van e-mail en wachtwoord.', 'text-red-700');
+        return;
+      }
+      if (!user.verified) {
+        setMessage(authMessage, 'Bevestig eerst je e-mailadres via de verificatiemail.', 'text-amber-700');
+        resendVerificationBtn.dataset.email = email;
+        resendVerificationBtn.classList.remove('hidden');
         return;
       }
       setCurrentUser(email);
@@ -601,7 +749,69 @@
       setCurrentUser(null);
       setMessage(authMessage, 'Je bent uitgelogd.');
       activeUser.textContent = '';
+      resendVerificationBtn.classList.add('hidden');
+      resetRequest.classList.add('hidden');
+      resetForm.classList.add('hidden');
       showPage(false);
+    });
+
+    resendVerificationBtn.addEventListener('click', () => {
+      const email = resendVerificationBtn.dataset.email;
+      const user = findUser(email);
+      if (user) {
+        sendVerificationEmail(user);
+      }
+    });
+
+    forgotLink.addEventListener('click', () => {
+      resetForm.classList.add('hidden');
+      resetRequest.classList.remove('hidden');
+      setMessage(authMessage, 'Vul je e-mailadres in om een herstel-link te ontvangen.', 'text-blue-700');
+    });
+
+    requestResetBtn.addEventListener('click', () => {
+      const email = resetEmail.value.trim().toLowerCase();
+      const user = findUser(email);
+      if (user) {
+        sendResetEmail(user);
+      } else {
+        setMessage(authMessage, 'Als het e-mailadres bekend is, is een herstel-link verstuurd.', 'text-blue-700');
+      }
+      resetRequest.classList.add('hidden');
+    });
+
+    submitResetBtn.addEventListener('click', () => {
+      if (!activeResetToken) {
+        setMessage(authMessage, 'Open de herstel-link vanuit de mail om een nieuw wachtwoord te kiezen.', 'text-red-700');
+        return;
+      }
+      const pwd = newPasswordInput.value;
+      const confirm = confirmPasswordInput.value;
+      if (pwd.length < 8) {
+        setMessage(authMessage, 'Wachtwoord moet minimaal 8 tekens bevatten.', 'text-red-700');
+        return;
+      }
+      if (pwd !== confirm) {
+        setMessage(authMessage, 'Wachtwoorden komen niet overeen.', 'text-red-700');
+        return;
+      }
+      const user = state.users.find((u) => u.passwordReset?.token === activeResetToken);
+      if (!user) {
+        setMessage(authMessage, 'Herstellink is ongeldig of al gebruikt.', 'text-red-700');
+        return;
+      }
+      if (user.passwordReset.expires < Date.now()) {
+        setMessage(authMessage, 'Herstellink is verlopen. Vraag een nieuwe aan.', 'text-red-700');
+        return;
+      }
+      user.password = pwd;
+      user.passwordReset = null;
+      saveUsers();
+      setCurrentUser(user.email);
+      setMessage(authMessage, 'Wachtwoord bijgewerkt. Je bent nu ingelogd.');
+      resetForm.classList.add('hidden');
+      activeResetToken = null;
+      renderWorkspace();
     });
 
     document.getElementById('saveSettings').addEventListener('click', () => {
@@ -788,9 +998,12 @@
 
     function renderWorkspace() {
       const user = findUser(state.currentUserEmail);
-      const loggedIn = Boolean(user);
+      const loggedIn = Boolean(user && user.verified);
       showPage(loggedIn);
-      if (!loggedIn) return;
+      if (!loggedIn) {
+        setCurrentUser(null);
+        return;
+      }
 
       activeUser.textContent = `Ingelogd als ${user.name} (${user.email})`;
       renderSettings(user);
@@ -798,6 +1011,7 @@
     }
 
     loadState();
+    renderMailbox();
     renderWorkspace();
   </script>
 </body>
