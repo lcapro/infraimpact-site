@@ -3,7 +3,7 @@ import { EpdUpload } from '../components/workspace/EpdUpload';
 import { MaterialForm } from '../components/workspace/MaterialForm';
 import { MaterialsTable } from '../components/workspace/MaterialsTable';
 import { ProjectList } from '../components/workspace/ProjectList';
-import { useWorkspace } from '../lib/useWorkspace';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 export function WorkspacePage() {
   const { projects, addProject, addMaterial, removeMaterial, addCustomColumn, parseEpd } = useWorkspace();
@@ -58,6 +58,7 @@ export function WorkspacePage() {
             </div>
 
             <MaterialsTable
+              project={activeProject}
               materials={activeProject.materials}
               customColumns={activeProject.customColumns}
               onRemove={(id) => removeMaterial(activeProject.id, id)}

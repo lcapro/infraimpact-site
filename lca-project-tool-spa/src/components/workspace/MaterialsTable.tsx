@@ -1,14 +1,15 @@
-import { Material } from '../../lib/types';
+import { calculateMaterialTotals, calculateProjectTotals } from '../../lib/calculations';
+import { Material, Project } from '../../lib/types';
 
 interface Props {
   materials: Material[];
+  project?: Project;
   customColumns: string[];
   onRemove: (id: string) => void;
 }
 
-export function MaterialsTable({ materials, customColumns, onRemove }: Props) {
-  const totalMki = materials.reduce((sum, m) => sum + (m.mkiPerUnit ?? 0) * (m.quantity ?? 0), 0);
-  const totalGwp = materials.reduce((sum, m) => sum + (m.gwpPerUnit ?? 0) * (m.quantity ?? 0), 0);
+export function MaterialsTable({ materials, customColumns, onRemove, project }: Props) {
+  const totals = calculateProjectTotals(project ?? { id: '', name: '', customColumns, materials });
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200">
@@ -18,8 +19,12 @@ export function MaterialsTable({ materials, customColumns, onRemove }: Props) {
           <p className="text-lg font-semibold text-slate-900">Materialen</p>
         </div>
         <div className="text-right text-sm text-slate-600">
-          <p>Totaal MKI: <span className="font-semibold text-brand-700">€ {totalMki.toFixed(2)}</span></p>
-          <p>Totaal CO₂: <span className="font-semibold text-brand-700">{totalGwp.toFixed(2)} kg</span></p>
+          <p>
+            Totaal MKI: <span className="font-semibold text-brand-700">€ {totals.mki.toFixed(2)}</span>
+          </p>
+          <p>
+            Totaal CO₂: <span className="font-semibold text-brand-700">{totals.gwp.toFixed(2)} kg</span>
+          </p>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -40,7 +45,7 @@ export function MaterialsTable({ materials, customColumns, onRemove }: Props) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {materials.length === 0 && (
+          {materials.length === 0 && (
               <tr>
                 <td colSpan={7 + customColumns.length} className="px-4 py-6 text-center text-slate-500">
                   Nog geen materialen toegevoegd.
@@ -48,8 +53,7 @@ export function MaterialsTable({ materials, customColumns, onRemove }: Props) {
               </tr>
             )}
             {materials.map((material) => {
-              const totalMaterialMki = (material.mkiPerUnit ?? 0) * (material.quantity ?? 0);
-              const totalMaterialGwp = (material.gwpPerUnit ?? 0) * (material.quantity ?? 0);
+              const { mki: totalMaterialMki, gwp: totalMaterialGwp } = calculateMaterialTotals(material);
               return (
                 <tr key={material.id} className="hover:bg-brand-50/30">
                   <td className="px-4 py-3 font-semibold text-slate-900">{material.name}</td>

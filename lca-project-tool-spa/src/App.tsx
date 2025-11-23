@@ -1,8 +1,8 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import { useAuth } from './context/AuthContext';
 import { AuthPage } from './pages/AuthPage';
 import { WorkspacePage } from './pages/WorkspacePage';
-import { useAuth } from './lib/useAuth';
 
 export default function App() {
   const { session, bootstrap } = useAuth();

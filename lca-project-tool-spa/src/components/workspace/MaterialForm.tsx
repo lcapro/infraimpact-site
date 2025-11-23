@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { PhaseInputs } from './PhaseInputs';
 import { Material, PhaseValue } from '../../lib/types';
 
 interface Props {
@@ -11,50 +12,58 @@ interface Props {
 const transportModes = ['Vrachtwagen', 'Schip', 'Trein'];
 const fuelTypes = ['Diesel Euro 5', 'Elektrisch', 'HVO'];
 
+const basePhases: PhaseValue[] = [
+  { phase: 'A1' },
+  { phase: 'A2' },
+  { phase: 'A3' },
+  { phase: 'D' },
+];
+
 export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: Props) {
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState<number | undefined>();
-  const [unit, setUnit] = useState('ton');
-  const [supplier, setSupplier] = useState('');
-  const [transportDistance, setTransportDistance] = useState<number | undefined>();
-  const [transportMode, setTransportMode] = useState('Vrachtwagen');
-  const [fuelType, setFuelType] = useState('Diesel Euro 5');
-  const [mkiPerUnit, setMkiPerUnit] = useState<number | undefined>();
-  const [gwpPerUnit, setGwpPerUnit] = useState<number | undefined>();
-  const [phases, setPhases] = useState<PhaseValue[]>([
-    { phase: 'A1' },
-    { phase: 'A2' },
-    { phase: 'A3' },
-    { phase: 'D' },
-  ]);
-  const [customValues, setCustomValues] = useState<Record<string, string>>({});
+  const [form, setForm] = useState<Omit<Material, 'id'>>({
+    name: '',
+    supplier: '',
+    quantity: undefined,
+    unit: 'ton',
+    transportDistance: undefined,
+    transportMode: 'Vrachtwagen',
+    fuelType: 'Diesel Euro 5',
+    mkiPerUnit: undefined,
+    gwpPerUnit: undefined,
+    phases: [...basePhases],
+    customFields: {},
+  });
   const [newColumn, setNewColumn] = useState('');
 
   useEffect(() => {
-    if (parsed?.mkiPerUnit !== undefined) setMkiPerUnit(parsed.mkiPerUnit);
-    if (parsed?.gwpPerUnit !== undefined) setGwpPerUnit(parsed.gwpPerUnit);
-    if (parsed?.phases) setPhases(parsed.phases as PhaseValue[]);
+    if (!parsed) return;
+    setForm((prev) => ({
+      ...prev,
+      mkiPerUnit: parsed.mkiPerUnit ?? prev.mkiPerUnit,
+      gwpPerUnit: parsed.gwpPerUnit ?? prev.gwpPerUnit,
+      phases: parsed.phases ? (parsed.phases as PhaseValue[]) : prev.phases,
+    }));
   }, [parsed]);
+
+  const handleChange = (key: keyof Omit<Material, 'id' | 'phases' | 'customFields'>, value: any) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const phaseChange = (index: number, value: Partial<PhaseValue>) => {
+    setForm((prev) => {
+      const next = [...prev.phases];
+      next[index] = { ...next[index], ...value };
+      return { ...prev, phases: next };
+    });
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      name,
-      quantity,
-      unit,
-      supplier,
-      transportDistance,
-      transportMode,
-      fuelType,
-      mkiPerUnit,
-      gwpPerUnit,
-      phases,
-      customFields: customValues,
-    });
-    setName('');
-    setQuantity(undefined);
-    setSupplier('');
+    onSubmit(form);
+    setForm((prev) => ({ ...prev, name: '', supplier: '', quantity: undefined }));
   };
+
+  const hasCustomColumns = useMemo(() => customColumns.length > 0, [customColumns.length]);
 
   return (
     <form className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4" onSubmit={handleSubmit}>
@@ -75,8 +84,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
         <label className="text-sm font-medium text-slate-700">
           Materiaalnaam
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={form.name}
+            onChange={(e) => handleChange('name', e.target.value)}
             required
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="Gewapend beton"
@@ -85,8 +94,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
         <label className="text-sm font-medium text-slate-700">
           Leverancier / herkomst
           <input
-            value={supplier}
-            onChange={(e) => setSupplier(e.target.value)}
+            value={form.supplier}
+            onChange={(e) => handleChange('supplier', e.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="Bijv. Heijmans"
           />
@@ -96,8 +105,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <input
             type="number"
             min={0}
-            value={quantity ?? ''}
-            onChange={(e) => setQuantity(e.target.value ? Number(e.target.value) : undefined)}
+            value={form.quantity ?? ''}
+            onChange={(e) => handleChange('quantity', e.target.value ? Number(e.target.value) : undefined)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="0"
           />
@@ -105,8 +114,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
         <label className="text-sm font-medium text-slate-700">
           Eenheid
           <input
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
+            value={form.unit}
+            onChange={(e) => handleChange('unit', e.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="kg / ton / m2"
           />
@@ -116,8 +125,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <input
             type="number"
             min={0}
-            value={transportDistance ?? ''}
-            onChange={(e) => setTransportDistance(e.target.value ? Number(e.target.value) : undefined)}
+            value={form.transportDistance ?? ''}
+            onChange={(e) => handleChange('transportDistance', e.target.value ? Number(e.target.value) : undefined)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="100"
           />
@@ -126,8 +135,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <label className="text-sm font-medium text-slate-700">
             Vervoer
             <select
-              value={transportMode}
-              onChange={(e) => setTransportMode(e.target.value)}
+              value={form.transportMode}
+              onChange={(e) => handleChange('transportMode', e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             >
               {transportModes.map((mode) => (
@@ -138,8 +147,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <label className="text-sm font-medium text-slate-700">
             Brandstof
             <select
-              value={fuelType}
-              onChange={(e) => setFuelType(e.target.value)}
+              value={form.fuelType}
+              onChange={(e) => handleChange('fuelType', e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             >
               {fuelTypes.map((fuel) => (
@@ -156,8 +165,8 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <input
             type="number"
             step="0.001"
-            value={mkiPerUnit ?? ''}
-            onChange={(e) => setMkiPerUnit(e.target.value ? Number(e.target.value) : undefined)}
+            value={form.mkiPerUnit ?? ''}
+            onChange={(e) => handleChange('mkiPerUnit', e.target.value ? Number(e.target.value) : undefined)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="€"
           />
@@ -167,37 +176,18 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
           <input
             type="number"
             step="0.001"
-            value={gwpPerUnit ?? ''}
-            onChange={(e) => setGwpPerUnit(e.target.value ? Number(e.target.value) : undefined)}
+            value={form.gwpPerUnit ?? ''}
+            onChange={(e) => handleChange('gwpPerUnit', e.target.value ? Number(e.target.value) : undefined)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
             placeholder="kg CO₂"
           />
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {phases.map((phase, idx) => (
-          <label key={phase.phase} className="text-sm font-medium text-slate-700">
-            {phase.phase} (MKI)
-            <input
-              type="number"
-              step="0.001"
-              value={phase.mki ?? ''}
-              onChange={(e) =>
-                setPhases((prev) => {
-                  const next = [...prev];
-                  next[idx] = { ...next[idx], mki: e.target.value ? Number(e.target.value) : undefined };
-                  return next;
-                })
-              }
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
-            />
-          </label>
-        ))}
-      </div>
+      <PhaseInputs phases={form.phases} onChange={phaseChange} />
 
       <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-slate-800">Eigen kolommen</p>
           <div className="flex gap-2">
             <input
@@ -219,18 +209,25 @@ export function MaterialForm({ onSubmit, customColumns, onAddColumn, parsed }: P
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {customColumns.map((column) => (
-            <label key={column} className="text-sm font-medium text-slate-700">
-              {column}
-              <input
-                value={customValues[column] ?? ''}
-                onChange={(e) => setCustomValues((prev) => ({ ...prev, [column]: e.target.value }))}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
-              />
-            </label>
-          ))}
-        </div>
+        {hasCustomColumns && (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {customColumns.map((column) => (
+              <label key={column} className="text-sm font-medium text-slate-700">
+                {column}
+                <input
+                  value={form.customFields[column] ?? ''}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      customFields: { ...prev.customFields, [column]: e.target.value },
+                    }))
+                  }
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
+                />
+              </label>
+            ))}
+          </div>
+        )}
       </div>
     </form>
   );
