@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  org_admin
+  user
+  viewer
+}
+
+enum PlanTier {
+  trial
+  team
+  enterprise
+}
+
+model Organization {
+  id           String   @id @default(cuid())
+  name         String
+  plan         PlanTier @default(trial)
+  trialEndsAt  DateTime?
+  users        User[]
+  projects     Project[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String
+  name           String
+  role           UserRole  @default(user)
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  settings       Json?
+  projects       Project[] @relation("ProjectOwner")
+  sessions       Session[]
+  epds           EpdDocument[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String   @unique
+  refresh   String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id             String             @id @default(cuid())
+  name           String
+  description    String?
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  organizationId String
+  owner          User               @relation("ProjectOwner", fields: [ownerId], references: [id])
+  ownerId        String
+  materials      ProjectMaterial[]
+  customFields   ProjectCustomField[]
+  epds           EpdDocument[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+}
+
+model ProjectCustomField {
+  id        String   @id @default(cuid())
+  label     String
+  type      String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime @default(now())
+}
+
+model ProjectMaterial {
+  id            String   @id @default(cuid())
+  project       Project  @relation(fields: [projectId], references: [id])
+  projectId     String
+  name          String
+  supplier      String?
+  quantity      Float
+  unit          String
+  distanceKm    Float
+  transportMode String
+  transportFuel String
+  installation  String
+  phaseA1Mki    Float
+  phaseA1Gwp    Float
+  phaseA2Mki    Float
+  phaseA2Gwp    Float
+  phaseA3Mki    Float
+  phaseA3Gwp    Float
+  phaseDMki     Float
+  phaseDGwp     Float
+  customValues  ProjectMaterialCustomValue[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ProjectMaterialCustomValue {
+  id          String            @id @default(cuid())
+  material    ProjectMaterial   @relation(fields: [materialId], references: [id])
+  materialId  String
+  customField ProjectCustomField @relation(fields: [customFieldId], references: [id])
+  customFieldId String
+  value       String
+  createdAt   DateTime @default(now())
+}
+
+model EpdDocument {
+  id          String   @id @default(cuid())
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  uploader    User     @relation(fields: [uploaderId], references: [id])
+  uploaderId  String
+  filePath    String
+  parsedJson  Json
+  createdAt   DateTime @default(now())
+}
