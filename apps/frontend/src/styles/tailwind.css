@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-green: #2f6f65;
+  --brand-blue: #2b536d;
+  --ink: #1f2937;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, #e5efed 0, transparent 35%),
+    radial-gradient(circle at 80% 0, #eaf3f7 0, transparent 30%),
+    linear-gradient(120deg, #ffffff, #f8fbfd, #e8f3f0, #eaf3f7);
+  background-size: 160% 160%;
+  animation: bgMove 36s ease infinite;
+  color: var(--ink);
+}
+
+@keyframes bgMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.card {
+  @apply rounded-2xl bg-white shadow-lg border border-gray-100;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.grid-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
