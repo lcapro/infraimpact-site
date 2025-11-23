@@ -1,20 +1,22 @@
 import { useState } from 'react';
-import { Project } from '../types';
+import { ProjectSummary } from '../types';
 
 interface ProjectListProps {
-  projects: Project[];
+  projects: ProjectSummary[];
   activeId?: string;
-  onAdd: (project: Project) => void;
+  loading?: boolean;
+  onAdd: (project: { name: string; description?: string }) => void;
   onDelete: (id: string) => void;
+  onSelect: (id: string) => void;
 }
 
-const ProjectList = ({ projects, activeId, onAdd, onDelete }: ProjectListProps) => {
+const ProjectList = ({ projects, activeId, onAdd, onDelete, onSelect, loading }: ProjectListProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
   const addProject = () => {
     if (!name) return;
-    onAdd({ id: crypto.randomUUID(), name, description, customColumns: [], materials: [] });
+    onAdd({ name, description });
     setName('');
     setDescription('');
   };
@@ -52,28 +54,35 @@ const ProjectList = ({ projects, activeId, onAdd, onDelete }: ProjectListProps) 
         </button>
       </div>
       <div className="grid gap-3" aria-label="project-list">
-        {projects.map((project) => (
-          <div key={project.id} className="border rounded-xl p-3 flex items-start gap-3 justify-between">
-            <div>
-              <div className="font-semibold">{project.name}</div>
-              <div className="text-sm text-gray-600">{project.description || 'Geen beschrijving'}</div>
+        {loading && <div className="text-sm text-gray-600">Projecten laden...</div>}
+        {!loading &&
+          projects.map((project) => (
+            <div key={project.id} className="border rounded-xl p-3 flex items-start gap-3 justify-between">
+              <div>
+                <div className="font-semibold">{project.name}</div>
+                <div className="text-sm text-gray-600">{project.description || 'Geen beschrijving'}</div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onSelect(project.id)}
+                  className={`px-3 py-1 rounded-xl text-sm ${
+                    project.id === activeId ? 'bg-green-100 text-green-800' : 'bg-blue-700 text-white hover:bg-blue-600'
+                  }`}
+                >
+                  {project.id === activeId ? 'Actief' : 'Openen'}
+                </button>
+                <button
+                  onClick={() => onDelete(project.id)}
+                  className="px-3 py-1 rounded-xl text-sm bg-red-50 text-red-700 hover:bg-red-100"
+                >
+                  Verwijderen
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <span
-                className={`px-3 py-1 rounded-xl text-sm ${project.id === activeId ? 'bg-green-100 text-green-800' : 'bg-gray-50 text-gray-700'}`}
-              >
-                {project.id === activeId ? 'Actief' : 'Selecteer via router'}
-              </span>
-              <button
-                onClick={() => onDelete(project.id)}
-                className="px-3 py-1 rounded-xl text-sm bg-red-50 text-red-700 hover:bg-red-100"
-              >
-                Verwijderen
-              </button>
-            </div>
-          </div>
-        ))}
-        {projects.length === 0 && <div className="text-sm text-gray-600">Nog geen projecten. Voeg er hierboven een toe.</div>}
+          ))}
+        {!loading && projects.length === 0 && (
+          <div className="text-sm text-gray-600">Nog geen projecten. Voeg er hierboven een toe.</div>
+        )}
       </div>
     </div>
   );

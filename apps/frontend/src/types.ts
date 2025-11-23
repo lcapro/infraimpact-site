@@ -5,7 +5,9 @@ export interface PhaseValues {
   gwp: number;
 }
 
-export interface CustomColumn {
+export type MaterialPhases = Record<PhaseKey, PhaseValues>;
+
+export interface CustomField {
   id: string;
   label: string;
   type: 'text' | 'number';
@@ -13,22 +15,40 @@ export interface CustomColumn {
 
 export interface Material {
   id: string;
-  material: string;
+  name: string;
   supplier?: string;
   quantity: number;
   unit: string;
-  distance: number;
+  distanceKm: number;
   transportMode: string;
   transportFuel: string;
-  installationFuel: string;
-  phases: Record<PhaseKey, PhaseValues>;
-  custom: Record<string, string | number>;
+  installation: string;
+  phases: MaterialPhases;
+  customValues?: Record<string, string>;
 }
 
-export interface Project {
+export interface ProjectSummary {
   id: string;
   name: string;
-  description?: string;
-  customColumns: CustomColumn[];
+  description?: string | null;
+}
+
+export interface Project extends ProjectSummary {
+  customFields: CustomField[];
   materials: Material[];
+}
+
+export interface UserSettings {
+  preferredUnit?: string;
+  roleDescription?: string;
+  [key: string]: unknown;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  organizationId: string;
+  settings?: UserSettings;
 }

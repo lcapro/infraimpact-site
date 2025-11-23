@@ -1,21 +1,27 @@
 import { useState } from 'react';
+import { uploadEpd } from '../api/epds';
+import { MaterialPhases } from '../types';
 
 interface EpdUploadProps {
-  onParsed: (filled: number) => void;
+  projectId: string;
+  onParsed: (filled: number, phases: MaterialPhases) => void;
 }
 
-const EpdUpload = ({ onParsed }: EpdUploadProps) => {
+const EpdUpload = ({ projectId, onParsed }: EpdUploadProps) => {
   const [status, setStatus] = useState<string>('');
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     setStatus('Lezen...');
-    // Placeholder for backend PDF parsing call
-    setTimeout(() => {
-      setStatus('EPD gelezen (demo). Handmatige velden worden ingevuld wanneer de backend live is.');
-      onParsed(4);
-    }, 600);
+    try {
+      const result = await uploadEpd(projectId, file);
+      setStatus('EPD gelezen. Waarden zijn ingevuld waar beschikbaar.');
+      onParsed(result.indicatorsFound, result.phases);
+    } catch (err) {
+      console.error(err);
+      setStatus('Kon EPD niet lezen. Probeer opnieuw.');
+    }
   };
 
   return (

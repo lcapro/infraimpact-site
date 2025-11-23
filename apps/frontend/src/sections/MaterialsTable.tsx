@@ -26,7 +26,7 @@ const MaterialsTable = ({ project, onDelete }: MaterialsTableProps) => {
             <th className="px-3 py-2">A3 MKI / GWP</th>
             <th className="px-3 py-2">D MKI / GWP</th>
             <th className="px-3 py-2">Totaal MKI</th>
-            {project.customColumns.map((c) => (
+            {project.customFields.map((c) => (
               <th key={c.id} className="px-3 py-2">
                 {c.label}
               </th>
@@ -37,19 +37,19 @@ const MaterialsTable = ({ project, onDelete }: MaterialsTableProps) => {
         <tbody className="divide-y divide-gray-100">
           {project.materials.map((entry) => (
             <tr key={entry.id}>
-              <td className="px-3 py-2 align-top">{entry.material || '–'}</td>
+              <td className="px-3 py-2 align-top">{entry.name || '–'}</td>
               <td className="px-3 py-2 align-top">{entry.supplier || '–'}</td>
               <td className="px-3 py-2 align-top">{`${entry.quantity || 0} ${entry.unit || ''}`}</td>
-              <td className="px-3 py-2 align-top">{`${entry.distance || 0} km • ${entry.transportMode}`}</td>
-              <td className="px-3 py-2 align-top">{entry.installationFuel || 'Diesel'}</td>
+              <td className="px-3 py-2 align-top">{`${entry.distanceKm || 0} km • ${entry.transportMode}`}</td>
+              <td className="px-3 py-2 align-top">{entry.installation || 'Diesel'}</td>
               <td className="px-3 py-2 align-top">{`${entry.phases.A1.mki} / ${entry.phases.A1.gwp} kg`}</td>
               <td className="px-3 py-2 align-top">{`${entry.phases.A2.mki} / ${entry.phases.A2.gwp} kg`}</td>
               <td className="px-3 py-2 align-top">{`${entry.phases.A3.mki} / ${entry.phases.A3.gwp} kg`}</td>
               <td className="px-3 py-2 align-top">{`${entry.phases.D.mki} / ${entry.phases.D.gwp} kg`}</td>
               <td className="px-3 py-2 align-top">{calcTotalMki(entry.quantity, entry.phases).toFixed(4)}</td>
-              {project.customColumns.map((c) => (
+              {project.customFields.map((c) => (
                 <td key={c.id} className="px-3 py-2 align-top">
-                  {entry.custom?.[c.id] ?? ''}
+                  {entry.customValues?.[c.id] ?? ''}
                 </td>
               ))}
               <td className="px-3 py-2">
@@ -61,7 +61,7 @@ const MaterialsTable = ({ project, onDelete }: MaterialsTableProps) => {
           ))}
           {project.materials.length === 0 && (
             <tr>
-              <td colSpan={11 + project.customColumns.length} className="px-3 py-6 text-center text-gray-600">
+              <td colSpan={11 + project.customFields.length} className="px-3 py-6 text-center text-gray-600">
                 Nog geen materialen toegevoegd.
               </td>
             </tr>

@@ -3,6 +3,7 @@ import AuthPage from '../pages/AuthPage';
 import WorkspacePage from '../pages/WorkspacePage';
 import SettingsPage from '../pages/SettingsPage';
 import Navbar from '../components/Navbar';
+import RequireAuth from '../components/RequireAuth';
 
 const App = () => {
   return (
@@ -12,9 +13,30 @@ const App = () => {
         <Route path="/" element={<AuthPage mode="login" />} />
         <Route path="/login" element={<AuthPage mode="login" />} />
         <Route path="/register" element={<AuthPage mode="register" />} />
-        <Route path="/app" element={<WorkspacePage />} />
-        <Route path="/app/projects/:id" element={<WorkspacePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route
+          path="/app"
+          element={(
+            <RequireAuth>
+              <WorkspacePage />
+            </RequireAuth>
+          )}
+        />
+        <Route
+          path="/app/projects/:id"
+          element={(
+            <RequireAuth>
+              <WorkspacePage />
+            </RequireAuth>
+          )}
+        />
+        <Route
+          path="/settings"
+          element={(
+            <RequireAuth>
+              <SettingsPage />
+            </RequireAuth>
+          )}
+        />
       </Routes>
     </div>
   );

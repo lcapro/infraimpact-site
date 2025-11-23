@@ -8,8 +8,8 @@ export const router = Router();
 router.use(authGuard);
 
 router.get('/projects/:id/export.xlsx', async (req: AuthRequest, res) => {
-  const project = await prisma.project.findUnique({
-    where: { id: req.params.id },
+  const project = await prisma.project.findFirst({
+    where: { id: req.params.id, organizationId: req.user?.organizationId },
     include: { materials: true },
   });
   if (!project) return res.status(404).json({ error: 'Project not found' });
@@ -31,7 +31,10 @@ router.get('/projects/:id/export.xlsx', async (req: AuthRequest, res) => {
 });
 
 router.get('/projects/:id/report.pdf', async (req: AuthRequest, res) => {
-  const project = await prisma.project.findUnique({ where: { id: req.params.id }, include: { materials: true } });
+  const project = await prisma.project.findFirst({
+    where: { id: req.params.id, organizationId: req.user?.organizationId },
+    include: { materials: true },
+  });
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
   const browser = await puppeteer.launch({ headless: 'new' });

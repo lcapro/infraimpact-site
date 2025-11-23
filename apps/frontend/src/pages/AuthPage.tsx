@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthHero from '../sections/AuthHero';
 import Mailbox from '../sections/Mailbox';
+import { useAuth } from '../context/AuthContext';
 
 interface AuthPageProps {
   mode: 'login' | 'register';
@@ -9,10 +10,30 @@ interface AuthPageProps {
 
 const AuthPage = ({ mode }: AuthPageProps) => {
   const [message, setMessage] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessage('Demo: wire dit formulier aan de backend auth endpoints.');
+    setMessage('');
+    setError('');
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get('email'));
+    const password = String(formData.get('password'));
+    const name = String(formData.get('name') || '');
+    try {
+      if (mode === 'register') {
+        await register(name, email, password);
+        setMessage('Account aangemaakt. Je bent ingelogd.');
+      } else {
+        await login(email, password);
+        setMessage('Ingelogd.');
+      }
+      navigate('/app');
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Aanmelden mislukt. Controleer je gegevens.');
+    }
   };
 
   return (
@@ -26,7 +47,7 @@ const AuthPage = ({ mode }: AuthPageProps) => {
               Beveiligde toegang met e-mailverificatie en herstel voor wachtwoordbeheer.
             </p>
           </div>
-          <div className="text-sm font-semibold text-brand-green">{message}</div>
+          <div className={`text-sm font-semibold ${error ? 'text-red-700' : 'text-brand-green'}`}>{message || error}</div>
         </div>
 
         <form className="grid md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
@@ -42,6 +63,7 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                 <label className="space-y-1">
                   <span className="grid-label">Naam</span>
                   <input
+                    name="name"
                     type="text"
                     className="w-full border rounded-xl px-3 py-2"
                     placeholder="Voor- en achternaam"
@@ -52,6 +74,7 @@ const AuthPage = ({ mode }: AuthPageProps) => {
               <label className="space-y-1">
                 <span className="grid-label">E-mail</span>
                 <input
+                  name="email"
                   type="email"
                   className="w-full border rounded-xl px-3 py-2"
                   placeholder="naam@bedrijf.nl"
@@ -61,6 +84,7 @@ const AuthPage = ({ mode }: AuthPageProps) => {
               <label className="space-y-1">
                 <span className="grid-label">Wachtwoord</span>
                 <input
+                  name="password"
                   type="password"
                   className="w-full border rounded-xl px-3 py-2"
                   placeholder="Minimaal 8 tekens"

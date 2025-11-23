@@ -2,31 +2,21 @@ import { useState } from 'react';
 import EpdUpload from './EpdUpload';
 import MaterialForm from './MaterialForm';
 import MaterialsTable from './MaterialsTable';
-import { Material, Project } from '../types';
+import { MaterialPhases, Project } from '../types';
+import { CreateMaterialInput } from '../api/projects';
+import { downloadFile } from '../api/download';
 
 interface ProjectDetailProps {
   project: Project;
-  onChange: (project: Project) => void;
+  onAddMaterial: (material: CreateMaterialInput) => void;
+  onDeleteMaterial: (id: string) => void;
+  onAddColumn: (label: string, type: 'text' | 'number') => void;
+  message?: string;
 }
 
-const ProjectDetail = ({ project, onChange }: ProjectDetailProps) => {
-  const [message, setMessage] = useState('');
-
-  const handleAddMaterial = (material: Material) => {
-    onChange({ ...project, materials: [...project.materials, material] });
-    setMessage('Materiaal opgeslagen in het actieve project.');
-  };
-
-  const handleDeleteMaterial = (id: string) => {
-    onChange({ ...project, materials: project.materials.filter((m) => m.id !== id) });
-  };
-
-  const handleAddColumn = (label: string, type: 'text' | 'number') => {
-    onChange({
-      ...project,
-      customColumns: [...project.customColumns, { id: crypto.randomUUID(), label, type }],
-    });
-  };
+const ProjectDetail = ({ project, onAddMaterial, onDeleteMaterial, onAddColumn, message }: ProjectDetailProps) => {
+  const [prefillPhases, setPrefillPhases] = useState<MaterialPhases | undefined>();
+  const [epdStatus, setEpdStatus] = useState('');
 
   return (
     <div className="space-y-6">
@@ -40,17 +30,39 @@ const ProjectDetail = ({ project, onChange }: ProjectDetailProps) => {
         <div className="text-xs text-gray-500">Project-id: {project.id}</div>
       </div>
 
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={() => downloadFile(`/exports/projects/${project.id}/export.xlsx`, `project-${project.id}.xlsx`)}
+          className="px-3 py-2 rounded-xl bg-blue-700 text-white text-sm hover:bg-blue-600"
+        >
+          Exporteer naar Excel
+        </button>
+        <button
+          onClick={() => downloadFile(`/exports/projects/${project.id}/report.pdf`, `project-${project.id}.pdf`)}
+          className="px-3 py-2 rounded-xl bg-gray-800 text-white text-sm hover:bg-gray-700"
+        >
+          Download PDF-rapport
+        </button>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6">
-        <EpdUpload onParsed={(values) => setMessage(`EPD gelezen en ${values} velden gevuld.`)} />
+        <EpdUpload
+          projectId={project.id}
+          onParsed={(count, phases) => {
+            setPrefillPhases(phases);
+            setEpdStatus(`EPD gelezen en ${count} velden gevuld.`);
+          }}
+        />
         <MaterialForm
-          project={project}
-          onAddMaterial={handleAddMaterial}
-          onAddColumn={handleAddColumn}
-          message={message}
+          customFields={project.customFields}
+          onAddMaterial={onAddMaterial}
+          onAddColumn={onAddColumn}
+          message={message || epdStatus}
+          prefillPhases={prefillPhases}
         />
       </div>
 
-      <MaterialsTable project={project} onDelete={handleDeleteMaterial} />
+      <MaterialsTable project={project} onDelete={onDeleteMaterial} />
     </div>
   );
 };

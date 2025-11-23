@@ -1,62 +1,75 @@
-import { useState } from 'react';
-import { Material, PhaseKey, Project } from '../types';
+import { useEffect, useMemo, useState } from 'react';
+import { CreateMaterialInput } from '../api/projects';
+import { CustomField, MaterialPhases, PhaseKey } from '../types';
 
 interface MaterialFormProps {
-  project: Project;
-  onAddMaterial: (material: Material) => void;
+  customFields: CustomField[];
+  onAddMaterial: (material: CreateMaterialInput) => void;
   onAddColumn: (label: string, type: 'text' | 'number') => void;
   message?: string;
+  prefillPhases?: MaterialPhases;
 }
 
-const MaterialForm = ({ project, onAddMaterial, onAddColumn, message }: MaterialFormProps) => {
+const emptyPhases: MaterialPhases = {
+  A1: { mki: 0, gwp: 0 },
+  A2: { mki: 0, gwp: 0 },
+  A3: { mki: 0, gwp: 0 },
+  D: { mki: 0, gwp: 0 },
+};
+
+const MaterialForm = ({ customFields, onAddMaterial, onAddColumn, message, prefillPhases }: MaterialFormProps) => {
   const [form, setForm] = useState({
-    material: '',
+    name: '',
     supplier: '',
     quantity: 0,
     unit: '',
-    distance: 0,
+    distanceKm: 0,
     transportMode: 'Vrachtwagen - Diesel Euro 5',
     transportFuel: 'Diesel Euro 5',
-    installationFuel: 'Diesel',
+    installation: 'Diesel',
   });
-  const [phases, setPhases] = useState<Record<PhaseKey, { mki: number; gwp: number }>>({
-    A1: { mki: 0, gwp: 0 },
-    A2: { mki: 0, gwp: 0 },
-    A3: { mki: 0, gwp: 0 },
-    D: { mki: 0, gwp: 0 },
-  });
+  const [phases, setPhases] = useState<MaterialPhases>(emptyPhases);
   const [customLabel, setCustomLabel] = useState('');
   const [customType, setCustomType] = useState<'text' | 'number'>('text');
+  const [customValues, setCustomValues] = useState<Record<string, string | number>>({});
+
+  useEffect(() => {
+    if (prefillPhases) {
+      setPhases((prev) => ({
+        A1: prefillPhases.A1 || prev.A1,
+        A2: prefillPhases.A2 || prev.A2,
+        A3: prefillPhases.A3 || prev.A3,
+        D: prefillPhases.D || prev.D,
+      }));
+    }
+  }, [prefillPhases]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAddMaterial({
-      id: crypto.randomUUID(),
       ...form,
       phases,
-      custom: Object.fromEntries(project.customColumns.map((c) => [c.id, ''])),
+      customValues,
     });
     setForm({
-      material: '',
+      name: '',
       supplier: '',
       quantity: 0,
       unit: '',
-      distance: 0,
+      distanceKm: 0,
       transportMode: 'Vrachtwagen - Diesel Euro 5',
       transportFuel: 'Diesel Euro 5',
-      installationFuel: 'Diesel',
+      installation: 'Diesel',
     });
-    setPhases({
-      A1: { mki: 0, gwp: 0 },
-      A2: { mki: 0, gwp: 0 },
-      A3: { mki: 0, gwp: 0 },
-      D: { mki: 0, gwp: 0 },
-    });
+    setPhases(emptyPhases);
+    setCustomValues({});
   };
 
   const updatePhase = (phase: PhaseKey, field: 'mki' | 'gwp', value: number) => {
     setPhases((prev) => ({ ...prev, [phase]: { ...prev[phase], [field]: value } }));
   };
+
+  const customFieldsSorted = useMemo(() => customFields, [customFields]);
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
@@ -65,8 +78,8 @@ const MaterialForm = ({ project, onAddMaterial, onAddColumn, message }: Material
         <label className="space-y-1">
           <span className="grid-label">Materiaal</span>
           <input
-            value={form.material}
-            onChange={(e) => setForm({ ...form, material: e.target.value })}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
             type="text"
             className="w-full border rounded-xl px-3 py-2"
             placeholder="Asfalt AC 16"
@@ -108,8 +121,8 @@ const MaterialForm = ({ project, onAddMaterial, onAddColumn, message }: Material
         <label className="space-y-1">
           <span className="grid-label">Transportafstand (km)</span>
           <input
-            value={form.distance}
-            onChange={(e) => setForm({ ...form, distance: Number(e.target.value) })}
+            value={form.distanceKm}
+            onChange={(e) => setForm({ ...form, distanceKm: Number(e.target.value) })}
             type="number"
             min="0"
             step="0.1"
@@ -143,8 +156,8 @@ const MaterialForm = ({ project, onAddMaterial, onAddColumn, message }: Material
         <label className="space-y-1">
           <span className="grid-label">Brandstof aanleg</span>
           <input
-            value={form.installationFuel}
-            onChange={(e) => setForm({ ...form, installationFuel: e.target.value })}
+            value={form.installation}
+            onChange={(e) => setForm({ ...form, installation: e.target.value })}
             type="text"
             className="w-full border rounded-xl px-3 py-2"
             placeholder="Diesel"
@@ -211,10 +224,17 @@ const MaterialForm = ({ project, onAddMaterial, onAddColumn, message }: Material
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {project.customColumns.map((c) => (
+            {customFieldsSorted.map((c) => (
               <label className="space-y-1" key={c.id}>
                 <span className="grid-label">{c.label}</span>
-                <input className="w-full border rounded-xl px-3 py-2" type={c.type === 'number' ? 'number' : 'text'} />
+                <input
+                  className="w-full border rounded-xl px-3 py-2"
+                  type={c.type === 'number' ? 'number' : 'text'}
+                  value={customValues[c.id] ?? ''}
+                  onChange={(e) =>
+                    setCustomValues((prev) => ({ ...prev, [c.id]: c.type === 'number' ? Number(e.target.value) : e.target.value }))
+                  }
+                />
               </label>
             ))}
           </div>
