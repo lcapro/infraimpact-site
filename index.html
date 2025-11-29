@@ -21,8 +21,8 @@
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <!-- Preload hero/profielfoto (sneller first paint) -->
-  <link rel="preload" as="image" href="../assets/logo_full.png" type="image/png" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/jim_profile.webp" type="image/webp">
+  <link rel="preload" as="image" href="/assets/logo_full.png" type="image/png" fetchpriority="high">
+  <link rel="preload" as="image" href="/assets/jim_profile.webp" type="image/webp">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:title" content="InfraImpact – Duurzaamheid die stand houdt">
@@ -39,7 +39,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="InfraImpact – MKI & LCA-berekeningen voor de GWW">
   <meta name="twitter:description" content="MKI- en LCA-berekeningen, aanbestedingsadvies en praktische sturing voor de GWW-sector.">
-  <meta name="twitter:image" content="..//assets/og-infraimpact.jpg">
+  <meta name="twitter:image" content="/assets/og-infraimpact.jpg">
 
   <!-- Libraries -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
@@ -86,7 +86,7 @@
   }
   </script>
 
-  <!-- (Optioneel) Organization schema op de home -->
+  <!-- Organization schema -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -101,6 +101,7 @@
   }
   </script>
 
+  <!-- FAQ schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -190,7 +191,7 @@
         <a href="/" class="hover:text-green-700">Home</a>
         <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="hover:text-green-700">Projecten</a> </div>
+        <a href="/#faq" class="hover:text-green-700">FAQ</a>
         <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="../over/" class="hover:text-green-700">Over ons</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
@@ -206,7 +207,7 @@
         <a href="/" class="block py-2">Home</a>
         <a href="/#wat" class="block py-2">Wat we doen</a>
         <a href="/#inzicht" class="block py-2">Inzichten</a>
-        <div hidden> <a href="#inzicht" class="block py-2">Projecten</a> </div>
+        <a href="/#faq" class="block py-2">FAQ</a>
         <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         <a href="../over/" class="block py-2">Over</a>
         <a href="#contact" class="block py-2">Contact</a>
@@ -221,7 +222,7 @@
       <div data-animate>
         <p class="text-green-500 font-semibold uppercase tracking-wide">Making sustainability count</p>
         <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.28] md:leading-[1.26] mt-2 pb-1 md:pb-2 text-gradient overflow-visible">
-          MKI- en LCA-berekeningen voor de GWW: duurzaamheid die stand houdt in cijfers en praktijk
+          MKI- en LCA-berekeningen voor de GWW – duurzaamheid die stand houdt
         </h1>
         <p class="text-lg mt-5 text-gray-700 leading-relaxed pb-1 overflow-visible">
           InfraImpact helpt aannemers, opdrachtgevers en leveranciers om duurzaamheid
@@ -245,57 +246,99 @@
   </header>
 
   <main>
-    <section id="mki-lca" class="py-20 md:py-24">
+    <!-- VOOR WIE WE WERKEN -->
+    <section class="w-full border-y bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-8 grid md:grid-cols-3 gap-6 text-center">
+        <div data-animate>
+          <p class="text-xs uppercase tracking-wide text-green-600 font-semibold mb-1">Voor</p>
+          <h2 class="text-lg font-semibold">Aannemers</h2>
+          <p class="text-sm text-gray-600 mt-1">MKI-berekeningen, EMVI/MKI-strategie en ontwerpoptimalisaties die uitvoerbaar zijn op de bouwplaats.</p>
+        </div>
+        <div data-animate>
+          <p class="text-xs uppercase tracking-wide text-green-600 font-semibold mb-1">Voor</p>
+          <h2 class="text-lg font-semibold">Opdrachtgevers</h2>
+          <p class="text-sm text-gray-600 mt-1">Realistische MKI-eisen, duurzaam aanbesteden en toetsbare criteria voor GWW- en bouwprojecten.</p>
+        </div>
+        <div data-animate>
+          <p class="text-xs uppercase tracking-wide text-green-600 font-semibold mb-1">Voor</p>
+          <h2 class="text-lg font-semibold">Leveranciers</h2>
+          <p class="text-sm text-gray-600 mt-1">LCA’s en EPD-onderbouwing zodat producten goed meekomen in MKI-gestuurde aanbestedingen.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MKI & LCA VERDIEPING -->
+    <section id="mki-lca" class="py-20 md:py-24 bg-gray-50">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-start">
         <div data-animate class="space-y-5">
-          <h2 class="text-3xl md:text-4xl font-bold text-gradient leading-tight">MKI- en LCA-berekeningen voor de GWW en bouw</h2>
-          <p class="text-gray-700 leading-relaxed">InfraImpact is specialist in <strong>MKI- en LCA-berekeningen</strong> voor infrastructuur en utiliteitsbouw. We leveren complete onderbouwingen volgens NMD-richtlijnen, vertalen resultaten naar duidelijke stuurinformatie en zorgen dat ontwerpkeuzes aantoonbaar bijdragen aan minder milieu-impact.</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-gradient leading-tight">MKI- en LCA-berekeningen die je kunt uitleggen</h2>
+          <p class="text-gray-700 leading-relaxed">
+            InfraImpact is specialist in <strong>MKI- en LCA-berekeningen</strong> voor infrastructuur en utiliteitsbouw.
+            We leveren complete onderbouwingen volgens NMD-richtlijnen en vertalen de uitkomsten naar
+            keuzes waar ontwerp- en tenderteams direct mee verder kunnen.
+          </p>
+          <p class="text-gray-700 leading-relaxed">
+            Of het nu gaat om een inschrijving, een bouwteamfase of beleid: we zorgen dat de
+            <strong>milieu-impact in cijfers én verhaal</strong> klopt.
+          </p>
           <ul class="space-y-2 text-gray-700 list-disc list-inside">
-            <li>Projectspecifieke MKI-rapportages voor RAW, UAV-gc en bouwteamtrajecten</li>
+            <li>MKI-rapportages voor RAW, UAV-gc en bouwteamtrajecten</li>
             <li>LCA’s voor materialen, asfaltmengsels en constructies met actuele EPD-data</li>
-            <li>EMVI/MKI-advies waarmee duurzame keuzes scoren én binnen budget passen</li>
+            <li>Toetsing en review van bestaande MKI- en LCA-berekeningen</li>
           </ul>
         </div>
         <div data-animate class="p-6 bg-white rounded-2xl shadow-sm ring-1 ring-green-100 space-y-4">
           <h3 class="text-2xl font-semibold text-gradient leading-tight">Duurzaam aanbesteden met MKI</h3>
-          <p class="text-gray-700 leading-relaxed">We koppelen <strong>MKI-sturing</strong> aan inkoop- en aanbestedingscriteria zodat je met een sterker plan de EMVI-tafel op gaat. Denk aan plafonds toetsen, optimalisatiescenario’s doorrekenen en heldere argumentatie voor beoordelaars.</p>
-          <h3 class="text-xl font-semibold">Wat je krijgt</h3>
+          <p class="text-gray-700 leading-relaxed">
+            We koppelen <strong>MKI-sturing</strong> aan inkoop- en aanbestedingscriteria zodat je met een sterker plan
+            de EMVI-tafel op gaat. Denk aan plafonds toetsen, optimalisatiescenario’s doorrekenen
+            en heldere argumentatie voor beoordelaars.
+          </p>
+          <h3 class="text-xl font-semibold">Wat je van ons mag verwachten</h3>
           <ul class="space-y-2 text-gray-700 list-disc list-inside">
             <li>Snelle toetsing van MKI-plafonds en eisen uit bestekken</li>
             <li>Scenariovergelijkingen voor minder CO₂ en lagere MKI</li>
-            <li>Praktische adviezen die uitvoerbaar zijn op de bouwplaats</li>
+            <li>Praktische adviezen die uitvoerbaar zijn in uitvoering en beheer</li>
           </ul>
         </div>
       </div>
     </section>
 
     <!-- WAT WE DOEN -->
-    <section id="wat" class="w-full py-20 md:py-24 bg-gray-50">
+    <section id="wat" class="w-full py-20 md:py-24 bg-white">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
         <div class="max-w-3xl mx-auto text-center mb-12" data-animate>
+          <p class="text-sm font-semibold text-green-600 uppercase tracking-wide mb-2">Diensten</p>
           <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4">Wat we doen</h2>
           <p class="text-gray-700">
             Wij maken duurzaamheid praktisch voor aannemers, opdrachtgevers en leveranciers.
-            Van het opstellen van MKI-berekeningen tot strategisch advies in aanbestedingen en beleid.
+            Van MKI- en LCA-berekeningen tot strategisch advies in aanbestedingen en beleid.
           </p>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6" data-animate>
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
-            <h3 class="text-xl font-semibold mb-2">LCA & MKI-berekeningen</h3>
-            <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen.
-               Van volledige <a href="../over/#voor-wie" class="underline hover:text-green-700">MKI-berekeningen</a> tot LCA’s voor aanbestedingen en ontwerpoptimalisaties.</p>
+          <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
+            <h3 class="text-xl font-semibold mb-2">LCA &amp; MKI-berekeningen</h3>
+            <p class="text-gray-700">
+              Betrouwbare milieuprestaties van producten, materialen en projecten, conform actuele richtlijnen.
+              Van volledige <a href="../over/#voor-wie" class="underline hover:text-green-700">MKI-berekeningen</a> tot LCA’s voor aanbestedingen en ontwerpoptimalisaties.
+            </p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
-            <h3 class="text-xl font-semibold mb-2">Aanbesteding & projectadvies</h3>
-            <p>Voor aannemers leggen we kosten en MKI naast elkaar om het optimale resultaat te behalen in aanbestedingen.
-               Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
+          <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
+            <h3 class="text-xl font-semibold mb-2">Aanbesteding &amp; projectadvies</h3>
+            <p class="text-gray-700">
+              We leggen kosten en MKI naast elkaar om het optimale resultaat te behalen in aanbestedingen.
+              Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.
+            </p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
-            <h3 class="text-xl font-semibold mb-2">Kennis & opleidingen</h3>
-            <p>Praktijkgerichte cursussen en incompany trainingen. Van basis MKI tot verdieping in regelgeving en LCA-methodiek.</p>
+          <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1">
+            <h3 class="text-xl font-semibold mb-2">Kennis &amp; opleidingen</h3>
+            <p class="text-gray-700">
+              Praktijkgerichte cursussen en incompany trainingen. Van basis MKI tot verdieping in regelgeving
+              en LCA-methodiek voor project- en tenderteams.
+            </p>
           </div>
 
           <!-- CTA-kaart naar de checker -->
@@ -324,54 +367,80 @@
           </p>
         </div>
         <div data-animate class="overflow-visible">
+          <p class="text-sm font-semibold text-green-700 uppercase tracking-wide mb-2">Inzicht</p>
           <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4 leading-[1.28] md:leading-[1.24] pb-[2px] overflow-visible">Van data naar dialoog</h2>
           <p class="text-gray-700 mb-6 leading-relaxed pb-[1px] overflow-visible">
             Compact overzicht van de MKI-verdeling: in één oogopslag zie je waar het grootste aandeel zit
-            en dus waar sturing het meeste oplevert.
+            en dus waar sturing het meeste oplevert. Dat maakt het gesprek over ontwerpvarianten en
+            uitvoeringskeuzes concreet.
           </p>
           <ul class="space-y-3 text-gray-700">
             <li>• Inzicht in MKI en CO₂ per projectfase</li>
-            <li>• Scenario’s en optimalisaties</li>
-            <li>• Onderbouwingen voor aanbestedingen en audits</li>
-            <li>• Strategisch advies en beleidsondersteuning</li>
+            <li>• Scenario’s en optimalisaties voor ontwerp en uitvoering</li>
+            <li>• Onderbouwingen voor aanbestedingen, audits en beleid</li>
+            <li>• Strategisch advies voor duurzaam aanbesteden in de GWW</li>
           </ul>
         </div>
       </div>
     </section>
 
+    <!-- FAQ -->
     <section id="faq" class="py-20 md:py-24 bg-gray-50">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
         <div class="max-w-3xl mx-auto text-center mb-12" data-animate>
+          <p class="text-sm font-semibold text-green-600 uppercase tracking-wide mb-2">Vragen</p>
           <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4">Veelgestelde vragen over MKI, LCA en duurzaam aanbesteden</h2>
-          <p class="text-gray-700">Kort en duidelijk antwoord op de vragen die we dagelijks krijgen van aannemers, opdrachtgevers en leveranciers in de GWW.</p>
+          <p class="text-gray-700">
+            Kort en duidelijk antwoord op de vragen die we dagelijks krijgen van aannemers, opdrachtgevers en leveranciers in de GWW.
+          </p>
         </div>
         <div class="grid md:grid-cols-2 gap-6" data-animate>
           <div class="p-6 bg-white rounded-2xl shadow-sm h-full">
             <h3 class="text-xl font-semibold mb-2">Wat is een MKI-berekening en waarom is die belangrijk in de GWW?</h3>
-            <p class="text-gray-700">De Milieukostenindicator (MKI) geeft de milieubelasting van een ontwerp of product weer in euro’s. In GWW-aanbestedingen is het de standaard om duurzaamheid objectief te beoordelen, en wij leveren MKI-berekeningen die voldoen aan de NMD-richtlijnen en direct inzetbaar zijn in inschrijvingen.</p>
+            <p class="text-gray-700">
+              De Milieukostenindicator (MKI) geeft de milieubelasting van een ontwerp of product weer in euro’s.
+              In GWW-aanbestedingen is het de standaard om duurzaamheid objectief te beoordelen, en wij leveren
+              MKI-berekeningen die voldoen aan de NMD-richtlijnen en direct inzetbaar zijn in inschrijvingen.
+            </p>
           </div>
           <div class="p-6 bg-white rounded-2xl shadow-sm h-full">
             <h3 class="text-xl font-semibold mb-2">Wat is het verschil tussen een MKI en een LCA voor bouwprojecten?</h3>
-            <p class="text-gray-700">Een LCA brengt de volledige levenscyclus in kaart, van grondstoffen tot einde levensduur. De MKI is de eindsom van die LCA in één score. Wij leveren beide: gedetailleerde LCA-rapporten én de MKI-waarde waarmee je in de GWW-sector kunt sturen en rapporteren.</p>
+            <p class="text-gray-700">
+              Een LCA brengt de volledige levenscyclus in kaart, van grondstoffen tot einde levensduur.
+              De MKI is de eindsom van die LCA in één score. Wij leveren beide: gedetailleerde LCA-rapporten
+              én de MKI-waarde waarmee je in de GWW-sector kunt sturen en rapporteren.
+            </p>
           </div>
           <div class="p-6 bg-white rounded-2xl shadow-sm h-full">
             <h3 class="text-xl font-semibold mb-2">Hoe helpt InfraImpact bij duurzaam aanbesteden en EMVI/MKI?</h3>
-            <p class="text-gray-700">We vertalen MKI-resultaten naar een winnende EMVI-strategie: het toetsen van plafonds, het combineren van prijs en milieuvoordeel en het onderbouwen van keuzes voor beoordelingscommissies. Zo benut je maximaal de duurzaamheidsruimte binnen het bestek.</p>
+            <p class="text-gray-700">
+              We vertalen MKI-resultaten naar een winnende EMVI-strategie: het toetsen van plafonds,
+              het combineren van prijs en milieuvoordeel en het onderbouwen van keuzes voor beoordelingscommissies.
+              Zo benut je maximaal de duurzaamheidsruimte binnen het bestek.
+            </p>
           </div>
           <div class="p-6 bg-white rounded-2xl shadow-sm h-full">
             <h3 class="text-xl font-semibold mb-2">Kunnen jullie het ontwerp optimaliseren om de MKI te verlagen?</h3>
-            <p class="text-gray-700">Ja. We rekenen scenario’s door met alternatieve materialen, hergebruik en slimme bouwlogistiek. Je krijgt concrete opties met impact op CO₂, MKI en kosten, inclusief onderbouwing voor ontwerpteams en opdrachtgevers.</p>
+            <p class="text-gray-700">
+              Ja. We rekenen scenario’s door met alternatieve materialen, hergebruik en slimme bouwlogistiek.
+              Je krijgt concrete opties met impact op CO₂, MKI en kosten, inclusief onderbouwing voor
+              ontwerpteams en opdrachtgevers.
+            </p>
           </div>
           <div class="p-6 bg-white rounded-2xl shadow-sm h-full md:col-span-2">
             <h3 class="text-xl font-semibold mb-2">Welke data gebruiken jullie voor MKI- en LCA-berekeningen?</h3>
-            <p class="text-gray-700">We werken met geverifieerde EPD’s en de Nationale Milieudatabase (NMD), aangevuld met projectspecifieke meetgegevens waar nodig. Dat maakt de berekeningen auditbaar en direct bruikbaar voor toetsing, audits en aanbestedingen.</p>
+            <p class="text-gray-700">
+              We werken met geverifieerde EPD’s en de Nationale Milieudatabase (NMD), aangevuld met
+              projectspecifieke meetgegevens waar nodig. Dat maakt de berekeningen auditbaar en direct
+              bruikbaar voor toetsing, audits en aanbestedingen.
+            </p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- QUOTE -->
-    <section class="py-16">
+    <section class="py-16 bg-white">
       <div class="max-w-3xl mx-auto text-center px-6 sm:px-8" data-animate>
         <blockquote class="text-xl italic text-gray-700 leading-relaxed">
           <strong>“Wij kennen beide kanten van de tafel.”</strong><br>
@@ -385,7 +454,9 @@
   <footer id="contact" class="bg-white rounded-t-3xl shadow-inner pt-16 pb-10">
     <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center" data-animate>
       <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-6">Samen bouwen aan aantoonbare duurzaamheid</h2>
-      <p class="text-gray-700 mb-8">Benieuwd hoe jouw organisatie voordeel haalt uit MKI & LCA? We denken graag mee en reageren dezelfde werkdag.</p>
+      <p class="text-gray-700 mb-8">
+        Benieuwd hoe jouw organisatie voordeel haalt uit MKI &amp; LCA? We denken graag mee en reageren dezelfde werkdag.
+      </p>
       <div class="space-y-2 text-gray-600">
         <p><strong>InfraImpact B.V.</strong></p>
         <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
