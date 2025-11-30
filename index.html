@@ -71,6 +71,18 @@
     html{scroll-behavior:smooth} [id]{scroll-margin-top:96px}
     a.button, a.px-6, a.px-8{transition:transform .2s ease, background-color .2s ease, box-shadow .2s ease}
     a.button:hover, a.px-6:hover, a.px-8:hover{transform:translateY(-1px)}
+    .glass-card{background:linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,251,247,0.8));border:1px solid rgba(47,111,101,0.08);box-shadow:0 20px 60px rgba(17,24,39,0.08)}
+    .accent-ring{position:relative}
+    .accent-ring::after{content:'';position:absolute;inset:-10px;z-index:-1;border-radius:9999px;background:radial-gradient(circle at 30% 30%,rgba(122,218,211,0.35),transparent 55%)}
+    .flow-grid{position:relative}
+    .flow-grid::before{content:'';position:absolute;top:28px;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(47,111,101,0.15),rgba(47,111,101,0.05));z-index:0;display:none}
+    @media(min-width:768px){.flow-grid::before{display:block}}
+    details[open]{border-color:rgba(47,111,101,0.35);box-shadow:0 10px 30px rgba(17,24,39,0.08)}
+    details[open] summary{color:var(--brand-green)}
+    details summary{cursor:pointer;list-style:none}
+    details summary::-webkit-details-marker{display:none}
+    .faq-chevron::after{content:'›';transform:rotate(90deg);transition:transform .3s ease;color:#4B5563;font-weight:700}
+    details[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
     @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
     h1, h2 { line-height:1.25; overflow:visible }
   </style>
@@ -234,39 +246,83 @@
   </nav>
 
   <!-- HERO -->
-  <header class="relative bg-transparent">
-    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center py-20 md:py-28" style="isolation:isolate">
-      <div data-animate>
-        <p class="text-green-500 font-semibold uppercase tracking-wide">Making sustainability count</p>
-        <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.28] md:leading-[1.26] mt-2 pb-1 md:pb-2 text-gradient overflow-visible">
+  <header class="relative bg-transparent overflow-hidden">
+    <div class="absolute -right-24 -top-24 w-72 h-72 bg-gradient-to-br from-green-100/70 via-white to-blue-100/70 rounded-full blur-3xl" aria-hidden="true"></div>
+    <div class="absolute left-0 bottom-12 w-80 h-80 bg-gradient-to-br from-blue-100/70 via-white to-green-100/70 rounded-full blur-3xl" aria-hidden="true"></div>
+    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 grid md:grid-cols-2 gap-12 items-center py-20 md:py-28" style="isolation:isolate">
+      <div class="space-y-5" data-animate>
+        <p class="text-green-600 font-semibold uppercase tracking-[0.2em]">Making sustainability count</p>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.28] md:leading-[1.22] pb-1 md:pb-2 text-gradient overflow-visible">
           Duurzaamheid die stand houdt, in cijfers en in de praktijk
         </h1>
-        <p class="text-lg mt-5 text-gray-700 leading-relaxed pb-1 overflow-visible">
+        <p class="text-lg md:text-xl mt-2 text-gray-700 leading-relaxed pb-1 overflow-visible">
           InfraImpact helpt aannemers, opdrachtgevers en leveranciers om duurzaamheid
           <strong>tastbaar, toetsbaar en toepasbaar</strong> te maken.
           Met betrouwbare <strong>MKI- en LCA-data</strong>, aanbestedingskennis en ervaring aan beide kanten van de tafel vertalen we ambities naar aantoonbare resultaten.
         </p>
         <div class="mt-8 flex flex-wrap gap-4">
-          <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium cta">
+          <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-medium shadow-lg shadow-green-200 cta">
             Plan een kennismaking
           </a>
         </div>
       </div>
 
-      <div class="hidden md:flex justify-center items-center" data-animate>
-        <img src="assets/logo_full.png" alt="InfraImpact visual"
-             width="640" height="320" loading="lazy" decoding="async"
-             class="max-h-80 w-auto object-contain opacity-0 transition-opacity duration-1000"
-             onload="this.style.opacity='1'" />
+      <div class="relative hidden md:block" aria-hidden="true">
+        <div class="absolute inset-0 bg-gradient-to-br from-green-100/70 via-white to-blue-100/60 rounded-3xl blur-2xl scale-110"></div>
+        <div class="relative flex flex-col gap-5">
+          <div class="glass-card rounded-3xl p-6 shadow-xl" data-animate style="transition-delay:120ms">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-10 w-10 rounded-2xl bg-green-600 text-white items-center justify-center font-semibold">MKI</span>
+                <div>
+                  <p class="text-sm text-gray-500">Projectsuite</p>
+                  <p class="font-semibold text-lg text-gray-800">LCA &amp; GWW-inzichten</p>
+                </div>
+              </div>
+              <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto opacity-90">
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-sm text-gray-700">
+              <div class="p-3 rounded-2xl bg-white/80 border border-green-50 shadow-sm">
+                <p class="text-xs uppercase text-green-700 font-semibold tracking-wide">Data</p>
+                <p class="font-bold text-gray-900 mt-1">MKI</p>
+                <p class="text-xs text-gray-500">Projectniveau</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-white/80 border border-blue-50 shadow-sm">
+                <p class="text-xs uppercase text-blue-700 font-semibold tracking-wide">Praktijk</p>
+                <p class="font-bold text-gray-900 mt-1">LCA</p>
+                <p class="text-xs text-gray-500">Aanbesteding</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-white/80 border border-green-50 shadow-sm">
+                <p class="text-xs uppercase text-green-700 font-semibold tracking-wide">Impact</p>
+                <p class="font-bold text-gray-900 mt-1">GWW</p>
+                <p class="text-xs text-gray-500">Resultaten</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="glass-card rounded-2xl p-4 flex-1 shadow-md" data-animate style="transition-delay:220ms">
+              <p class="text-xs uppercase text-gray-500 tracking-[0.2em]">Snel beeld</p>
+              <p class="text-2xl font-bold text-gray-900 mt-2">55% <span class="text-sm font-semibold text-gray-500">Productie</span></p>
+              <p class="text-sm text-gray-600 mt-1">Fase met grootste reductiekans.</p>
+            </div>
+            <div class="glass-card rounded-2xl p-4 w-40 shadow-md accent-ring" data-animate style="transition-delay:300ms">
+              <p class="text-xs uppercase text-gray-500 tracking-[0.2em]">Focus</p>
+              <p class="text-lg font-semibold text-gray-900 mt-1">MKI • LCA • GWW</p>
+              <p class="text-xs text-green-700 mt-2">Praktisch toepasbaar</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </header>
 
   <main>
     <!-- WAT WE DOEN -->
-    <section id="wat" class="w-full py-20 md:py-24 bg-gray-50">
-      <div class="max-w-screen-xl mx-auto px-6 sm:px-8">
-        <div class="max-w-3xl mx-auto text-center mb-12 space-y-4" data-animate>
+    <section id="wat" class="w-full py-20 md:py-24 bg-gray-50 relative overflow-hidden">
+      <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" aria-hidden="true"></div>
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-12">
+        <div class="max-w-3xl mx-auto text-center space-y-4" data-animate>
+          <p class="text-sm uppercase tracking-[0.25em] text-green-600 font-semibold">Proces</p>
           <h2 class="text-3xl md:text-4xl font-bold text-gradient">Wat we doen</h2>
           <p class="text-gray-700">
             Wij maken duurzaamheid praktisch voor aannemers, opdrachtgevers en leveranciers.
@@ -274,56 +330,61 @@
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6" data-animate>
-          <div class="p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1 space-y-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold" aria-hidden="true">1</div>
+        <div class="grid md:grid-cols-3 gap-6 flow-grid" data-animate>
+          <div class="relative p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-lg transition-transform hover:-translate-y-1 space-y-3 z-10">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-green-200 text-green-800 flex items-center justify-center font-bold shadow-inner" aria-hidden="true">1</div>
               <div>
-                <h3 class="text-xl font-semibold">LCA & MKI-berekeningen</h3>
+                <p class="text-xs uppercase text-gray-500 tracking-[0.2em]">Stap</p>
+                <h3 class="text-xl font-semibold">LCA &amp; MKI-berekeningen</h3>
               </div>
             </div>
             <p>Betrouwbare milieuprestaties van producten, materialen en projecten, conform huidige richtlijnen.
                Van volledige <a href="../over/#voor-wie" class="underline hover:text-green-700">MKI-berekeningen</a> tot LCA’s voor aanbestedingen en ontwerpoptimalisaties.</p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1 space-y-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold" aria-hidden="true">2</div>
+          <div class="relative p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-lg transition-transform hover:-translate-y-1 space-y-3 z-10">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-green-100 text-green-900 flex items-center justify-center font-bold shadow-inner" aria-hidden="true">2</div>
               <div>
-                <h3 class="text-xl font-semibold">Aanbesteding & projectadvies</h3>
+                <p class="text-xs uppercase text-gray-500 tracking-[0.2em]">Stap</p>
+                <h3 class="text-xl font-semibold">Aanbesteding &amp; projectadvies</h3>
               </div>
             </div>
             <p>Voor aannemers leggen we kosten en MKI naast elkaar om het optimale resultaat te behalen in aanbestedingen.
                Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
           </div>
 
-          <div class="p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-md transition-transform hover:-translate-y-1 md:col-span-1 space-y-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold" aria-hidden="true">3</div>
+          <div class="relative p-6 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 hover:shadow-lg transition-transform hover:-translate-y-1 space-y-3 z-10">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-white text-green-800 flex items-center justify-center font-bold shadow-inner" aria-hidden="true">3</div>
               <div>
-
-                <h3 class="text-xl font-semibold">Kennis & opleidingen</h3>
+                <p class="text-xs uppercase text-gray-500 tracking-[0.2em]">Stap</p>
+                <h3 class="text-xl font-semibold">Kennis &amp; opleidingen</h3>
               </div>
             </div>
             <p>Praktijkgerichte cursussen en incompany trainingen. Van basis MKI tot verdieping in regelgeving en LCA-methodiek.</p>
           </div>
 
           <!-- CTA-kaart naar de checker -->
-          <div class="p-6 bg-white rounded-2xl shadow ring-1 ring-green-100 md:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
+          <div class="p-6 bg-gradient-to-r from-white via-green-50 to-white rounded-3xl shadow ring-1 ring-green-100 md:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4" data-animate>
+            <div class="space-y-1">
+              <span class="inline-flex px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-green-700 bg-green-100 rounded-full">Tool</span>
               <h3 class="text-xl font-semibold mb-1">Tool: MKI-toetsing asfalt</h3>
               <p class="text-gray-700">Upload EPD’s en toets ze direct aan de NPDW MKI-plafondwaarden (PCR 2.0). Compact, duidelijk en exporteerbaar.</p>
             </div>
-            <a href="../epd-checker/" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Start de check</a>
+            <a href="../epd-checker/" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 shadow-md cta">Start de check</a>
           </div>
         </div>
       </div>
     </section>
 
     <!-- INZICHTEN / DONUT -->
-    <section id="inzicht" class="py-20 md:py-24 section-brand">
-      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center">
-        <div data-animate>
+    <section id="inzicht" class="py-20 md:py-24 section-brand relative overflow-hidden">
+      <div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-gray-50 to-transparent" aria-hidden="true"></div>
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-12 items-center">
+        <div class="glass-card rounded-3xl p-6 shadow-xl" data-animate>
+          <p class="text-xs uppercase tracking-[0.25em] text-green-700 font-semibold mb-3">MKI per levenscyclusfase</p>
           <div class="max-w-md mx-auto">
             <canvas id="impactChart" class="w-full h-56"
                     aria-label="Donutdiagram MKI-aandelen per levenscyclusfase" role="img"></canvas>
@@ -333,13 +394,14 @@
             Grondstoffen &amp; productie 55%, Transport 10%, Bouwfase 15%, Gebruik &amp; onderhoud 15%, Einde levensduur 5%.
           </p>
         </div>
-        <div data-animate class="overflow-visible">
-          <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4 leading-[1.28] md:leading-[1.24] pb-[2px] overflow-visible">Van data naar dialoog</h2>
-          <p class="text-gray-700 mb-6 leading-relaxed pb-[1px] overflow-visible">
+        <div data-animate class="overflow-visible space-y-4">
+          <p class="text-sm uppercase tracking-[0.25em] text-green-700 font-semibold">Inzichten</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-gradient leading-[1.28] md:leading-[1.24] pb-[2px] overflow-visible">Van data naar dialoog</h2>
+          <p class="text-gray-700 leading-relaxed pb-[1px] overflow-visible">
             Compact overzicht van de MKI-verdeling: in één oogopslag zie je waar het grootste aandeel zit
             en dus waar sturing het meeste oplevert.
           </p>
-          <ul class="space-y-3 text-gray-700">
+          <ul class="space-y-4 text-gray-700">
             <li>• Inzicht in MKI en CO₂ per projectfase</li>
             <li>• Scenario’s en optimalisaties</li>
             <li>• Onderbouwingen voor aanbestedingen en audits</li>
@@ -358,33 +420,51 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-6" data-animate>
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Wanneer heb ik een MKI-berekening nodig?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Wanneer heb ik een MKI-berekening nodig?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">Een MKI-berekening is relevant zodra je de milieuprestatie van een ontwerp, product of project inzichtelijk wilt maken. In de bouw en GWW wordt MKI vaak gevraagd bij aanbestedingen, EMVI/MKI-uitvragen en bij het onderbouwen van duurzaamheidsambities. Maar ook intern kun je MKI gebruiken om varianten te vergelijken en keuzes te onderbouwen richting management of opdrachtgever.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Wat is het verschil tussen een LCA en een MKI-score?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Wat is het verschil tussen een LCA en een MKI-score?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">Een LCA (Life Cycle Assessment) beschrijft de milieu-impact van een product, materiaal of project over de volledige levenscyclus. De MKI-score zet al die effecten om naar één getal in euro’s milieukosten. In Nederland wordt die MKI-score veel gebruikt in de bouw en GWW om oplossingen te vergelijken, aanbestedingen te beoordelen en beleid vorm te geven.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Welke gegevens hebben jullie nodig voor een LCA- of MKI-berekening?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Welke gegevens hebben jullie nodig voor een LCA- of MKI-berekening?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">Meestal starten we met beschikbare ontwerpen, hoeveelheden, materiaal- en mengselinformatie, transportafstanden en de geplande uitvoeringswijze. We denken mee welke informatie echt nodig is en wat nog mag worden aangevuld. Op basis daarvan koppelen we de juiste milieudata, bouwen we het LCA-model op en rekenen we de MKI uit, inclusief een duidelijke onderbouwing.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Hoe helpt MKI bij duurzaam aanbesteden en strategische keuzes?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Hoe helpt MKI bij duurzaam aanbesteden en strategische keuzes?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">Met MKI kun je varianten objectief vergelijken op milieu-impact. In aanbestedingen en EMVI/MKI-trajecten gebruiken we MKI om inschrijvingen te optimaliseren en de onderbouwing scherp te formuleren. Maar MKI helpt ook bij interne strategie: bijvoorbeeld bij het kiezen van materialen, het opstellen van duurzaamheidsdoelen of het onderbouwen van investeringen in meer duurzame oplossingen.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Kunnen jullie ook helpen met EPD’s, tools en kennisopbouw?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Kunnen jullie ook helpen met EPD’s, tools en kennisopbouw?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">Ja. We ondersteunen leveranciers en producenten bij het interpreteren en inzetten van EPD’s, en we helpen organisaties bij het slim gebruiken van productdata in LCA- en MKI-berekeningen. Daarnaast ontwikkelen we tooling en bieden we trainingen en kennissessies, zodat teams zelf beter met milieu-impactdata aan de slag kunnen.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm">
-            <summary class="text-lg font-semibold cursor-pointer">Voor wie is InfraImpact de juiste partner?</summary>
+          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
+            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+              <span>Voor wie is InfraImpact de juiste partner?</span>
+              <span class="faq-chevron text-sm"></span>
+            </summary>
             <p class="mt-3 text-gray-700">InfraImpact werkt voor aannemers, ingenieurs- en adviesbureaus, opdrachtgevers (publiek en privaat) én leveranciers en producenten. We combineren praktijkervaring bij aannemers en ingenieursbureaus met diepgaande kennis van MKI, LCA en duurzaam aanbesteden. Daardoor sluiten onze analyses, tools en adviezen goed aan op de dagelijkse praktijk én de langetermijndoelen van organisaties.</p>
           </details>
         </div>
@@ -392,9 +472,10 @@
     </section>
 
     <!-- QUOTE -->
-    <section class="py-16">
+    <section class="py-16 bg-white relative">
+      <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" aria-hidden="true"></div>
       <div class="max-w-3xl mx-auto text-center px-6 sm:px-8" data-animate>
-        <blockquote class="text-xl italic text-gray-700 leading-relaxed">
+        <blockquote class="text-2xl md:text-[26px] italic text-gray-800 leading-relaxed bg-white/70 rounded-3xl p-8 shadow-sm border border-gray-100">
           <strong>“Wij kennen beide kanten van de tafel.”</strong><br>
           Ervaring bij zowel aannemers als opdrachtgevers zorgt dat we begrijpen wat werkt in de praktijk.
         </blockquote>
@@ -403,28 +484,32 @@
   </main>
 
   <!-- FOOTER / CONTACT -->
-  <footer id="contact" class="bg-gray-900 text-gray-100 rounded-t-3xl shadow-inner pt-16 pb-12">
+  <footer id="contact" class="bg-gray-900 text-gray-100 rounded-t-3xl shadow-inner pt-16 pb-12 relative overflow-hidden">
+    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-blue-600 to-green-500 opacity-60" aria-hidden="true"></div>
     <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
       <div class="space-y-3">
         <p class="text-sm uppercase tracking-[0.2em] text-green-200 font-semibold">Contact</p>
         <h2 class="text-3xl md:text-4xl font-bold">Samen bouwen aan aantoonbare duurzaamheid</h2>
-        <p class="text-gray-200">Benieuwd hoe jouw organisatie voordeel haalt uit MKI & LCA? We denken graag mee en reageren dezelfde werkdag.</p>
+        <p class="text-gray-200">Benieuwd hoe jouw organisatie voordeel haalt uit MKI &amp; LCA? We denken graag mee en reageren dezelfde werkdag.</p>
       </div>
       <div class="space-y-2 text-gray-200">
-        <p><strong>InfraImpact B.V.</strong></p>
+        <p class="text-lg font-semibold">InfraImpact B.V.</p>
         <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
         <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-200 underline">info@infraimpact.nl</a></p>
         <p>T: <a href="tel:+31621350805" class="text-green-200 underline">+31 (0)6 2135 0805</a></p>
       </div>
       <div>
-        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-semibold shadow-sm inline-flex cta">
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-semibold shadow-md inline-flex cta">
           Plan een kennismaking
         </a>
       </div>
-      <p class="text-gray-300 text-sm">
-        <a href="../privacy/" class="underline">Privacy</a> ·
-        <a href="../cookies/" class="underline">Cookiebeleid</a> ·
-        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a> ·
+      <p class="text-gray-300 text-sm space-x-2">
+        <a href="../privacy/" class="underline">Privacy</a>
+        <span>·</span>
+        <a href="../cookies/" class="underline">Cookiebeleid</a>
+        <span>·</span>
+        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a>
+        <span>·</span>
         <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
       </p>
       <p class="text-gray-400 text-sm">
