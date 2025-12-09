@@ -26,9 +26,9 @@ Copy `.env.local.example` to `.env.local` and fill in your Supabase project valu
 - `SUPABASE_SERVICE_ROLE_KEY` – service role key used only in API routes via `getAdminClient`; never expose this to the browser.
 - `SUPABASE_STORAGE_BUCKET` – bucket name for uploading PDFs server-side (e.g. `epd-pdfs`).
 - `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET` – same bucket name but safe to expose; used to build public download URLs.
-- `NEXT_PUBLIC_BASE_URL` – base URL used by server components to call internal API routes (e.g. `http://localhost:3000` in development, or your production domain).
+- `NEXT_PUBLIC_BASE_PATH` – optional base path prefix if you deploy the app under a sub-path (e.g. `/epd_database`). Leave empty for root deployments.
 
-> **Warning:** keep `.env.local` out of version control and populate it with your real Supabase project URL/keys and bucket names. The provided `.env.local.example` only contains placeholders.
+> **Warning:** keep `.env.local` out of version control and populate it with your real Supabase project URL/keys and bucket names. The provided `.env.local.example` only contains placeholders. This app relies on Next.js server-side features (API routes, `pdf-parse`) and should be deployed on a platform that runs Next.js servers (e.g. Vercel), not as a static GitHub Pages site.
 
 ### 3. Database schema
 Run the migration SQL against your Supabase Postgres (via the SQL editor or `psql`):
@@ -46,3 +46,5 @@ Open http://localhost:3000.
 - API routes use the Supabase service role key on the server for inserts/updates.
 - Parsing is best effort; fields can be corrected in the UI before saving.
 - Exports are available via `/api/epd/export?format=excel` or `format=csv`.
+- Set `NEXT_PUBLIC_BASE_PATH` if you need to host the app under a sub-path (e.g. `/epd_database`); all internal links and fetch
+  calls are relative and will respect this base path.

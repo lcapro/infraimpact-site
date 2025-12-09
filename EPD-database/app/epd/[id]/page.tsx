@@ -6,8 +6,7 @@ const sets = ['SBK_SET_1', 'SBK_SET_2', 'UNKNOWN'] as const;
 const stages = ['A1', 'A2', 'A3', 'A1_A3', 'D'] as const;
 
 const fetchEpd = async (id: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/epd/${id}`, {
+  const res = await fetch(`/api/epd/${id}`, {
     cache: 'no-store'
   });
   if (!res.ok) throw new Error('Kan EPD niet laden');
