@@ -87,73 +87,73 @@
     @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
     h1, h2 { line-height:1.25; overflow:visible }
 
-  .logo-marquee {
-    position: relative;
-    overflow: hidden;
-  }
-  .logo-marquee::before,
-  .logo-marquee::after{
-    content:"";
-    position:absolute;
-    top:0; bottom:0;
-    width:64px;
-    z-index:2;
-    pointer-events:none;
-  }
-  .logo-marquee::before{
-    left:0;
-    background: linear-gradient(to right, #fff, rgba(255,255,255,0));
-  }
-  .logo-marquee::after{
-    right:0;
-    background: linear-gradient(to left, #fff, rgba(255,255,255,0));
-  }
+.logo-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: #fff;
+}
 
-  .logo-marquee-track{
-    display:flex;
-    width:max-content;
-    gap:2.5rem;
-    align-items:center;
-    padding: 1.25rem 1.5rem;
-    /* richting: links -> rechts */
-    animation: logoMarqueeLTR 28s linear infinite;
-    will-change: transform;
-  }
+/* zachte fades links/rechts */
+.logo-marquee::before,
+.logo-marquee::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:64px;
+  z-index:2;
+  pointer-events:none;
+}
+.logo-marquee::before{
+  left:0;
+  background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+}
+.logo-marquee::after{
+  right:0;
+  background: linear-gradient(to left, #fff, rgba(255,255,255,0));
+}
 
-  /* Hover pauze (fijn voor UX) */
-  .logo-marquee:hover .logo-marquee-track{
-    animation-play-state: paused;
-  }
+/* De track zelf */
+.logo-marquee-track{
+  display:flex;
+  align-items:center;
+  gap:3rem;
+  width:max-content;
+  padding: 1.5rem 0;
+  animation: marquee-ltr 35s linear infinite;
+  will-change: transform;
+}
 
-  @keyframes logoMarqueeLTR{
-    0%   { transform: translateX(-50%); }
-    100% { transform: translateX(0%); }
-  }
+/* Links → rechts, volledig buiten beeld */
+@keyframes marquee-ltr {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
 
-  /* Logo styling */
-  .client-logo{
-    height: 36px;
-    width: auto;
-    opacity: .85;
-    filter: saturate(0.95);
-    transition: opacity .2s ease, transform .2s ease;
-  }
-  .client-logo:hover{
-    opacity: 1;
-    transform: translateY(-1px);
-  }
+/* Logo styling */
+.client-logo{
+  height:36px;
+  width:auto;
+  opacity:.85;
+  transition: opacity .2s ease, transform .2s ease;
+  filter: saturate(0.95);
+}
+.client-logo:hover{
+  opacity:1;
+  transform: translateY(-1px);
+}
 
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce){
-    .logo-marquee-track{ animation: none; }
-  }
+/* Hover pauze */
+.logo-marquee:hover .logo-marquee-track{
+  animation-play-state: paused;
+}
 
-  /* Footnote/beeldmerk melding */
-  .logo-footnote{
-    padding: 0 1.5rem 1.25rem 1.5rem;
-    font-size: 12px;
-    color: #6B7280;
-  }
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .logo-marquee-track{ animation:none; }
+}
+
   </style>
 
   <!-- Structured data: WebSite -->
@@ -445,30 +445,29 @@
 
     <div class="max-w-3xl" data-animate>
       <p class="text-sm uppercase tracking-[0.25em] text-green-600 font-semibold">Projecten</p>
-      <h2 class="text-3xl md:text-4xl font-bold text-gradient">Aantoonbare resultaten in de praktijk</h2>
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient">
+        Aantoonbare resultaten in de praktijk
+      </h2>
       <p class="mt-4 text-gray-700 leading-relaxed">
         InfraImpact ondersteunt publieke en private partijen met MKI/LCA-werk dat klopt in de spreadsheet,
-        standhoudt in review en iedereen gaat begrijpen.
+        standhoudt in review en begrijpelijk blijft voor alle betrokkenen.
       </p>
     </div>
 
-    <!-- Logo strip -->
+    <!-- Logo banner -->
     <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" data-animate>
       <div class="px-6 sm:px-8 py-5 flex items-center justify-between gap-6">
-        <p class="text-sm text-gray-600">
-          <strong>Vertrouwd door</strong>
-        </p>
+        <p class="text-sm text-gray-600"><strong>Vertrouwd door</strong></p>
         <a href="/projecten/" class="text-sm font-semibold text-green-700 hover:underline">
           Bekijk alle projecten →
         </a>
       </div>
 
-      <div class="border-t bg-white logo-marquee" aria-label="Logo's van organisaties waar InfraImpact voor werkt">
-        <!-- Track met 2x dezelfde set voor oneindige loop -->
+      <div class="border-t logo-marquee" aria-label="Organisaties waar InfraImpact voor werkt">
         <div class="logo-marquee-track">
 
-          <!-- SET A -->
-          <a href="/projecten/nmd-gww-perceel-6/" class="flex items-center" title="Nationale Milieudatabase (NMD)">
+          <!-- Logo’s (uitbreidbaar) -->
+          <a href="/projecten/nmd-gww-perceel-6/" title="Nationale Milieudatabase (NMD)" class="flex items-center">
             <img src="/assets/Logo_nmd.png"
                  alt="Nationale Milieudatabase (NMD)"
                  class="client-logo"
@@ -476,30 +475,19 @@
                  decoding="async">
           </a>
 
-          <!-- Voeg hier straks meer logo's toe, bijv: -->
+          <!-- Voeg hier later extra logo’s toe -->
           <!--
-          <a href="/projecten/..." class="flex items-center" title="BAM">
-            <img src="/assets/clients/bam.svg" alt="BAM" class="client-logo" loading="lazy" decoding="async">
+          <a href="/projecten/..." class="flex items-center">
+            <img src="/assets/clients/voorbeeld.svg" alt="Voorbeeld organisatie" class="client-logo">
           </a>
           -->
 
-          <!-- SET B (DUPLICAAT van SET A) -->
-          <a href="/projecten/nmd-gww-perceel-6/" class="flex items-center" title="Nationale Milieudatabase (NMD)" aria-hidden="true" tabindex="-1">
-            <img src="/assets/Logo_nmd.png"
-                 alt=""
-                 class="client-logo"
-                 loading="lazy"
-                 decoding="async">
-          </a>
-
-          <!-- DUPLICAAT van extra logo's ook hier toevoegen zodra je uitbreidt -->
         </div>
       </div>
 
-      <!-- Footnote(s) voor beeldmerken/licenties -->
-      <div class="logo-footnote">
-        <p>Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt</p>
-      </div>
+      <p class="px-6 sm:px-8 pb-5 text-xs text-gray-500">
+        Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt
+      </p>
     </div>
 
   </div>
