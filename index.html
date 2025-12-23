@@ -222,7 +222,7 @@
   <nav id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="/" class="flex items-center">
-        <img src="assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
+        <img src="/assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
       </a>
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
         <a href="/" class="hover:text-green-700">Home</a>
@@ -274,7 +274,7 @@
       </div>
 
       <div class="hidden md:flex justify-center items-center" data-animate>
-        <img src="assets/logo_full.png" alt="InfraImpact visual"
+        <img src="/assets/logo_full.png" alt="InfraImpact visual"
              width="640" height="320" loading="lazy" decoding="async"
              class="max-h-80 w-auto object-contain opacity-0 transition-opacity duration-1000"
              onload="this.style.opacity='1'" />
@@ -364,6 +364,10 @@
             Compact overzicht van de MKI-verdeling: in één oogopslag zie je waar het grootste aandeel zit
             en dus waar sturing het meeste oplevert.
           </p>
+          <p class="text-sm text-gray-600">
+            <em>Voorbeeldverdeling</em>: we gebruiken dit soort inzichten om snel te bepalen waar optimalisatie het meeste effect heeft.
+          </p>
+
           <ul class="space-y-4 text-gray-700">
             <li>• Inzicht in MKI en CO₂ per projectfase</li>
             <li>• Scenario’s en optimalisaties</li>
@@ -426,47 +430,60 @@
         <!-- Featured project -->
         <div class="grid md:grid-cols-5 gap-6 md:gap-8 items-stretch" data-animate>
           <article class="md:col-span-3 bg-white rounded-3xl border shadow-sm overflow-hidden">
-            <div class="p-6 sm:p-8">
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span class="inline-flex text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">LCA</span>
-                <span class="inline-flex text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">Zelfstandig</span>
-                <span class="inline-flex text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700">NMD</span>
+        <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" data-animate>
+          <div class="px-6 sm:px-8 py-5 flex items-center justify-between gap-6">
+            <p class="text-sm text-gray-600">
+              <strong>Vertrouwd door</strong>
+            </p>
+            <a href="/projecten/" class="text-sm font-semibold text-green-700 hover:underline">Bekijk alle projecten →</a>
+          </div>
+        
+          <div class="border-t bg-white">
+            <div class="relative">
+              <div class="logo-marquee-track px-6 sm:px-8 py-6">
+                <div class="flex items-center gap-10 opacity-90">
+                  <img src="/assets/Logo_nmd.png"
+                       alt="Nationale Milieudatabase (NMD)"
+                       class="h-9 w-auto"
+                       loading="lazy" decoding="async">
+                </div>
+                <div class="flex items-center gap-10 opacity-90" aria-hidden="true">
+                  <img src="/assets/Logo_nmd.png"
+                       alt=""
+                       class="h-9 w-auto"
+                       loading="lazy" decoding="async">
+                </div>
               </div>
-    
-              <h3 class="text-2xl font-bold leading-snug">
-                NMD – GWW Perceel 6: actualisatie categorie 3 data & LCA-berekening
-              </h3>
-              <p class="mt-3 text-gray-700 leading-relaxed">
-                Uitgevoerd voor RAW-elementen <strong>H80 Funderingslagen</strong> en <strong>H81 Bitumineuze verhardingen</strong>.
-                Focus op controle/actualisatie van data, herstructurering van rapportage en oplevering in NMD-format.
-              </p>
-    
-              <ul class="mt-5 space-y-2 text-gray-700">
-                <li>• Controle & actualisatie (o.a. decompositie, biogene CO₂, module D, classificatie)</li>
-                <li>• LCA-berekening in meegeleverd Excel-formaat + conceptrapportage voor review</li>
-                <li>• Invoer/doorvoering van aangepaste data in het NMD-platform</li>
-              </ul>
-    
-              <div class="mt-7 flex flex-wrap gap-3">
-                <a href="/projecten/" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">
-                  Bekijk projecten
-                </a>
-                <a href="mailto:info@infraimpact.nl?subject=Vragen%20over%20NMD%20GWW%20Perceel%206%20case"
-                   class="inline-flex items-center px-5 py-3 rounded-xl border border-gray-200 hover:bg-gray-50">
-                  Stel een vraag
-                </a>
-              </div>
+        
+              <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent"></div>
+              <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent"></div>
             </div>
+        
+            <p class="px-6 sm:px-8 pb-5 text-xs text-gray-500">
+              Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt
+            </p>
+          </div>
+        </div>
           </article>
     
-          <aside class="md:col-span-2 bg-gradient-to-br from-white to-green-50 rounded-3xl border shadow-sm p-6 sm:p-8">
-            <p class="text-sm uppercase tracking-[0.25em] text-green-700 font-semibold">Waarom dit werkt</p>
-            <h4 class="mt-2 text-xl font-bold">Je ziet direct “proof of work”</h4>
-            <p class="mt-3 text-gray-700">
-              In de GWW draait het om herleidbaarheid, consistentie en review-proof onderbouwingen.
-              Cases laten zien dat je dat proces beheerst.
-            </p>
-            <a href="/projecten/" class="mt-6 inline-flex font-semibold text-green-700 hover:underline">Ga naar de projectenpagina →</a>
+          <aside class="md:col-span-2 bg-white rounded-3xl border shadow-sm p-6 sm:p-8">
+            <p class="text-sm uppercase tracking-[0.25em] text-green-700 font-semibold">Wat je krijgt</p>
+            <h4 class="mt-2 text-xl font-bold">Duidelijke oplevering die standhoudt</h4>
+          
+            <ul class="mt-4 space-y-2 text-gray-700">
+              <li>• <strong>Rapportage + rekenbestand</strong> (Excel) met navolgbare opbouw</li>
+              <li>• <strong>Aannames & bronnen</strong> expliciet vastgelegd </li>
+              <li>• <strong>Praktische vertaling</strong> naar keuzes in ontwerp/uitvoering</li>
+            </ul>
+          
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="/projecten/nmd-gww-perceel-6/" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">
+                Bekijk de NMD-case
+              </a>
+              <a href="/projecten/" class="inline-flex items-center px-5 py-3 rounded-xl border border-gray-200 hover:bg-gray-50">
+                Alle projecten
+              </a>
+            </div>
           </aside>
         </div>
     
@@ -897,7 +914,7 @@
 
     const existing = read();
     if (!('statistics' in existing)){
-      $stat.checked = true;
+      $stat.checked = false;
       showBanner();
     } else {
       apply(existing);
