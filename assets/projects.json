@@ -5,7 +5,7 @@
     "client": "Nationale Milieudatabase (NMD)",
     "type": "LCA",
     "tags": ["NMD", "GWW", "Perceel 6", "Categorie 3", "RAW", "H80", "H81", "Excel", "Review-proof"],
-    "summary": "Actualisatie van categorie 1/2/3 data en categorie 3 controle (incl. decompositie, biogene CO₂, module D, classificatie), herstructurering/opstellen rapportage conform NMD-template, LCA-berekening in meegeleverd Excel-formaat, verwerken review-feedback en invoer van aangepaste data in het NMD-platform.",
+    "summary": "Actualisatie van categorie 1/2/3 data en categorie 3 controle (incl. decompositie, biogene CO₂, module D, classificatie), herstructurering/opstellen rapportage conform NMD-template, LCA-berekening verwerking, verwerken review-feedback en invoer van aangepaste data in het NMD-platform.",
     "collaboration": "Zelfstandig",
     "hero": "/assets/Logo_nmd.png",
     "date": "2025-11",
