@@ -87,12 +87,73 @@
     @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
     h1, h2 { line-height:1.25; overflow:visible }
 
-  @keyframes logoMarquee { 
-    0% { transform: translateX(0); } 
-    100% { transform: translateX(-50%); } 
+  .logo-marquee {
+    position: relative;
+    overflow: hidden;
   }
-  .logo-marquee-track{ display:flex; width:max-content; gap:2.5rem; animation:logoMarquee 26s linear infinite; }
-  @media (prefers-reduced-motion: reduce){ .logo-marquee-track{ animation:none; } }
+  .logo-marquee::before,
+  .logo-marquee::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:64px;
+    z-index:2;
+    pointer-events:none;
+  }
+  .logo-marquee::before{
+    left:0;
+    background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  }
+  .logo-marquee::after{
+    right:0;
+    background: linear-gradient(to left, #fff, rgba(255,255,255,0));
+  }
+
+  .logo-marquee-track{
+    display:flex;
+    width:max-content;
+    gap:2.5rem;
+    align-items:center;
+    padding: 1.25rem 1.5rem;
+    /* richting: links -> rechts */
+    animation: logoMarqueeLTR 28s linear infinite;
+    will-change: transform;
+  }
+
+  /* Hover pauze (fijn voor UX) */
+  .logo-marquee:hover .logo-marquee-track{
+    animation-play-state: paused;
+  }
+
+  @keyframes logoMarqueeLTR{
+    0%   { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Logo styling */
+  .client-logo{
+    height: 36px;
+    width: auto;
+    opacity: .85;
+    filter: saturate(0.95);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .client-logo:hover{
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .logo-marquee-track{ animation: none; }
+  }
+
+  /* Footnote/beeldmerk melding */
+  .logo-footnote{
+    padding: 0 1.5rem 1.25rem 1.5rem;
+    font-size: 12px;
+    color: #6B7280;
+  }
   </style>
 
   <!-- Structured data: WebSite -->
@@ -378,118 +439,71 @@
       </div>
     </section>
 
-    <!-- PROJECTEN / VERTROUWD DOOR -->
-    <section id="projecten" class="py-20 md:py-24 bg-gray-50 border-t">
-      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-10">
-    
-        <div class="max-w-3xl" data-animate>
-          <p class="text-sm uppercase tracking-[0.25em] text-green-600 font-semibold">Projecten</p>
-          <h2 class="text-3xl md:text-4xl font-bold text-gradient">Aantoonbare resultaten in de praktijk</h2>
-          <p class="mt-4 text-gray-700 leading-relaxed">
-            InfraImpact ondersteunt publieke en private partijen met MKI/LCA-werk dat klopt in de spreadsheet én standhoudt in review.
-            Hieronder een recente opdracht en een plek waar we al het werk transparant maken.
-          </p>
-        </div>
-    
-        <!-- Logo strip -->
-        <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" data-animate>
-          <div class="px-6 sm:px-8 py-5 flex items-center justify-between gap-6">
-            <p class="text-sm text-gray-600">
-              <strong>Vertrouwd door</strong>
-            </p>
-            <a href="/projecten/" class="text-sm font-semibold text-green-700 hover:underline">Bekijk alle projecten →</a>
-          </div>
-    
-          <!-- Marquee (kan ook zonder dupliceren; dit werkt mooi met 1+ logo’s) -->
-          <div class="border-t bg-white">
-            <div class="relative">
-              <div class="logo-marquee-track px-6 sm:px-8 py-6">
-                <!-- DUPLICEER deze set 2x voor een naadloze loop -->
-                <div class="flex items-center gap-10 opacity-80">
-                  <!-- Gebruik logo als je het hebt; anders tijdelijke tekstbadge -->
-                  <!-- <img src="/assets/clients/nmd.svg" alt="Nationale Milieudatabase (NMD)" class="h-8 w-auto" loading="lazy" decoding="async"> -->
-                <img src="/assets/Logo_nmd.png"
-                     alt="Nationale Milieudatabase (NMD)"
-                     class="h-8 w-auto opacity-80"
-                     loading="lazy" decoding="async">
-                </div>
-              </div>
-    
-              <!-- zachte fades links/rechts -->
-              <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent"></div>
-              <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent"></div>
-            </div>
-          </div>
-        </div>
+<!-- PROJECTEN / VERTROUWD DOOR -->
+<section id="projecten" class="py-20 md:py-24 bg-gray-50 border-t">
+  <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-10">
 
-        <p class="px-6 sm:px-8 pb-6 text-xs text-gray-500">
-          Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt
+    <div class="max-w-3xl" data-animate>
+      <p class="text-sm uppercase tracking-[0.25em] text-green-600 font-semibold">Projecten</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-gradient">Aantoonbare resultaten in de praktijk</h2>
+      <p class="mt-4 text-gray-700 leading-relaxed">
+        InfraImpact ondersteunt publieke en private partijen met MKI/LCA-werk dat klopt in de spreadsheet,
+        standhoudt in review en iedereen gaat begrijpen.
+      </p>
+    </div>
+
+    <!-- Logo strip -->
+    <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" data-animate>
+      <div class="px-6 sm:px-8 py-5 flex items-center justify-between gap-6">
+        <p class="text-sm text-gray-600">
+          <strong>Vertrouwd door</strong>
         </p>
-
-    
-        <!-- Featured project -->
-        <div class="grid md:grid-cols-5 gap-6 md:gap-8 items-stretch" data-animate>
-          <article class="md:col-span-3 bg-white rounded-3xl border shadow-sm overflow-hidden">
-        <div class="bg-white rounded-3xl border shadow-sm overflow-hidden" data-animate>
-          <div class="px-6 sm:px-8 py-5 flex items-center justify-between gap-6">
-            <p class="text-sm text-gray-600">
-              <strong>Vertrouwd door</strong>
-            </p>
-            <a href="/projecten/" class="text-sm font-semibold text-green-700 hover:underline">Bekijk alle projecten →</a>
-          </div>
-        
-          <div class="border-t bg-white">
-            <div class="relative">
-              <div class="logo-marquee-track px-6 sm:px-8 py-6">
-                <div class="flex items-center gap-10 opacity-90">
-                  <img src="/assets/Logo_nmd.png"
-                       alt="Nationale Milieudatabase (NMD)"
-                       class="h-9 w-auto"
-                       loading="lazy" decoding="async">
-                </div>
-                <div class="flex items-center gap-10 opacity-90" aria-hidden="true">
-                  <img src="/assets/Logo_nmd.png"
-                       alt=""
-                       class="h-9 w-auto"
-                       loading="lazy" decoding="async">
-                </div>
-              </div>
-        
-              <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent"></div>
-              <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent"></div>
-            </div>
-        
-            <p class="px-6 sm:px-8 pb-5 text-xs text-gray-500">
-              Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt
-            </p>
-          </div>
-        </div>
-          </article>
-    
-          <aside class="md:col-span-2 bg-white rounded-3xl border shadow-sm p-6 sm:p-8">
-            <p class="text-sm uppercase tracking-[0.25em] text-green-700 font-semibold">Wat je krijgt</p>
-            <h4 class="mt-2 text-xl font-bold">Duidelijke oplevering die standhoudt</h4>
-          
-            <ul class="mt-4 space-y-2 text-gray-700">
-              <li>• <strong>Rapportage + rekenbestand</strong> (Excel) met navolgbare opbouw</li>
-              <li>• <strong>Aannames & bronnen</strong> expliciet vastgelegd </li>
-              <li>• <strong>Praktische vertaling</strong> naar keuzes in ontwerp/uitvoering</li>
-            </ul>
-          
-            <div class="mt-6 flex flex-wrap gap-3">
-              <a href="/projecten/nmd-gww-perceel-6/" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">
-                Bekijk de NMD-case
-              </a>
-              <a href="/projecten/" class="inline-flex items-center px-5 py-3 rounded-xl border border-gray-200 hover:bg-gray-50">
-                Alle projecten
-              </a>
-            </div>
-          </aside>
-        </div>
-    
+        <a href="/projecten/" class="text-sm font-semibold text-green-700 hover:underline">
+          Bekijk alle projecten →
+        </a>
       </div>
-    </section>
 
+      <div class="border-t bg-white logo-marquee" aria-label="Logo's van organisaties waar InfraImpact voor werkt">
+        <!-- Track met 2x dezelfde set voor oneindige loop -->
+        <div class="logo-marquee-track">
+
+          <!-- SET A -->
+          <a href="/projecten/nmd-gww-perceel-6/" class="flex items-center" title="Nationale Milieudatabase (NMD)">
+            <img src="/assets/Logo_nmd.png"
+                 alt="Nationale Milieudatabase (NMD)"
+                 class="client-logo"
+                 loading="lazy"
+                 decoding="async">
+          </a>
+
+          <!-- Voeg hier straks meer logo's toe, bijv: -->
+          <!--
+          <a href="/projecten/..." class="flex items-center" title="BAM">
+            <img src="/assets/clients/bam.svg" alt="BAM" class="client-logo" loading="lazy" decoding="async">
+          </a>
+          -->
+
+          <!-- SET B (DUPLICAAT van SET A) -->
+          <a href="/projecten/nmd-gww-perceel-6/" class="flex items-center" title="Nationale Milieudatabase (NMD)" aria-hidden="true" tabindex="-1">
+            <img src="/assets/Logo_nmd.png"
+                 alt=""
+                 class="client-logo"
+                 loading="lazy"
+                 decoding="async">
+          </a>
+
+          <!-- DUPLICAAT van extra logo's ook hier toevoegen zodra je uitbreidt -->
+        </div>
+      </div>
+
+      <!-- Footnote(s) voor beeldmerken/licenties -->
+      <div class="logo-footnote">
+        <p>Het beeldmerk is een merk van de Stichting Bouwkwaliteit en wordt met haar toestemming gebruikt</p>
+      </div>
+    </div>
+
+  </div>
+</section>
     
     <!-- FAQ -->
     <section id="faq" class="py-20 md:py-24">
