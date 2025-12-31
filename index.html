@@ -44,7 +44,6 @@
 
   <!-- Libraries -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-  <script async src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
     :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
@@ -404,36 +403,31 @@
       </div>
     </section>
 
-    <!-- INZICHTEN / DONUT -->
+    <!-- INZICHTEN / SAMENSTELLING -->
     <section id="inzicht" class="py-20 md:py-24 section-brand">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center">
-        <div class="glass-card rounded-3xl p-6 shadow-xl" data-animate>
-          <p class="text-xs uppercase tracking-[0.25em] text-green-700 font-semibold mb-3">MKI per levenscyclusfase</p>
-          <div class="max-w-md mx-auto">
-            <canvas id="impactChart" class="w-full h-56"
-                    aria-label="Donutdiagram MKI-aandelen per levenscyclusfase" role="img"></canvas>
-          </div>
-          <p id="chart-desc" class="sr-only">
-            Donutdiagram toont het MKI-aandeel per levenscyclusfase (som = 100%):
-            Grondstoffen &amp; productie 55%, Transport 10%, Bouwfase 15%, Gebruik &amp; onderhoud 15%, Einde levensduur 5%.
-          </p>
+        <div class="glass-card rounded-3xl p-4 shadow-xl" data-animate>
+          <img src="/assets/asfaltsamenstelling.png"
+               alt="Inzicht in MKI- en CO₂-impact per onderdeel voor producten, projecten en organisaties"
+               class="w-full h-auto rounded-2xl"
+               loading="lazy"
+               decoding="async">
         </div>
         <div data-animate class="overflow-visible space-y-4">
           <p class="text-sm uppercase tracking-[0.25em] text-green-700 font-semibold">Inzichten</p>
-          <h2 class="text-3xl md:text-4xl font-bold text-gradient leading-[1.28] md:leading-[1.24] pb-[2px] overflow-visible">Van data naar dialoog</h2>
+          <h2 class="text-3xl md:text-4xl font-bold text-gradient leading-[1.28] md:leading-[1.24] pb-[2px] overflow-visible">Van samenstelling naar sturing</h2>
           <p class="text-gray-700 leading-relaxed pb-[1px] overflow-visible">
-            Compact overzicht van de MKI-verdeling: in één oogopslag zie je waar het grootste aandeel zit
-            en dus waar sturing het meeste oplevert.
+            Elk product, project en elke organisatie bestaat uit onderdelen met een verschillende MKI- en CO₂-impact.
+            Wie alleen naar het totaal kijkt, mist waar de echte winst zit.
           </p>
-          <p class="text-sm text-gray-600">
-            <em>Voorbeeldverdeling</em>: we gebruiken dit soort inzichten om snel te bepalen waar optimalisatie het meeste effect heeft.
+          <p class="text-gray-700 leading-relaxed pb-[1px] overflow-visible">
+            InfraImpact maakt inzichtelijk waar de impact ontstaat — en vooral waar je kunt sturen.
+            Van grondstof tot uitvoering, van projectkeuze tot bedrijfsstrategie.
           </p>
-
           <ul class="space-y-4 text-gray-700">
-            <li>• Inzicht in MKI en CO₂ per projectfase</li>
-            <li>• Scenario’s en optimalisaties</li>
-            <li>• Onderbouwingen voor aanbestedingen en audits</li>
-            <li>• Strategisch advies en beleidsondersteuning</li>
+            <li>• Inzicht in MKI &amp; CO₂ op elk schaalniveau</li>
+            <li>• Gerichte optimalisaties met aantoonbaar effect</li>
+            <li>• Onderbouwing voor aanbestedingen, audits en beleid</li>
           </ul>
         </div>
       </div>
@@ -645,145 +639,6 @@
       else nav.classList.add('scroll-up'), nav.classList.remove('scroll-down');
       lastY = y;
     }, { passive: true });
-
-    // =========================
-    //  MKI-donut labels
-    // =========================
-    window.addEventListener('load', function(){
-      const canvas = document.getElementById('impactChart');
-      if (!canvas || !window.Chart) return;
-
-      const labelsFull = ['Grondstoffen & productie','Transport','Bouwfase','Gebruik & onderhoud','Einde levensduur'];
-      const labelsShort = ['Productie','Transport','Bouw','Gebruik','Einde levensduur'];
-      const values = [55, 10, 15, 15, 5];
-      const colors = ['#2F6F65','#2B536D','#7ADAD3','#F59E0B','#9CA3AF'];
-
-      function roundRect(ctx, x, y, w, h, r){
-        const rr = Math.min(r, h/2, w/2);
-        ctx.beginPath();
-        ctx.moveTo(x+rr, y);
-        ctx.arcTo(x+w, y, x+w, y+h, rr);
-        ctx.arcTo(x+w, y+h, x, y+h, rr);
-        ctx.arcTo(x, y+h, x, y, rr);
-        ctx.arcTo(x, y, x+w, y, rr);
-        ctx.closePath();
-      }
-
-      const overrides = { 0:{dx:18}, 4:{dy:-24} };
-
-      const labelsNoLines = {
-        id: 'labelsNoLines',
-        afterDatasetsDraw(chart) {
-          const { ctx, chartArea:{ top,bottom,left,right } } = chart;
-          const meta = chart.getDatasetMeta(0);
-          if (!meta || !meta.data) return;
-
-          const DPR = window.devicePixelRatio || 1;
-          ctx.save(); ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto'; ctx.lineWidth = 1 * DPR;
-
-          const offset = 34, lineH = 19, tether = 28, padX = 8, padY = 5;
-          const maxTextWidth = Math.min(180, (right-left)*0.33), marginX = 16, marginTop = 20, marginBottom = 16;
-
-          const items = meta.data.map((arc, i) => {
-            const mid = (arc.startAngle + arc.endAngle) / 2;
-            const cos = Math.cos(mid), sin = Math.sin(mid);
-            const rOuter = arc.outerRadius;
-
-            const anchor = { x: arc.x + cos*(rOuter+offset), y: arc.y + sin*(rOuter+offset) };
-            const rightSide = cos >= 0;
-            const label = `${labelsShort[i]} ${values[i]}%`;
-
-            const w = ctx.measureText(label).width;
-            let line1 = label, line2 = '';
-            let width = w;
-            if (w > maxTextWidth) {
-              const parts = label.split(' ');
-              line1 = ''; line2 = '';
-              for (let k=0;k<parts.length;k++){
-                const test = (line1 ? line1+' ' : '') + parts[k];
-                if (ctx.measureText(test).width <= maxTextWidth) line1 = test; else { line2 = parts.slice(k).join(' '); break; }
-              }
-              width = Math.max(ctx.measureText(line1).width, ctx.measureText(line2).width);
-            }
-            const lines = line2 ? [line1,line2] : [line1];
-            const textHeight = lines.length*14 + (lines.length-1)*2;
-            const xTextRaw = rightSide ? anchor.x + 8 : anchor.x - 8;
-
-            return { i, rightSide, anchor, w:width, textHeight, lines, xTextRaw, y0:anchor.y, xText:0, yText:0 };
-          });
-
-          items.forEach(it=>{
-            const boxW = it.w + 2*padX;
-            if (it.rightSide) it.xText = Math.min(it.xTextRaw, right - marginX - boxW + padX);
-            else it.xText = Math.max(it.xTextRaw, left + marginX + boxW - padX);
-            it.yText = it.y0;
-          });
-
-          function layoutSide(sideItems){
-            if (!sideItems.length) return;
-            sideItems.sort((a,b)=>a.y0-b.y0);
-            const minY = top + marginTop, maxY = bottom - marginBottom;
-
-            sideItems[0].yText = Math.max(Math.min(sideItems[0].y0, maxY), minY);
-            for (let k=1;k<sideItems.length;k++){
-              const prev = sideItems[k-1], cur = sideItems[k];
-              const need = prev.yText + prev.textHeight + lineH;
-              cur.yText = Math.max(cur.y0, need);
-            }
-            for (let k=sideItems.length-2;k>=0;k--){
-              const next = sideItems[k+1], cur = sideItems[k];
-              const maxAllowed = next.yText - (cur.textHeight + lineH);
-              cur.yText = Math.min(cur.yText, maxAllowed);
-            }
-            sideItems.forEach(it=>{
-              const halfH = it.textHeight/2;
-              if (it.yText > it.y0 + tether) it.yText = it.y0 + tether;
-              if (it.yText < it.y0 - tether) it.yText = it.y0 - tether;
-              it.yText = Math.min(Math.max(it.yText, minY), maxY - it.textHeight + halfH);
-            });
-          }
-          const leftSide = items.filter(i=>!i.rightSide);
-          const rightSide = items.filter(i=>i.rightSide);
-          layoutSide(leftSide); layoutSide(rightSide);
-
-          items.forEach(it=>{
-            const o = overrides[it.i]; if (o){ if (o.dx) it.xText += o.dx * (it.rightSide?1:-1); if (o.dy) it.yText += o.dy; }
-            const boxW = it.w + 2*padX;
-            if (it.rightSide) it.xText = Math.min(it.xText, right - marginX - boxW + padX);
-            else it.xText = Math.max(it.xText, left + marginX + boxW - padX);
-          });
-
-          items.forEach(it=>{
-            const boxW = it.w + 2*padX, boxH = it.textHeight + 2*padY;
-            const boxX = it.rightSide ? it.xText - padX : it.xText - boxW + padX;
-            const boxY = it.yText - (boxH/2);
-
-            ctx.save();
-            ctx.shadowColor = 'rgba(0,0,0,0.06)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
-            ctx.fillStyle = 'rgba(255,255,255,0.95)'; roundRect(ctx, boxX, boxY, boxW, boxH, 6); ctx.fill();
-            ctx.restore();
-
-            ctx.fillStyle = '#111827'; ctx.textBaseline = 'middle'; ctx.textAlign = it.rightSide ? 'left' : 'right';
-            const lineY0 = it.yText - ((it.lines.length-1) * 8);
-            it.lines.forEach((line, idx)=>{ const y = lineY0 + idx*16; ctx.fillText(line, it.rightSide?(boxX+padX):(boxX+boxW-padX), y); });
-          });
-
-          ctx.restore();
-        }
-      };
-
-      new Chart(canvas, {
-        type: 'doughnut',
-        data: { labels: labelsFull, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] },
-        options: {
-          responsive:true, maintainAspectRatio:true, aspectRatio:1.6, cutout:'62%',
-          layout:{ padding:{ top:36, right:40, bottom:28, left:40 } },
-          plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:(i)=>`${i.label}: ${i.parsed}%`, afterBody:(items)=>items[0].dataIndex===0?['Hier valt de meeste winst te behalen.']:[] } } },
-          animation:{ duration:600 }
-        },
-        plugins:[labelsNoLines]
-      });
-    });
 
     // Decoratieve streaks-animatie
     const c = document.getElementById('streaks');
