@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projecten & samenwerkingen – MKI & LCA-cases in de GWW | InfraImpact</title>
   <meta name="description" content="Bekijk MKI- en LCA-projecten van InfraImpact voor publieke en private partijen in de GWW. Aantoonbare resultaten in aanbestedingen en beleid.">
+  <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
 
   <!-- Favicons & App Icons -->
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
@@ -17,9 +21,11 @@
   <!-- Canonical + Hreflang -->
   <link rel="canonical" href="https://infraimpact.nl/projecten/"/>
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/projecten/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/projecten/">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <!-- Preload veelgebruikte afbeeldingen -->
   <link rel="preload" as="image" href="../assets/logo_full.png" type="image/png" fetchpriority="high">
@@ -35,6 +41,8 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Libraries -->
+  <!-- SEO/performance: preload CSS to improve LCP on mobile -->
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 
   <style>
@@ -59,7 +67,25 @@
     [data-animate].visible{opacity:1;transform:translateY(0)}
   </style>
 
-  <!-- Gestructureerde data (ItemList) wordt dynamisch geïnjecteerd in <head> door JS onderaan. -->
+  <!-- SEO: WebPage context voor MKI/LCA projecten (ItemList volgt dynamisch via JS) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "@id":"https://infraimpact.nl/projecten/#webpage",
+    "url":"https://infraimpact.nl/projecten/",
+    "name":"Projecten & samenwerkingen – MKI & LCA-cases in de GWW | InfraImpact",
+    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
+    "about":[
+      "MKI",
+      "LCA",
+      "EMVI",
+      "Aanbestedingen",
+      "GWW"
+    ],
+    "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+  }
+  </script>
 
   <!-- =========================
        CONSENT MODE v2 + GA4
@@ -125,7 +151,7 @@
 
   <!-- HEADER -->
   <header class="bg-gray-50">
-    <section class="max-w-screen-xl mx-auto px-6 sm:px-8 py-14 md:py-20">
+    <section class="max-w-screen-xl mx-auto px-6 sm:px-8 py-14 md:py-20" aria-label="Overzicht projecten">
       <h1 class="text-4xl md:text-5xl font-extrabold text-gradient" data-animate>Projecten & samenwerkingen</h1>
       <p class="mt-5 max-w-3xl text-gray-700 text-lg" data-animate>
         InfraImpact voert opdrachten uit voor publieke en private partijen in de GWW.
@@ -136,7 +162,7 @@
   </header>
 
   <!-- FILTERS -->
-  <section class="border-t">
+  <section class="border-t" aria-label="Projecten en cases">
     <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-6 md:py-8 flex flex-wrap gap-3 items-center" data-animate>
       <label class="text-sm text-gray-600">Filter:</label>
       <select id="typeFilter" class="border rounded-lg px-3 py-2">

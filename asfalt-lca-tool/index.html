@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Asfalt LCA-tool – project LCA (EN 15804) | InfraImpact</title>
   <meta name="description" content="Stel project-LCA's op voor asfaltmengsels volgens EN 15804 en de Nederlandse bepalingsmethode. Koppel EPD's, transportprofielen en aanleg-/eindefase-profielen.">
+  <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
+
+  <!-- Canonical + Hreflang -->
+  <link rel="canonical" href="https://infraimpact.nl/asfalt-lca-tool/">
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/asfalt-lca-tool/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/asfalt-lca-tool/">
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
@@ -26,6 +41,37 @@
 
   <!-- jsPDF voor rapport-generatie -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <!-- Structured data: tool + WebPage context -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"Asfalt LCA-tool",
+    "applicationCategory":"EngineeringApplication",
+    "operatingSystem":"Web",
+    "creator":{"@type":"Organization","name":"InfraImpact B.V."},
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
+    "url":"https://infraimpact.nl/asfalt-lca-tool/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "@id":"https://infraimpact.nl/asfalt-lca-tool/#webpage",
+    "url":"https://infraimpact.nl/asfalt-lca-tool/",
+    "name":"Asfalt LCA-tool – project LCA (EN 15804) | InfraImpact",
+    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
+    "about":[
+      "LCA",
+      "MKI",
+      "EPD",
+      "Asfalt",
+      "EN 15804"
+    ]
+  }
+  </script>
 
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0EC03F60S"></script>
@@ -135,7 +181,7 @@
     </header>
 
     <!-- Projectgegevens -->
-    <section class="card p-6 space-y-4">
+    <section class="card p-6 space-y-4" aria-label="Projectgegevens en EPD-koppeling">
       <h2 class="text-xl font-semibold">1. Projectgegevens</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div>
@@ -166,7 +212,7 @@
     </section>
 
     <!-- Mengsels -->
-    <section class="card p-6 space-y-4">
+    <section class="card p-6 space-y-4" aria-label="Berekening en resultaten">
       <div class="flex items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold">2. Asfaltmengsels in het project</h2>
@@ -184,7 +230,7 @@
     </section>
 
     <!-- Export -->
-    <section class="flex flex-wrap items-center gap-4">
+    <section class="flex flex-wrap items-center gap-4" aria-label="Export en acties">
       <button id="btn-pdf" type="button"
               class="px-5 py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-600 disabled:opacity-50">
         Genereer LCA-rapport (PDF)
