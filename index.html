@@ -93,6 +93,12 @@
     details[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
     @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
     h1, h2 { line-height:1.25; overflow:visible }
+    .nav-dropdown{position:relative}
+    .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
+    .nav-dropdown-menu a{display:block;padding:0.55rem 0.75rem;border-radius:0.6rem;white-space:nowrap}
+    .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
 
 .logo-marquee {
   position: relative;
@@ -375,6 +381,18 @@
         <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
         <a href="/projecten/" class="hover:text-green-700">Projecten</a>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700" aria-haspopup="true">
+            Artikelen
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/artikelen/">Artikelen overzicht</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact écht?</a>
+          </div>
+        </div>
         <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="../over/" class="hover:text-green-700">Over ons</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
@@ -391,6 +409,11 @@
         <a href="/#wat" class="block py-2">Wat we doen</a>
         <a href="/#inzicht" class="block py-2">Inzichten</a>
         <a href="/projecten/" class="block py-2">Projecten</a>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
+          <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact écht?</a>
+        </div>
         <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         <a href="../over/" class="block py-2">Over</a>
         <a href="#contact" class="block py-2">Contact</a>
