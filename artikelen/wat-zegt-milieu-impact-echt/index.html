@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wat zegt milieu-impact écht? | InfraImpact</title>
+  <meta name="description" content="Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
+
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="icon" type="image/png" href="../../assets/infra_impact-icoon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/infra_impact-icoon.png">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/">
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+  <meta property="og:title" content="Wat zegt milieu-impact écht?">
+  <meta property="og:description" content="Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/">
+  <meta property="og:site_name" content="InfraImpact">
+  <meta property="og:image" content="https://infraimpact.nl/assets/og-infraimpact.webp">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%;
+      animation: bgMove 60s ease infinite;
+      color: var(--ink);
+      font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient {
+      background: linear-gradient(90deg,var(--brand-green),var(--brand-blue));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      display: inline-block;
+      padding-bottom: 0.2em;
+      overflow: visible;
+    }
+    nav{position:sticky;top:0;background-color:#ffffffcc;backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:transform .3s ease,box-shadow .3s ease;z-index:50}
+    .nav-dropdown{position:relative}
+    .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
+    .nav-dropdown-menu a{display:block;padding:0.55rem 0.75rem;border-radius:0.6rem;white-space:nowrap}
+    .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
+    :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
+    .article-content h2{margin-top:2.5rem}
+    .article-content p{margin-top:1.25rem}
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"Wat zegt milieu-impact écht?",
+    "description":"Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.",
+    "author":{"@type":"Organization","name":"InfraImpact B.V."},
+    "publisher":{"@type":"Organization","name":"InfraImpact B.V.","logo":{"@type":"ImageObject","url":"https://infraimpact.nl/assets/logo_full.png"}},
+    "mainEntityOfPage":{"@type":"WebPage","@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/"}
+  }
+  </script>
+</head>
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
+        <a href="/projecten/" class="hover:text-green-700">Projecten</a>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700" aria-haspopup="true">
+            Artikelen
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/artikelen/">Artikelen overzicht</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact écht?</a>
+          </div>
+        </div>
+        <a href="/epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
+        <a href="/over/" class="hover:text-green-700">Over ons</a>
+        <a href="/#contact" class="hover:text-green-700">Contact</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/#inzicht" class="block py-2">Inzichten</a>
+        <a href="/projecten/" class="block py-2">Projecten</a>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
+          <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact écht?</a>
+        </div>
+        <a href="/epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        <a href="/over/" class="block py-2">Over ons</a>
+        <a href="/#contact" class="block py-2">Contact</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-green-700">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/artikelen/" class="hover:text-green-700">Artikelen</a>
+      <span class="mx-2">/</span>
+      <span aria-current="page">Wat zegt milieu-impact écht?</span>
+    </nav>
+
+    <header class="space-y-4">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">Artikel</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient">Wat zegt milieu-impact écht?</h1>
+      <p class="text-lg text-gray-700">Van asfaltgewicht naar sturingsinformatie met LCA en MKI</p>
+      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+        <span>InfraImpact</span>
+        <span>•</span>
+        <span>GWW-sector</span>
+        <span>•</span>
+        <span>LCA &amp; MKI</span>
+      </div>
+    </header>
+
+    <section class="mt-10 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6 md:p-10 article-content">
+      <p>
+        Wie al langer in de GWW-sector werkt, herkent het comfort van cijfers. Tonnen asfalt, kubieke meters,
+        transportkilometers en kosten per strekkende meter vormen de dagelijkse realiteit. Het zijn grootheden die
+        houvast geven en waar besluitvorming vaak op rust.
+      </p>
+      <p>
+        Zodra het gesprek verschuift naar milieu-impact, verandert dat. MKI-waarden, CO₂-emissies en EPD-data zijn
+        inhoudelijk correct, maar voelen voor veel professionals abstracter. In de praktijk zie ik regelmatig dat één
+        milieucijfer wordt gebruikt als eindconclusie, terwijl het juist een startpunt zou moeten zijn.
+      </p>
+      <p>
+        Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes. Pas wanneer je
+        milieu-impact combineert met andere projectinformatie – zoals gewicht, samenstelling en levensduur – ontstaat
+        echte sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">Asfalt: ogenschijnlijk eenvoudig, inhoudelijk complex</h2>
+      <p>Een ton asfalt bestaat grofweg uit vier componenten. In hoofdlijnen kennen we ze allemaal:</p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+        <li>steenslag</li>
+        <li>zand</li>
+        <li>vulstof</li>
+        <li>bitumen</li>
+      </ul>
+      <p>
+        Kijken we puur naar gewicht, dan lijkt het beeld helder. Steenslag en zand domineren de massa. Bitumen vormt
+        slechts een klein percentage. Wie hier stopt met kijken, zou kunnen concluderen dat optimalisatie vooral in
+        de minerale fracties moet zitten.
+      </p>
+      <p>
+        Maar zodra we dit gewicht koppelen aan milieu-impactdata, kantelt het beeld volledig. Wat in de praktijk vaak
+        gebeurt, is dat gewicht onbewust wordt gelijkgesteld aan milieubelasting. Zwaar voelt belastend, licht voelt
+        duurzaam. Asfalt laat zien hoe misleidend die aanname kan zijn. Juist het materiaal dat nauwelijks meetelt in
+        massa, blijkt een grote bijdrage te leveren aan zowel MKI als CO₂.
+      </p>
+
+      <figure class="mt-10 bg-gray-50 rounded-2xl p-6 shadow-sm ring-1 ring-gray-100">
+        <img src="/assets/asfaltsamenstelling.png" alt="Infographic over de samenstelling van 1 ton asfalt" class="w-full rounded-xl" loading="lazy" decoding="async">
+        <figcaption class="text-sm text-gray-500 mt-3">Samenstelling van asfalt en de verhouding tussen massa en milieudruk.</figcaption>
+      </figure>
+
+      <h2 class="text-2xl font-bold text-gradient">Waar de milieudruk werkelijk ontstaat</h2>
+      <p>
+        De verklaring ligt niet in het asfalt zelf, maar in de keten erachter. Bitumen is afkomstig uit fossiele
+        grondstoffen en kent een energie-intensief productieproces. Daardoor draagt het, ondanks het lage
+        massapercentage, onevenredig bij aan de totale milieukosten.
+      </p>
+      <p>
+        Dit is precies het type inzicht dat je niet uit een materiaallijst haalt, maar wél uit een levenscyclusanalyse.
+        LCA dwingt ons om verder te kijken dan wat we zien op de bouwplaats. Het laat zien waar milieudruk ontstaat in:
+      </p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+        <li>grondstofwinning</li>
+        <li>productieprocessen</li>
+        <li>transport</li>
+        <li>aanleg</li>
+        <li>gebruik en onderhoud</li>
+        <li>einde levensduur</li>
+      </ul>
+      <p>
+        Voor asfalt betekent dit dat keuzes over het mengsel altijd samenhangen met vragen over onderhoudsintervallen,
+        levensduur en hergebruik. Het materiaal is slechts één hoofdstuk in een veel groter verhaal.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">MKI en EPD’s: cijfers met een verhaal</h2>
+      <p>
+        De MKI brengt al deze milieueffecten samen in één geldwaarde. Dat maakt vergelijking mogelijk, bijvoorbeeld
+        tussen ontwerpvarianten of aanbiedingsstrategieën. Tegelijk schuilt daar een risico in: de MKI wordt te
+        gemakkelijk gezien als een score, terwijl het eigenlijk een samenvatting is.
+      </p>
+      <p>
+        Die samenvatting is alleen betrouwbaar als de onderliggende data klopt. EPD’s vormen daarom het fundament. Ze
+        zorgen voor:
+      </p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+        <li>gevalideerde LCA-data</li>
+        <li>vaste systeemgrenzen</li>
+        <li>consistente rekenregels volgens EN 15804</li>
+      </ul>
+      <p>
+        Zonder goede EPD’s verwordt sturen op MKI tot schijnzekerheid. Met goede EPD’s wordt het een inhoudelijk gesprek
+        over ontwerpkeuzes.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">Van inzicht naar sturing</h2>
+      <p>
+        Zodra milieu-impact niet meer los wordt bekeken, maar in samenhang met gewicht en levensduur, verandert ook de
+        focus van optimalisatie. In asfalt zit de grootste milieuwinst zelden in nog iets minder steenslag. De echte
+        knoppen zitten vaak in:
+      </p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+        <li>de keuze van het bindmiddel</li>
+        <li>het aandeel gerecycled asfalt</li>
+        <li>aanpassingen in de receptuur</li>
+        <li>het verlengen van de levensduur</li>
+      </ul>
+      <p>
+        Dit soort keuzes maakt vooral verschil als ze vroeg in het project worden gemaakt. In de ontwerpfase ligt de
+        beïnvloedbaarheid het hoogst. Wie daar al scenario’s doorrekent, voorkomt dat duurzaamheid achteraf een
+        rekenexercitie wordt.
+      </p>
+      <p>
+        In de praktijk zie ik dan ook dat projecten met een iets zwaarder ontwerp soms beter scoren over de hele
+        levensduur, simpelweg omdat onderhoud wordt beperkt en vervanging wordt uitgesteld. LCA maakt deze afweging
+        inzichtelijk en bespreekbaar.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">MKI in aanbestedingen: van last naar hulpmiddel</h2>
+      <p>
+        In aanbestedingen wordt MKI nog vaak ervaren als een verplicht nummer of een risico. Dat is begrijpelijk,
+        zeker als het cijfer pas laat in beeld komt. Maar zodra MKI wordt ingezet als ontwerpinstrument, verandert de
+        dynamiek.
+      </p>
+      <p>Door varianten naast elkaar te zetten – bijvoorbeeld met verschillende bitumensoorten, recyclingpercentages of
+        onderhoudsstrategieën – wordt zichtbaar:</p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+        <li>waar de milieu-impact daadwerkelijk verschuift</li>
+        <li>welke maatregel substantieel effect heeft</li>
+        <li>waar optimalisatie vooral cosmetisch is</li>
+      </ul>
+      <p>
+        Die transparantie helpt niet alleen aannemers en ingenieurs, maar ook opdrachtgevers. Het gesprek gaat niet
+        langer over “laagste MKI”, maar over de beste keuze over de hele levenscyclus.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">Wat dit betekent voor de GWW-professional</h2>
+      <p>
+        Voor opdrachtgevers biedt deze benadering de mogelijkheid om duurzaamheidseisen scherper en realistischer te
+        formuleren. Voor aannemers ontstaat grip op milieuprestaties, nog voordat het ontwerp definitief is.
+        Ingenieursbureaus krijgen hiermee een stevig inhoudelijk fundament voor hun advisering.
+      </p>
+
+      <h2 class="text-2xl font-bold text-gradient">Conclusie: van getallen naar keuzes</h2>
+      <p>
+        Milieu-impactwaarden krijgen pas betekenis als je ze bevraagt en in context plaatst. Niet het gewicht, niet één
+        MKI-getal, maar de samenhang tussen materiaal, toepassing en levensduur bepaalt de echte impact.
+      </p>
+      <p>
+        Wie LCA, MKI en EPD-data gebruikt als sturingsinformatie in plaats van als eindscore, maakt betere keuzes. En
+        uiteindelijk is dát waar duurzaam ontwerpen in de GWW om draait: niet optimaliseren op gevoel, maar op
+        aantoonbaar effect.
+      </p>
+      <p>
+        Wil je weten waar in jouw project de grootste milieu-impact zit – en waar optimalisatie daadwerkelijk verschil
+        maakt? Dan begint het met het stellen van de juiste vragen aan de juiste data.
+      </p>
+    </section>
+
+    <section class="mt-12 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gradient">Meer sturing nodig op MKI en LCA?</h2>
+        <p class="text-gray-600 mt-2">Samen brengen we de echte knoppen in beeld, nog voordat het ontwerp vastligt.</p>
+      </div>
+      <a href="mailto:info@infraimpact.nl?subject=Inzicht%20in%20milieu-impact" class="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 font-medium">Plan een gesprek</a>
+    </section>
+  </main>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.contains('hidden') === false;
+        mobileMenu.classList.toggle('hidden');
+        menuBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+  </script>
+</body>
+</html>

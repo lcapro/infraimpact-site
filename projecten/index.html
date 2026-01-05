@@ -65,6 +65,12 @@
     .card:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0,0,0,0.08); transition: transform .2s ease, box-shadow .2s ease; }
     [data-animate]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
     [data-animate].visible{opacity:1;transform:translateY(0)}
+    .nav-dropdown{position:relative}
+    .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
+    .nav-dropdown-menu a{display:block;padding:0.55rem 0.75rem;border-radius:0.6rem;white-space:nowrap}
+    .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
   </style>
 
   <!-- SEO: WebPage context voor MKI/LCA projecten (ItemList volgt dynamisch via JS) -->
@@ -125,6 +131,18 @@
         <a href="../index.html#wat" class="hover:text-green-700">Wat we doen</a>
         <a href="../index.html#inzicht" class="hover:text-green-700">Inzichten</a>
         <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700" aria-haspopup="true">
+            Artikelen
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/artikelen/">Artikelen overzicht</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact écht?</a>
+          </div>
+        </div>
         <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="../over/" class="hover:text-green-700">Over ons</a>
         <a href="#contact" class="hover:text-green-700">Contact</a>
@@ -141,6 +159,11 @@
         <a href="../index.html#wat" class="block py-2">Wat we doen</a>
         <a href="../index.html#inzicht" class="block py-2">Inzichten</a>
         <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
+          <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact écht?</a>
+        </div>
         <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         <a href="../over/" class="block py-2">Over ons</a>
         <a href="#contact" class="block py-2">Contact</a>
