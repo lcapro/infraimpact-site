@@ -63,6 +63,18 @@
     .article-content h2 + p{margin-top:0.75rem}
     .article-content ul{margin-top:0.75rem}
     .article-content li{margin-top:0.25rem}
+    .article-lead{display:grid;gap:1.5rem}
+    .article-card{background:rgba(255,255,255,0.9);border-radius:1rem;box-shadow:0 12px 30px rgba(15,23,42,0.08);border:1px solid rgba(15,23,42,0.06)}
+    .toc a{display:flex;justify-content:space-between;gap:1rem;padding:0.6rem 0.75rem;border-radius:0.75rem;color:#374151}
+    .toc a:hover{background:#f0f7f4;color:#2f6f65}
+    .pull-quote{border-left:4px solid var(--brand-green);padding-left:1.5rem;font-size:1.2rem;color:#1f2937}
+    .stat-grid{display:grid;gap:0.75rem}
+    .stat-card{background:#f9fafb;border-radius:0.75rem;padding:0.75rem 1rem;border:1px solid rgba(15,23,42,0.06)}
+    .article-divider{height:1px;background:linear-gradient(90deg,rgba(47,111,101,0.1),rgba(43,83,109,0.4),rgba(47,111,101,0.1));margin:2.5rem 0}
+    @media (min-width:768px){
+      .article-lead{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}
+      .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
   </style>
 
   <script type="application/ld+json">
@@ -160,23 +172,42 @@
     </header>
 
     <section class="mt-10 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6 md:p-10 article-content">
-      <p>
-        Wie al langer in de GWW-sector werkt, herkent het comfort van cijfers. Tonnen asfalt, kubieke meters,
-        transportkilometers en kosten per strekkende meter vormen de dagelijkse realiteit. Het zijn grootheden die
-        houvast geven en waar besluitvorming vaak op rust.
-      </p>
-      <p>
-        Zodra het gesprek verschuift naar milieu-impact, verandert dat. MKI-waarden, CO₂-emissies en EPD-data zijn
-        inhoudelijk correct, maar voelen voor veel professionals abstracter. In de praktijk zie ik regelmatig dat één
-        milieucijfer wordt gebruikt als eindconclusie, terwijl het juist een startpunt zou moeten zijn.
-      </p>
-      <p>
-        Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes. Pas wanneer je
-        milieu-impact combineert met andere projectinformatie, zoals gewicht, samenstelling en levensduur, ontstaat
-        echte sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
-      </p>
+      <div class="article-lead">
+        <div>
+          <p class="text-sm uppercase tracking-[0.2em] text-gray-400 font-semibold">Introductie</p>
+          <p class="text-xl text-gray-700 font-medium mt-3">
+            Wie al langer in de GWW-sector werkt, herkent het comfort van cijfers. Tonnen asfalt, kubieke meters,
+            transportkilometers en kosten per strekkende meter vormen de dagelijkse realiteit. Het zijn grootheden die
+            houvast geven en waar besluitvorming vaak op rust.
+          </p>
+          <p>
+            Zodra het gesprek verschuift naar milieu-impact, verandert dat. MKI-waarden, CO₂-emissies en EPD-data zijn
+            inhoudelijk correct, maar voelen voor veel professionals abstracter. In de praktijk zie ik regelmatig dat één
+            milieucijfer wordt gebruikt als eindconclusie, terwijl het juist een startpunt zou moeten zijn.
+          </p>
+          <p>
+            Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes. Pas wanneer je
+            milieu-impact combineert met andere projectinformatie, zoals gewicht, samenstelling en levensduur, ontstaat
+            echte sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
+          </p>
+        </div>
 
-      <h2 class="text-2xl font-bold text-gradient">Asfalt: ogenschijnlijk eenvoudig, inhoudelijk complex</h2>
+        <aside class="article-card p-5 space-y-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-gray-400 font-semibold">In dit artikel</p>
+            <nav class="toc mt-3 space-y-2 text-sm">
+              <a href="#asfalt-complex"><span>1. Asfalt: ogenschijnlijk eenvoudig</span><span>↓</span></a>
+              <a href="#milieudruk-keten"><span>2. Waar de milieudruk ontstaat</span><span>↓</span></a>
+              <a href="#mki-epd"><span>3. MKI &amp; EPD’s in context</span><span>↓</span></a>
+              <a href="#sturing"><span>4. Van inzicht naar sturing</span><span>↓</span></a>
+              <a href="#aanbestedingen"><span>5. MKI in aanbestedingen</span><span>↓</span></a>
+              <a href="#conclusie"><span>6. Conclusie</span><span>↓</span></a>
+            </nav>
+          </div>
+        </aside>
+      </div>
+
+      <h2 id="asfalt-complex" class="text-2xl font-bold text-gradient">Asfalt: ogenschijnlijk eenvoudig, inhoudelijk complex</h2>
       <p>Een ton asfalt bestaat grofweg uit vier componenten. In hoofdlijnen kennen we ze allemaal:</p>
       <ul class="list-disc list-inside text-gray-700 space-y-1 mt-3">
         <li>steenslag</li>
@@ -201,7 +232,9 @@
         <figcaption class="text-sm text-gray-500 mt-3">Samenstelling van asfalt en de verhouding tussen massa en milieudruk.</figcaption>
       </figure>
 
-      <h2 class="text-2xl font-bold text-gradient">Waar de milieudruk werkelijk ontstaat</h2>
+      <div class="article-divider"></div>
+
+      <h2 id="milieudruk-keten" class="text-2xl font-bold text-gradient">Waar de milieudruk werkelijk ontstaat</h2>
       <p>
         De verklaring ligt niet in het asfalt zelf, maar in de keten erachter. Bitumen is afkomstig uit fossiele
         grondstoffen en kent een energie-intensief productieproces. Daardoor draagt het, ondanks het lage
@@ -224,7 +257,15 @@
         levensduur en hergebruik. Het materiaal is slechts één hoofdstuk in een veel groter verhaal.
       </p>
 
-      <h2 class="text-2xl font-bold text-gradient">MKI en EPD’s: cijfers met een verhaal</h2>
+      <div class="mt-8 article-card p-5 md:p-6">
+        <p class="pull-quote">
+          “Wat je in de massa niet ziet, kan in de milieudruk juist dominant zijn. De context maakt het verschil.”
+        </p>
+      </div>
+
+      <div class="article-divider"></div>
+
+      <h2 id="mki-epd" class="text-2xl font-bold text-gradient">MKI en EPD’s: cijfers met een verhaal</h2>
       <p>
         De MKI brengt al deze milieueffecten samen in één geldwaarde. Dat maakt vergelijking mogelijk, bijvoorbeeld
         tussen ontwerpvarianten of aanbiedingsstrategieën. Tegelijk schuilt daar een risico in: de MKI wordt te
@@ -244,7 +285,9 @@
         over ontwerpkeuzes.
       </p>
 
-      <h2 class="text-2xl font-bold text-gradient">Van inzicht naar sturing</h2>
+      <div class="article-divider"></div>
+
+      <h2 id="sturing" class="text-2xl font-bold text-gradient">Van inzicht naar sturing</h2>
       <p>
         Zodra milieu-impact niet meer los wordt bekeken, maar in samenhang met gewicht en levensduur, verandert ook de
         focus van optimalisatie. In asfalt zit de grootste milieuwinst zelden in nog iets minder steenslag. De echte
@@ -267,7 +310,9 @@
         inzichtelijk en bespreekbaar.
       </p>
 
-      <h2 class="text-2xl font-bold text-gradient">MKI in aanbestedingen: van last naar hulpmiddel</h2>
+      <div class="article-divider"></div>
+
+      <h2 id="aanbestedingen" class="text-2xl font-bold text-gradient">MKI in aanbestedingen: van last naar hulpmiddel</h2>
       <p>
         In aanbestedingen wordt MKI nog vaak ervaren als een verplicht nummer of een risico. Dat is begrijpelijk,
         zeker als het cijfer pas laat in beeld komt. Maar zodra MKI wordt ingezet als ontwerpinstrument, verandert de
@@ -285,14 +330,18 @@
         langer over “laagste MKI”, maar over de beste keuze over de hele levenscyclus.
       </p>
 
-      <h2 class="text-2xl font-bold text-gradient">Wat dit betekent voor de GWW-professional</h2>
+      <div class="article-divider"></div>
+
+      <h2 id="gww-professional" class="text-2xl font-bold text-gradient">Wat dit betekent voor de GWW-professional</h2>
       <p>
         Voor opdrachtgevers biedt deze benadering de mogelijkheid om duurzaamheidseisen scherper en realistischer te
         formuleren. Voor aannemers ontstaat grip op milieuprestaties, nog voordat het ontwerp definitief is.
         Ingenieursbureaus krijgen hiermee een stevig inhoudelijk fundament voor hun advisering.
       </p>
 
-      <h2 class="text-2xl font-bold text-gradient">Conclusie: van getallen naar keuzes</h2>
+      <div class="article-divider"></div>
+
+      <h2 id="conclusie" class="text-2xl font-bold text-gradient">Conclusie: van getallen naar keuzes</h2>
       <p>
         Milieu-impactwaarden krijgen pas betekenis als je ze bevraagt en in context plaatst. Niet het gewicht, niet één
         MKI-getal, maar de samenhang tussen materiaal, toepassing en levensduur bepaalt de echte impact.
@@ -306,6 +355,15 @@
         Wil je weten waar in jouw project de grootste milieu-impact zit, en waar optimalisatie daadwerkelijk verschil
         maakt? Dan begint het met het stellen van de juiste vragen aan de juiste data.
       </p>
+
+      <div class="mt-10 article-card p-5 md:p-6">
+        <h3 class="text-lg font-semibold text-gray-800">Belangrijkste inzichten</h3>
+        <ul class="mt-3 space-y-2 text-gray-700 list-disc list-inside">
+          <li>Milieu-impact wordt pas sturingsinformatie als je het koppelt aan samenstelling en levensduur.</li>
+          <li>Bitumen is een klein massapercentage, maar een grote milieukostenpost.</li>
+          <li>De beste optimalisaties ontstaan in de ontwerpfase, niet achteraf in de aanbesteding.</li>
+        </ul>
+      </div>
     </section>
 
     <section class="mt-12 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
