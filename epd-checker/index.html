@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MKI-toetsing asfalt – EPD-checker voor eisen PCR 2.0 | InfraImpact</title>
   <meta name="description" content="Upload EPD’s en toets direct aan de uniforme MKI-plafondwaarden (Asfalt PCR 2.0). Snel, transparant en exporteerbaar – een tool van InfraImpact.">
+  <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
   
   <!-- Favicons & App Icons -->
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
@@ -18,9 +22,11 @@
   <!-- Canonical + Hreflang -->
   <link rel="canonical" href="https://infraimpact.nl/epd-checker/"/>
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/epd-checker/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/epd-checker/">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <!-- Preload veelgebruikte afbeeldingen -->
   <link rel="preload" as="image" href="../assets/logo_full.png" type="image/png" fetchpriority="high">
@@ -120,6 +126,24 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "@id":"https://infraimpact.nl/epd-checker/#webpage",
+    "url":"https://infraimpact.nl/epd-checker/",
+    "name":"MKI-toetsing asfalt – EPD-checker voor eisen PCR 2.0 | InfraImpact",
+    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
+    "about":[
+      "EPD",
+      "MKI",
+      "PCR 2.0",
+      "Asfalt",
+      "NMD"
+    ],
+    "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+  }
+  </script>
 
   <!-- =========================
        CONSENT MODE v2 + GA4
@@ -186,7 +210,7 @@
 
   <!-- HERO/Intro -->
   <header class="relative bg-transparent">
-    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 py-10 md:py-12">
+    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 py-10 md:py-12" aria-label="Introductie MKI-toetsing asfalt">
       <h1 class="text-3xl md:text-4xl font-extrabold text-gradient">MKI-toetsing asfalt</h1>
       <p class="text-gray-700 mt-2">
         Upload EPD’s en toets ze direct aan de uniforme MKI-plafondwaarden 2025 van het NPDW (PCR 2.0). Compact, duidelijk en exporteerbaar.
@@ -199,7 +223,7 @@
     <div id="toast" class="hidden fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-xl shadow"></div>
 
     <!-- EISEN + JAAR -->
-    <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <section class="bg-white rounded-2xl shadow p-6 space-y-4" aria-label="Upload EPD en MKI-toetsing">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold">Uniforme MKI-plafondwaarden 2025 (PCR 2.0)</h2>
@@ -223,7 +247,7 @@
     </section>
 
     <!-- UPLOAD -->
-    <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <section class="bg-white rounded-2xl shadow p-6 space-y-4" aria-label="Resultaten en export">
       <h2 class="text-xl font-semibold">Upload EPD’s (PDF)</h2>
 
       <div id="epd-drop" class="dropzone p-6 bg-gray-50">

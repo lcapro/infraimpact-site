@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LCA-project-tool | InfraImpact</title>
   <meta name="description" content="Maak accounts aan, lees EPD's in en volg per levenscyclusfase de MKI- en CO2-waarden van materialen per project." />
+  <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
+
+  <!-- Canonical + Hreflang -->
+  <link rel="canonical" href="https://infraimpact.nl/lca-project-tool/">
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/lca-project-tool/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/lca-project-tool/">
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
@@ -53,6 +67,37 @@
     .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
     .hidden { display: none; }
   </style>
+
+  <!-- Structured data: tool + WebPage context -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"LCA-project-tool",
+    "applicationCategory":"EngineeringApplication",
+    "operatingSystem":"Web",
+    "creator":{"@type":"Organization","name":"InfraImpact B.V."},
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
+    "url":"https://infraimpact.nl/lca-project-tool/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "@id":"https://infraimpact.nl/lca-project-tool/#webpage",
+    "url":"https://infraimpact.nl/lca-project-tool/",
+    "name":"LCA-project-tool | InfraImpact",
+    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
+    "about":[
+      "LCA",
+      "MKI",
+      "EPD",
+      "CO2",
+      "Milieu-impact"
+    ]
+  }
+  </script>
 </head>
 <body class="text-gray-800">
   <nav class="bg-white/90 backdrop-blur border-b border-gray-100 sticky top-0 z-40">

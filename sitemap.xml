@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://infraimpact.nl/</loc></url>
-  <url><loc>https://infraimpact.nl/over.html</loc></url>
-  <url><loc>https://infraimpact.nl/projecten.html</loc></url>
-  <url><loc>https://infraimpact.nl/epd-checker.html</loc></url>
+  <url><loc>https://infraimpact.nl/over/</loc></url>
+  <url><loc>https://infraimpact.nl/projecten/</loc></url>
+  <url><loc>https://infraimpact.nl/epd-checker/</loc></url>
+  <url><loc>https://infraimpact.nl/asfalt-lca-tool/</loc></url>
   <url><loc>https://infraimpact.nl/lca-project-tool/</loc></url>
+  <url><loc>https://infraimpact.nl/epd-test/</loc></url>
+  <url><loc>https://infraimpact.nl/privacy/</loc></url>
+  <url><loc>https://infraimpact.nl/cookies/</loc></url>
+  <url><loc>https://infraimpact.nl/algemene-voorwaarden/</loc></url>
 </urlset>

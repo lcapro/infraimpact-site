@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InfraImpact | MKI-berekening & LCA adviseur GWW | Duurzaam aanbesteden</title>
   <meta name="description" content="InfraImpact levert MKI- en LCA-berekeningen voor de GWW-sector, van aanbestedingsadvies en duurzaam aanbesteden tot praktische sturing met milieu-impactdata en EPD's.">
+  <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
 
   <!-- Favicons & App Icons -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -16,9 +20,11 @@
   <!-- Canonical + Hreflang -->
   <link rel="canonical" href="https://infraimpact.nl/"/>
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <!-- Preload hero/profielfoto (sneller first paint) -->
@@ -43,6 +49,8 @@
   <meta name="twitter:image" content="https://infraimpact.nl/assets/og-infraimpact.jpg">
 
   <!-- Libraries -->
+  <!-- SEO/performance: preload CSS to improve LCP on mobile -->
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 
   <style>
@@ -160,6 +168,7 @@
   {
     "@context":"https://schema.org",
     "@type":"WebSite",
+    "@id":"https://infraimpact.nl/#website",
     "name":"InfraImpact",
     "url":"https://infraimpact.nl",
     "potentialAction":{"@type":"SearchAction","target":"https://infraimpact.nl/?q={search_term_string}","query-input":"required name=search_term_string"}
@@ -184,9 +193,86 @@
       "duurzaam aanbesteden",
       "GWW-sector",
       "EPD's voor bouwmaterialen",
-      "milieu-impactberekeningen"
+      "milieu-impactberekeningen",
+      "MPG-berekeningen",
+      "EMVI-aanbestedingen",
+      "NMD/SBK data"
+    ],
+    "serviceType":[
+      "LCA (Life Cycle Assessment)",
+      "MKI-berekeningen",
+      "EPD-analyse",
+      "Duurzaamheidsadvies GWW",
+      "Aanbestedingsadvies (EMVI)"
     ],
     "sameAs":[]
+  }
+  </script>
+
+  <!-- SEO: aanvullende entiteiten voor topical authority (LCA/MKI/MPG/EPD) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"mailto:info@infraimpact.nl",
+        "telephone":"+31621350805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":{"@type":"Country","name":"Nederland"}
+      },
+      {
+        "@type":"ConsultingService",
+        "@id":"https://infraimpact.nl/#consulting",
+        "name":"LCA & MKI advies",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "serviceType":[
+          "LCA",
+          "MKI",
+          "MPG",
+          "EPD",
+          "Duurzaamheid GWW",
+          "Milieu-impact infrastructuur"
+        ],
+        "areaServed":{"@type":"Country","name":"Nederland"}
+      },
+      {
+        "@type":"WebPage",
+        "@id":"https://infraimpact.nl/#webpage",
+        "url":"https://infraimpact.nl/",
+        "name":"InfraImpact | MKI-berekening & LCA adviseur GWW | Duurzaam aanbesteden",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":[
+          "LCA",
+          "MKI",
+          "MPG",
+          "EPD",
+          "Duurzaamheid GWW",
+          "Milieu-impact infrastructuur",
+          "NMD",
+          "SBK",
+          "EMVI"
+        ],
+        "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/#breadcrumbs",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"}
+        ]
+      }
+    ]
   }
   </script>
 
@@ -315,7 +401,7 @@
 
   <!-- HERO -->
   <header class="relative bg-transparent">
-    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center py-20 md:py-28" style="isolation:isolate">
+    <section class="max-w-screen-xl mx-auto w-full px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center py-20 md:py-28" style="isolation:isolate" aria-label="Introductie InfraImpact">
       <div data-animate>
         <p class="text-green-500 font-semibold uppercase tracking-wide">Making sustainability count</p>
         <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.28] md:leading-[1.26] mt-2 pb-1 md:pb-2 text-gradient overflow-visible">
@@ -344,7 +430,7 @@
 
   <main>
     <!-- WAT WE DOEN -->
-    <section id="wat" class="w-full py-20 md:py-24 bg-gray-50 relative overflow-hidden">
+    <section id="wat" class="w-full py-20 md:py-24 bg-gray-50 relative overflow-hidden" aria-label="Expertise LCA en MKI">
       <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" aria-hidden="true"></div>
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-12">
         <div class="max-w-3xl mx-auto text-center space-y-4" data-animate>
@@ -375,7 +461,8 @@
                 <h3 class="text-xl font-semibold">Aanbesteding &amp; projectadvies</h3>
               </div>
             </div>
-            <p>Voor aannemers leggen we kosten en MKI naast elkaar om het optimale resultaat te behalen in aanbestedingen.
+            <p>Voor aannemers leggen we kosten en MKI naast elkaar om het optimale resultaat te behalen in
+               <a href="/projecten/" class="underline hover:text-green-700">aanbestedingen</a>.
                Praktisch, onderbouwd en direct toepasbaar binnen de eisen van opdrachtgevers.</p>
           </div>
 
@@ -404,7 +491,7 @@
     </section>
 
     <!-- INZICHTEN / SAMENSTELLING -->
-    <section id="inzicht" class="py-20 md:py-24 section-brand">
+    <section id="inzicht" class="py-20 md:py-24 section-brand" aria-label="Inzicht in milieu-impact">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center">
         <div class="glass-card rounded-3xl p-4 shadow-xl" data-animate>
           <img src="/assets/asfaltsamenstelling.png"
@@ -434,7 +521,7 @@
     </section>
 
 <!-- PROJECTEN / VERTROUWD DOOR -->
-<section id="projecten" class="py-20 md:py-24 bg-gray-50 border-t">
+<section id="projecten" class="py-20 md:py-24 bg-gray-50 border-t" aria-label="Projecten en samenwerking">
   <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-10">
 
     <div class="max-w-3xl" data-animate>
@@ -484,7 +571,7 @@
 </section>
     
     <!-- FAQ -->
-    <section id="faq" class="py-20 md:py-24">
+    <section id="faq" class="py-20 md:py-24" aria-label="Veelgestelde vragen LCA en MKI">
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 space-y-10">
         <div class="max-w-3xl mx-auto text-center" data-animate>
           <h2 class="text-3xl md:text-4xl font-bold text-gradient mb-4">Veelgestelde vragen over MKI &amp; LCA</h2>
@@ -544,7 +631,7 @@
     </section>
     
     <!-- QUOTE -->
-    <section class="py-16 bg-white relative">
+    <section class="py-16 bg-white relative" aria-label="Contact en kennismaking">
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" aria-hidden="true"></div>
       <div class="max-w-3xl mx-auto text-center px-6 sm:px-8" data-animate>
         <blockquote class="text-2xl md:text-[26px] italic text-gray-800 leading-relaxed bg-white/70 rounded-3xl p-8 shadow-sm border border-gray-100">
