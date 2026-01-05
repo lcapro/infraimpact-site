@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wat zegt milieu-impact écht? | InfraImpact</title>
+  <title>Wat zegt milieu-impact echt? | InfraImpact</title>
   <meta name="description" content="Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.">
   <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
-  <meta name="author" content="InfraImpact B.V.">
+  <meta name="author" content="Jim van der Kooij (InfraImpact)">
 
   <link rel="icon" type="image/x-icon" href="../../favicon.ico">
   <link rel="icon" type="image/png" href="../../assets/infra_impact-icoon.png">
@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-  <meta property="og:title" content="Wat zegt milieu-impact écht?">
+  <meta property="og:title" content="Wat zegt milieu-impact echt?">
   <meta property="og:description" content="Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/">
@@ -58,17 +58,20 @@
     .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
     .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
     :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
-    .article-content h2{margin-top:2.5rem}
-    .article-content p{margin-top:1.25rem}
+    .article-content h2{margin-top:2rem}
+    .article-content p{margin-top:1rem}
+    .article-content h2 + p{margin-top:0.75rem}
+    .article-content ul{margin-top:0.75rem}
+    .article-content li{margin-top:0.25rem}
   </style>
 
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@type":"Article",
-    "headline":"Wat zegt milieu-impact écht?",
+    "headline":"Wat zegt milieu-impact echt?",
     "description":"Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.",
-    "author":{"@type":"Organization","name":"InfraImpact B.V."},
+    "author":{"@type":"Person","name":"Jim van der Kooij","affiliation":{"@type":"Organization","name":"InfraImpact"}},
     "publisher":{"@type":"Organization","name":"InfraImpact B.V.","logo":{"@type":"ImageObject","url":"https://infraimpact.nl/assets/logo_full.png"}},
     "mainEntityOfPage":{"@type":"WebPage","@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/"}
   }
@@ -83,10 +86,20 @@
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
         <a href="/" class="hover:text-green-700">Home</a>
         <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
-        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
         <a href="/projecten/" class="hover:text-green-700">Projecten</a>
         <div class="nav-dropdown">
-          <button type="button" class="hover:text-green-700" aria-haspopup="true">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Tools
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/epd-checker/">MKI-toetsing asfalt</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
             Artikelen
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
@@ -94,12 +107,10 @@
           </button>
           <div class="nav-dropdown-menu">
             <a href="/artikelen/">Artikelen overzicht</a>
-            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact écht?</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact echt?</a>
           </div>
         </div>
-        <a href="/epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="/over/" class="hover:text-green-700">Over ons</a>
-        <a href="/#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
       <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
@@ -110,36 +121,37 @@
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
         <a href="/" class="block py-2">Home</a>
         <a href="/#wat" class="block py-2">Wat we doen</a>
-        <a href="/#inzicht" class="block py-2">Inzichten</a>
         <a href="/projecten/" class="block py-2">Projecten</a>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Tools</p>
+          <a href="/epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        </div>
         <div class="pt-2">
           <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
           <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
-          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact écht?</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact echt?</a>
         </div>
-        <a href="/epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         <a href="/over/" class="block py-2">Over ons</a>
-        <a href="/#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
     </div>
   </nav>
 
   <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
-    <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+    <nav class="text-sm text-gray-500 mb-6 inline-flex flex-wrap items-center gap-2 bg-white/90 rounded-xl px-4 py-2 shadow-sm ring-1 ring-gray-100" aria-label="Breadcrumb">
       <a href="/" class="hover:text-green-700">Home</a>
       <span class="mx-2">/</span>
       <a href="/artikelen/" class="hover:text-green-700">Artikelen</a>
       <span class="mx-2">/</span>
-      <span aria-current="page">Wat zegt milieu-impact écht?</span>
+      <span aria-current="page">Wat zegt milieu-impact echt?</span>
     </nav>
 
     <header class="space-y-4">
       <p class="text-green-600 font-semibold uppercase tracking-wide">Artikel</p>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient">Wat zegt milieu-impact écht?</h1>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient">Wat zegt milieu-impact echt?</h1>
       <p class="text-lg text-gray-700">Van asfaltgewicht naar sturingsinformatie met LCA en MKI</p>
       <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-        <span>InfraImpact</span>
+        <span>Jim van der Kooij (InfraImpact)</span>
         <span>•</span>
         <span>GWW-sector</span>
         <span>•</span>
@@ -160,13 +172,13 @@
       </p>
       <p>
         Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes. Pas wanneer je
-        milieu-impact combineert met andere projectinformatie – zoals gewicht, samenstelling en levensduur – ontstaat
+        milieu-impact combineert met andere projectinformatie, zoals gewicht, samenstelling en levensduur, ontstaat
         echte sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
       </p>
 
       <h2 class="text-2xl font-bold text-gradient">Asfalt: ogenschijnlijk eenvoudig, inhoudelijk complex</h2>
       <p>Een ton asfalt bestaat grofweg uit vier componenten. In hoofdlijnen kennen we ze allemaal:</p>
-      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+      <ul class="list-disc list-inside text-gray-700 space-y-1 mt-3">
         <li>steenslag</li>
         <li>zand</li>
         <li>vulstof</li>
@@ -199,7 +211,7 @@
         Dit is precies het type inzicht dat je niet uit een materiaallijst haalt, maar wél uit een levenscyclusanalyse.
         LCA dwingt ons om verder te kijken dan wat we zien op de bouwplaats. Het laat zien waar milieudruk ontstaat in:
       </p>
-      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+      <ul class="list-disc list-inside text-gray-700 space-y-1 mt-3">
         <li>grondstofwinning</li>
         <li>productieprocessen</li>
         <li>transport</li>
@@ -222,7 +234,7 @@
         Die samenvatting is alleen betrouwbaar als de onderliggende data klopt. EPD’s vormen daarom het fundament. Ze
         zorgen voor:
       </p>
-      <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+      <ul class="list-disc list-inside text-gray-700 space-y-1 mt-3">
         <li>gevalideerde LCA-data</li>
         <li>vaste systeemgrenzen</li>
         <li>consistente rekenregels volgens EN 15804</li>
@@ -261,8 +273,8 @@
         zeker als het cijfer pas laat in beeld komt. Maar zodra MKI wordt ingezet als ontwerpinstrument, verandert de
         dynamiek.
       </p>
-      <p>Door varianten naast elkaar te zetten – bijvoorbeeld met verschillende bitumensoorten, recyclingpercentages of
-        onderhoudsstrategieën – wordt zichtbaar:</p>
+      <p>Door varianten naast elkaar te zetten, bijvoorbeeld met verschillende bitumensoorten, recyclingpercentages of
+        onderhoudsstrategieën, wordt zichtbaar:</p>
       <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
         <li>waar de milieu-impact daadwerkelijk verschuift</li>
         <li>welke maatregel substantieel effect heeft</li>
@@ -291,7 +303,7 @@
         aantoonbaar effect.
       </p>
       <p>
-        Wil je weten waar in jouw project de grootste milieu-impact zit – en waar optimalisatie daadwerkelijk verschil
+        Wil je weten waar in jouw project de grootste milieu-impact zit, en waar optimalisatie daadwerkelijk verschil
         maakt? Dan begint het met het stellen van de juiste vragen aan de juiste data.
       </p>
     </section>

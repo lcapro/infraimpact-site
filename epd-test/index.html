@@ -88,10 +88,19 @@
       <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
         <a href="/" class="hover:text-green-700">Home</a>
         <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
-        <a href="/#inzicht" class="hover:text-green-700">Inzichten</a>
-        <div hidden><a href="#inzicht" class="hover:text-green-700">Projecten</a></div>
         <div class="nav-dropdown">
-          <button type="button" class="hover:text-green-700" aria-haspopup="true">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Tools
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="../epd-checker/">MKI-toetsing asfalt</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
             Artikelen
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
@@ -99,12 +108,10 @@
           </button>
           <div class="nav-dropdown-menu">
             <a href="/artikelen/">Artikelen overzicht</a>
-            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact écht?</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact echt?</a>
           </div>
         </div>
-        <a href="../epd-checker/" class="hover:text-green-700">MKI-toetsing asfalt</a>
         <a href="../over/" class="hover:text-green-700">Over ons</a>
-        <a href="#contact" class="hover:text-green-700">Contact</a>
         <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
       <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
@@ -115,16 +122,16 @@
       <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
         <a href="/" class="block py-2">Home</a>
         <a href="/#wat" class="block py-2">Wat we doen</a>
-        <a href="/#inzicht" class="block py-2">Inzichten</a>
-        <div hidden><a href="#inzicht" class="block py-2">Projecten</a></div>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Tools</p>
+          <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        </div>
         <div class="pt-2">
           <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
           <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
-          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact écht?</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact echt?</a>
         </div>
-        <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         <a href="../over/" class="block py-2">Over ons</a>
-        <a href="#contact" class="block py-2">Contact</a>
         <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
       </div>
     </div>
