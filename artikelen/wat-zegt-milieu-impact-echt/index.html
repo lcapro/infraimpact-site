@@ -50,7 +50,7 @@
       padding-bottom: 0.2em;
       overflow: visible;
     }
-    nav{position:sticky;top:0;background-color:#ffffffcc;backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:transform .3s ease,box-shadow .3s ease;z-index:50}
+    .site-nav{position:sticky;top:0;background-color:#ffffffcc;backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:transform .3s ease,box-shadow .3s ease;z-index:50}
     .nav-dropdown{position:relative}
     .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
     .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
@@ -90,7 +90,7 @@
   </script>
 </head>
 <body class="bg-transparent text-gray-700">
-  <nav id="nav" class="transition-transform duration-300">
+  <nav id="nav" class="site-nav transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="/" class="flex items-center">
         <img src="../../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
