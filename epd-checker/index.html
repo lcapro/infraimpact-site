@@ -109,45 +109,99 @@
     .btn-danger:hover{background:#fecaca}
   </style>
 
-  <!-- Structured data (Tool + Breadcrumbs) -->
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"SoftwareApplication",
-    "name":"MKI-toetsing asfalt checker",
-    "applicationCategory":"EngineeringApplication",
-    "operatingSystem":"Web",
-    "creator":{"@type":"Organization","name":"InfraImpact B.V."},
-    "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
-    "url":"https://infraimpact.nl/epd-checker/"
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"},
-      {"@type":"ListItem","position":2,"name":"MKI-toetsing asfalt","item":"https://infraimpact.nl/epd-checker/"}
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
+          "LCA",
+          "MKI",
+          "EPD",
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
+        ],
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"WebPage",
+        "@id":"https://infraimpact.nl/epd-checker/#webpage",
+        "url":"https://infraimpact.nl/epd-checker/",
+        "name":"MKI-toetsing asfalt – EPD-checker voor eisen PCR 2.0 | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"},
+        "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/epd-checker/#breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"MKI-toetsing asfalt",
+            "item":"https://infraimpact.nl/epd-checker/"
+          }
+        ]
+      },
+      {
+        "@type":"WebApplication",
+        "@id":"https://infraimpact.nl/epd-checker/#application",
+        "name":"MKI-toetsing asfalt",
+        "applicationCategory":"BusinessApplication",
+        "operatingSystem":"Web",
+        "url":"https://infraimpact.nl/epd-checker/",
+        "creator":{"@id":"https://infraimpact.nl/#organization"},
+        "description":"Upload EPD’s en toets ze aan de NPDW MKI-plafondwaarden (PCR 2.0), met exporteerbare resultaten voor besluitvorming."
+      }
     ]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"WebPage",
-    "@id":"https://infraimpact.nl/epd-checker/#webpage",
-    "url":"https://infraimpact.nl/epd-checker/",
-    "name":"MKI-toetsing asfalt – EPD-checker voor eisen PCR 2.0 | InfraImpact",
-    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
-    "about":[
-      "EPD",
-      "MKI",
-      "PCR 2.0",
-      "Asfalt",
-      "NMD"
-    ],
-    "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
   }
   </script>
 
