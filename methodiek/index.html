@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Methodiek | InfraImpact</title>
+  <meta name="description" content="Methodiek voor LCA en MKI in de GWW: normen, bepalingsmethoden en toetsbare onderbouwing voor projecten.">
+
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="icon" type="image/png" href="../assets/infra_impact-icoon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/infra_impact-icoon.png">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/methodiek/"/>
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/methodiek/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%; animation: bgMove 60s ease infinite;
+      color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient {
+      background: linear-gradient(90deg,var(--brand-green),var(--brand-blue));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      display: inline-block;
+      padding-bottom: 0.2em;
+      overflow: visible;
+    }
+    .nav-dropdown{position:relative}
+    .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
+    .nav-dropdown-menu a{display:block;padding:0.55rem 0.75rem;border-radius:0.6rem;white-space:nowrap}
+    .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
+  </style>
+</head>
+
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Tools
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="../epd-checker/">MKI-toetsing asfalt</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Artikelen
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/artikelen/">Artikelen overzicht</a>
+            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact echt?</a>
+          </div>
+        </div>
+        <a href="../over/" class="hover:text-green-700">Over ons</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Tools</p>
+          <a href="../epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        </div>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
+          <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
+          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact echt?</a>
+        </div>
+        <a href="../over/" class="block py-2">Over</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">InfraImpact</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient mb-4">Methodiek</h1>
+      <p class="text-lg text-gray-700">Heldere onderbouwing van LCA- en MKI-berekeningen voor GWW-projecten.</p>
+    </header>
+
+    <section class="bg-white border border-gray-100 rounded-2xl shadow-sm p-8 space-y-6">
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Normen en bepalingsmethoden</h2>
+        <p class="text-gray-700">
+          InfraImpact is een onafhankelijk LCA-adviesbureau, gespecialiseerd in MKI-berekeningen, LCA- en EPD-begeleiding volgens geldende normen en bepalingsmethoden voor GWW-projecten.
+          We werken toetsbaar en transparant, zodat uitkomsten direct toepasbaar zijn in beleid, ontwerp en aanbesteding.
+        </p>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">Wat dit oplevert</h2>
+        <p class="text-gray-700">Je krijgt consistente resultaten, een herleidbare aanpak en duidelijkheid over aannames en data, zonder ruis in het proces.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact" class="bg-gray-900 text-gray-100 rounded-t-3xl shadow-inner pt-16 pb-12 relative overflow-hidden">
+    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-blue-600 to-green-500 opacity-60" aria-hidden="true"></div>
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
+      <div class="space-y-3">
+        <p class="text-sm uppercase tracking-[0.2em] text-green-200 font-semibold">Contact</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Samen bouwen aan aantoonbare duurzaamheid</h2>
+        <p class="text-gray-200">Benieuwd hoe jouw organisatie voordeel haalt uit MKI &amp; LCA? We denken graag mee en reageren dezelfde werkdag.</p>
+      </div>
+      <div class="space-y-2 text-gray-200">
+        <p class="text-lg font-semibold">InfraImpact B.V.</p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-200 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-200 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-semibold shadow-md inline-flex cta">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-300 text-sm space-x-2">
+        <a href="../privacy/" class="underline">Privacy</a>
+        <span>·</span>
+        <a href="../cookies/" class="underline">Cookiebeleid</a>
+        <span>·</span>
+        <a href="../algemene-voorwaarden/" class="underline">Algemene voorwaarden</a>
+        <span>·</span>
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+      <p class="text-gray-400 text-sm">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (btn && menu){
+      btn.addEventListener('click',()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobileMenu a').forEach(a=>{
+        a.addEventListener('click',()=>{
+          if (window.innerWidth < 768){
+            btn.setAttribute('aria-expanded','false');
+            menu.classList.add('hidden');
+          }
+        });
+      });
+      document.addEventListener('keydown',(e)=>{
+        if(e.key==='Escape'){
+          btn.setAttribute('aria-expanded','false');
+          menu.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
