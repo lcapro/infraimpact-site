@@ -69,10 +69,84 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"CollectionPage",
-    "name":"Artikelen",
-    "url":"https://infraimpact.nl/artikelen/",
-    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"}
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
+          "LCA",
+          "MKI",
+          "EPD",
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
+        ],
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"CollectionPage",
+        "@id":"https://infraimpact.nl/artikelen/#webpage",
+        "name":"Artikelen | InfraImpact",
+        "url":"https://infraimpact.nl/artikelen/",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"}
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/artikelen/#breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Artikelen",
+            "item":"https://infraimpact.nl/artikelen/"
+          }
+        ]
+      }
+    ]
   }
   </script>
 </head>

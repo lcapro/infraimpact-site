@@ -80,12 +80,106 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"Article",
-    "headline":"Wat zegt milieu-impact echt?",
-    "description":"Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.",
-    "author":{"@type":"Person","name":"Jim van der Kooij","affiliation":{"@type":"Organization","name":"InfraImpact"}},
-    "publisher":{"@type":"Organization","name":"InfraImpact B.V.","logo":{"@type":"ImageObject","url":"https://infraimpact.nl/assets/logo_full.png"}},
-    "mainEntityOfPage":{"@type":"WebPage","@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/"}
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
+          "LCA",
+          "MKI",
+          "EPD",
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
+        ],
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"WebPage",
+        "@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/#webpage",
+        "url":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/",
+        "name":"Wat zegt milieu-impact echt? | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"},
+        "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/#breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Artikelen",
+            "item":"https://infraimpact.nl/artikelen/"
+          },
+          {
+            "@type":"ListItem",
+            "position":3,
+            "name":"Wat zegt milieu-impact echt?",
+            "item":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/"
+          }
+        ]
+      },
+      {
+        "@type":"Article",
+        "@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/#article",
+        "headline":"Wat zegt milieu-impact echt?",
+        "description":"Van asfaltgewicht naar sturingsinformatie met LCA en MKI. Waarom massa niet hetzelfde is als milieudruk.",
+        "author":{
+          "@type":"Person",
+          "name":"Jim van der Kooij",
+          "worksFor":{"@id":"https://infraimpact.nl/#organization"}
+        },
+        "publisher":{"@id":"https://infraimpact.nl/#organization"},
+        "datePublished":"TODO: vul publicatiedatum in (YYYY-MM-DD)",
+        "dateModified":"TODO: vul wijzigingsdatum in (YYYY-MM-DD)",
+        "mainEntityOfPage":{"@id":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/#webpage"}
+      }
+    ]
   }
   </script>
 </head>

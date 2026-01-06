@@ -92,69 +92,96 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"Organization",
-    "name":"InfraImpact B.V.",
-    "url":"https://infraimpact.nl",
-    "logo":"https://infraimpact.nl/assets/logo_full.png",
-    "email":"mailto:info@infraimpact.nl",
-    "telephone":"+31621350805",
-    "address":{"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"}
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Person",
-    "name":"Jim van der Kooij",
-    "jobTitle":"LCA- & MKI-specialist",
-    "worksFor":{"@type":"Organization","name":"InfraImpact B.V."},
-    "email":"mailto:jim.vanderkooij@infraimpact.nl",
-    "url":"https://infraimpact.nl/over/",
-    "image":"https://infraimpact.nl/assets/jim_profile.webp"
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"},
-      {"@type":"ListItem","position":2,"name":"Over ons","item":"https://infraimpact.nl/over/"}
-    ]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
     "@graph":[
       {
-        "@type":"WebPage",
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
+          "LCA",
+          "MKI",
+          "EPD",
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
+        ],
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"AboutPage",
         "@id":"https://infraimpact.nl/over/#webpage",
         "url":"https://infraimpact.nl/over/",
         "name":"Over InfraImpact – MKI & LCA-advies dat duurzaamheid beslisbaar maakt in de GWW",
-        "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
-        "about":[
-          "LCA",
-          "MKI",
-          "EPD",
-          "Duurzaamheid GWW",
-          "Milieu-impact infrastructuur"
-        ],
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"},
         "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
       },
       {
-        "@type":"ConsultingService",
-        "@id":"https://infraimpact.nl/over/#consulting",
-        "name":"LCA & MKI advies",
-        "provider":{"@type":"Organization","name":"InfraImpact B.V.","url":"https://infraimpact.nl/"},
-        "serviceType":[
+        "@type":"Person",
+        "name":"Jim van der Kooij",
+        "jobTitle":"LCA- & MKI-specialist",
+        "worksFor":{"@id":"https://infraimpact.nl/#organization"},
+        "knowsAbout":[
           "LCA",
           "MKI",
-          "EPD",
-          "Aanbestedingsadvies",
-          "Duurzaamheidsadvies GWW"
+          "GWW",
+          "EPD"
         ],
-        "areaServed":{"@type":"Country","name":"Nederland"}
+        "image":"https://infraimpact.nl/assets/jim_profile.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/over/#breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Over ons",
+            "item":"https://infraimpact.nl/over/"
+          }
+        ]
       }
     ]
   }

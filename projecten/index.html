@@ -73,23 +73,89 @@
     .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
   </style>
 
-  <!-- SEO: WebPage context voor MKI/LCA projecten (ItemList volgt dynamisch via JS) -->
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"WebPage",
-    "@id":"https://infraimpact.nl/projecten/#webpage",
-    "url":"https://infraimpact.nl/projecten/",
-    "name":"Projecten & samenwerkingen – MKI & LCA-cases in de GWW | InfraImpact",
-    "isPartOf":{"@type":"WebSite","@id":"https://infraimpact.nl/#website"},
-    "about":[
-      "MKI",
-      "LCA",
-      "EMVI",
-      "Aanbestedingen",
-      "GWW"
-    ],
-    "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
+          "LCA",
+          "MKI",
+          "EPD",
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
+        ],
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"CollectionPage",
+        "@id":"https://infraimpact.nl/projecten/#webpage",
+        "url":"https://infraimpact.nl/projecten/",
+        "name":"Projecten & samenwerkingen – MKI & LCA-cases in de GWW | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"},
+        "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/projecten/#breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Projecten",
+            "item":"https://infraimpact.nl/projecten/"
+          }
+        ]
+      }
+    ]
   }
   </script>
 

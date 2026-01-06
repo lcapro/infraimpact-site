@@ -169,53 +169,7 @@
 
   </style>
 
-  <!-- Structured data: WebSite -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"WebSite",
-    "@id":"https://infraimpact.nl/#website",
-    "name":"InfraImpact",
-    "url":"https://infraimpact.nl",
-    "potentialAction":{"@type":"SearchAction","target":"https://infraimpact.nl/?q={search_term_string}","query-input":"required name=search_term_string"}
-  }
-  </script>
-
-  <!-- (Optioneel) Organization schema op de home -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"ProfessionalService",
-    "name":"InfraImpact B.V.",
-    "url":"https://infraimpact.nl",
-    "logo":"https://infraimpact.nl/assets/logo_full.png",
-    "email":"mailto:info@infraimpact.nl",
-    "telephone":"+31621350805",
-    "address":{"@type":"PostalAddress","streetAddress":"Westzeedijk 639","postalCode":"3024 PJ","addressLocality":"Rotterdam","addressCountry":"NL"},
-    "areaServed": {"@type":"Country","name":"Nederland"},
-    "knowsAbout": [
-      "MKI-berekeningen",
-      "LCA-berekeningen",
-      "duurzaam aanbesteden",
-      "GWW-sector",
-      "EPD's voor bouwmaterialen",
-      "milieu-impactberekeningen",
-      "MPG-berekeningen",
-      "EMVI-aanbestedingen",
-      "NMD/SBK data"
-    ],
-    "serviceType":[
-      "LCA (Life Cycle Assessment)",
-      "MKI-berekeningen",
-      "EPD-analyse",
-      "Duurzaamheidsadvies GWW",
-      "Aanbestedingsadvies (EMVI)"
-    ],
-    "sameAs":[]
-  }
-  </script>
-
-  <!-- SEO: aanvullende entiteiten voor topical authority (LCA/MKI/MPG/EPD) -->
+  <!-- Structured data: organization + homepage -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -224,10 +178,11 @@
         "@type":"Organization",
         "@id":"https://infraimpact.nl/#organization",
         "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
         "url":"https://infraimpact.nl/",
         "logo":"https://infraimpact.nl/assets/logo_full.png",
-        "email":"mailto:info@infraimpact.nl",
-        "telephone":"+31621350805",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
         "address":{
           "@type":"PostalAddress",
           "streetAddress":"Westzeedijk 639",
@@ -235,22 +190,39 @@
           "addressLocality":"Rotterdam",
           "addressCountry":"NL"
         },
-        "areaServed":{"@type":"Country","name":"Nederland"}
-      },
-      {
-        "@type":"ConsultingService",
-        "@id":"https://infraimpact.nl/#consulting",
-        "name":"LCA & MKI advies",
-        "provider":{"@id":"https://infraimpact.nl/#organization"},
-        "serviceType":[
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "knowsAbout":[
           "LCA",
           "MKI",
-          "MPG",
           "EPD",
-          "Duurzaamheid GWW",
-          "Milieu-impact infrastructuur"
+          "EN 15804",
+          "Bepalingsmethode",
+          "PCR",
+          "GWW"
         ],
-        "areaServed":{"@type":"Country","name":"Nederland"}
+        "description":"Onafhankelijk adviesbureau voor LCA-, MKI- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[
+          {
+            "@type":"ContactPoint",
+            "contactType":"sales",
+            "email":"info@infraimpact.nl",
+            "telephone":"+31 6 2135 0805",
+            "areaServed":[
+              "NL"
+            ]
+          }
+        ]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
       },
       {
         "@type":"WebPage",
@@ -258,24 +230,131 @@
         "url":"https://infraimpact.nl/",
         "name":"InfraImpact | MKI-berekening & LCA adviseur GWW | Duurzaam aanbesteden",
         "isPartOf":{"@id":"https://infraimpact.nl/#website"},
-        "about":[
-          "LCA",
-          "MKI",
-          "MPG",
-          "EPD",
-          "Duurzaamheid GWW",
-          "Milieu-impact infrastructuur",
-          "NMD",
-          "SBK",
-          "EMVI"
-        ],
+        "about":{"@id":"https://infraimpact.nl/#organization"},
         "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
       },
       {
         "@type":"BreadcrumbList",
         "@id":"https://infraimpact.nl/#breadcrumbs",
         "itemListElement":[
-          {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"}
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: diensten (Wat we doen) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"WebPage",
+        "@id":"https://infraimpact.nl/#wat-we-doen",
+        "url":"https://infraimpact.nl/#wat",
+        "name":"Wat we doen | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"}
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/#wat-we-doen-breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Wat we doen",
+            "item":"https://infraimpact.nl/#wat"
+          }
+        ]
+      },
+      {
+        "@type":"Service",
+        "@id":"https://infraimpact.nl/#service-lca-mki",
+        "name":"LCA & MKI-berekeningen",
+        "serviceType":"LCA & MKI-berekeningen",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "description":"Betrouwbare milieuprestaties van producten, materialen en projecten conform actuele richtlijnen."
+      },
+      {
+        "@type":"Service",
+        "@id":"https://infraimpact.nl/#service-aanbesteding",
+        "name":"Aanbesteding & projectadvies",
+        "serviceType":"Aanbesteding & projectadvies",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "description":"Praktisch advies voor MKI-gestuurde aanbestedingen en projectbeslissingen in de GWW."
+      },
+      {
+        "@type":"Service",
+        "@id":"https://infraimpact.nl/#service-kennis",
+        "name":"Kennis & opleidingen",
+        "serviceType":"Kennis & opleidingen",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "areaServed":[
+          {
+            "@type":"Country",
+            "name":"Netherlands"
+          }
+        ],
+        "description":"Trainingen en kennissessies over MKI, LCA-methodiek en relevante regelgeving."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: contact -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"ContactPage",
+        "@id":"https://infraimpact.nl/#contact",
+        "url":"https://infraimpact.nl/#contact",
+        "name":"Contact | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"}
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/#contact-breadcrumbs",
+        "itemListElement":[
+          {
+            "@type":"ListItem",
+            "position":1,
+            "name":"Home",
+            "item":"https://infraimpact.nl/"
+          },
+          {
+            "@type":"ListItem",
+            "position":2,
+            "name":"Contact",
+            "item":"https://infraimpact.nl/#contact"
+          }
         ]
       }
     ]
