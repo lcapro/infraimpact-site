@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCA in aanbestedingen GWW | InfraImpact</title>
+  <meta name="description" content="LCA in aanbestedingen: hoe je MKI en LCA inzet in EMVI/BPKV, variantenstudies en aanbestedingsstrategieën in GWW.">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+  <meta name="author" content="InfraImpact B.V.">
+
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="icon" type="image/png" href="../assets/infra_impact-icoon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/infra_impact-icoon.png">
+  <meta name="theme-color" content="#2F6F65">
+
+  <link rel="canonical" href="https://infraimpact.nl/lca-aanbestedingen-gww/">
+  <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/lca-aanbestedingen-gww/">
+  <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/lca-aanbestedingen-gww/">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+  <meta property="og:title" content="LCA in aanbestedingen GWW">
+  <meta property="og:description" content="LCA in aanbestedingen: hoe je MKI en LCA inzet in EMVI/BPKV, variantenstudies en aanbestedingsstrategieën in GWW.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://infraimpact.nl/lca-aanbestedingen-gww/">
+  <meta property="og:site_name" content="InfraImpact">
+  <meta property="og:image" content="https://infraimpact.nl/assets/og-infraimpact.webp">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+
+  <style>
+    :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
+    body {
+      background: linear-gradient(120deg,#ffffff,#f8fbfd,#e8f3f0,#eaf3f7);
+      background-size: 400% 400%;
+      animation: bgMove 60s ease infinite;
+      color: var(--ink);
+      font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .text-gradient {
+      background: linear-gradient(90deg,var(--brand-green),var(--brand-blue));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      display: inline-block;
+      padding-bottom: 0.2em;
+      overflow: visible;
+    }
+    .site-nav{position:sticky;top:0;background-color:#ffffffcc;backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:transform .3s ease,box-shadow .3s ease;z-index:50}
+    .nav-dropdown{position:relative}
+    .nav-dropdown button{display:flex;align-items:center;gap:0.35rem}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;min-width:16rem;background:#fff;border:1px solid rgba(15,23,42,0.08);border-radius:0.75rem;box-shadow:0 18px 40px rgba(15,23,42,0.12);padding:0.4rem;display:none;z-index:60}
+    .nav-dropdown-menu a{display:block;padding:0.55rem 0.75rem;border-radius:0.6rem;white-space:nowrap}
+    .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
+    :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
+    .content-card{background:rgba(255,255,255,0.95);border-radius:1.25rem;border:1px solid rgba(15,23,42,0.08);box-shadow:0 12px 30px rgba(15,23,42,0.08)}
+    .divider{height:1px;background:linear-gradient(90deg,rgba(47,111,101,0.1),rgba(43,83,109,0.35),rgba(47,111,101,0.1));margin:2.5rem 0}
+    .info-grid{display:grid;gap:1.5rem}
+    .info-card{background:#f9fafb;border-radius:1rem;padding:1.25rem;border:1px solid rgba(15,23,42,0.06)}
+    .faq-item{border-bottom:1px solid rgba(15,23,42,0.08);padding:1.2rem 0}
+    .faq-item:last-child{border-bottom:none}
+    @media (min-width:768px){
+      .info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "name":"InfraImpact B.V.",
+        "legalName":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "logo":"https://infraimpact.nl/assets/logo_full.png",
+        "email":"info@infraimpact.nl",
+        "telephone":"+31 6 2135 0805",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        },
+        "areaServed":[{"@type":"Country","name":"Netherlands"}],
+        "knowsAbout":["LCA","MKI","EPD","EN 15804","Bepalingsmethode","PCR","GWW"],
+        "description":"Onafhankelijk adviesbureau voor MKI-, LCA- en EPD-begeleiding binnen GWW-projecten, volgens geldende normen en bepalingsmethoden.",
+        "contactPoint":[{"@type":"ContactPoint","contactType":"sales","email":"info@infraimpact.nl","telephone":"+31 6 2135 0805","areaServed":["NL"]}]
+      },
+      {
+        "@type":"WebSite",
+        "@id":"https://infraimpact.nl/#website",
+        "name":"InfraImpact",
+        "url":"https://infraimpact.nl/"
+      },
+      {
+        "@type":"WebPage",
+        "@id":"https://infraimpact.nl/lca-aanbestedingen-gww/#webpage",
+        "url":"https://infraimpact.nl/lca-aanbestedingen-gww/",
+        "name":"LCA in aanbestedingen GWW | InfraImpact",
+        "isPartOf":{"@id":"https://infraimpact.nl/#website"},
+        "about":{"@id":"https://infraimpact.nl/#organization"},
+        "primaryImageOfPage":"https://infraimpact.nl/assets/og-infraimpact.webp"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"https://infraimpact.nl/lca-aanbestedingen-gww/#breadcrumbs",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Home","item":"https://infraimpact.nl/"},
+          {"@type":"ListItem","position":2,"name":"Kennis","item":"https://infraimpact.nl/artikelen/"},
+          {"@type":"ListItem","position":3,"name":"LCA in aanbestedingen GWW","item":"https://infraimpact.nl/lca-aanbestedingen-gww/"}
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="bg-transparent text-gray-700">
+  <nav id="nav" class="site-nav transition-transform duration-300">
+    <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
+      <a href="/" class="flex items-center">
+        <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition"/>
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-gray-700 font-medium">
+        <a href="/" class="hover:text-green-700">Home</a>
+        <a href="/#wat" class="hover:text-green-700">Wat we doen</a>
+        <a href="/projecten/" class="hover:text-green-700">Projecten</a>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Tools
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/epd-checker/">MKI-toetsing asfalt</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
+            Kennis
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/lca-gww/">LCA in de GWW</a>
+            <a href="/mki-berekening-gww/">MKI-berekeningen</a>
+            <a href="/epd-en-15804/">EPD &amp; normen</a>
+            <a href="/lca-aanbestedingen-gww/">LCA in aanbestedingen</a>
+            <a href="/artikelen/">Alle artikelen</a>
+          </div>
+        </div>
+        <a href="/over/" class="hover:text-green-700">Over ons</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 sm:px-8 py-3 space-y-2">
+        <a href="/" class="block py-2">Home</a>
+        <a href="/#wat" class="block py-2">Wat we doen</a>
+        <a href="/projecten/" class="block py-2">Projecten</a>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Tools</p>
+          <a href="/epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
+        </div>
+        <div class="pt-2">
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Kennis</p>
+          <a href="/lca-gww/" class="block py-2">LCA in de GWW</a>
+          <a href="/mki-berekening-gww/" class="block py-2">MKI-berekeningen</a>
+          <a href="/epd-en-15804/" class="block py-2">EPD &amp; normen</a>
+          <a href="/lca-aanbestedingen-gww/" class="block py-2">LCA in aanbestedingen</a>
+          <a href="/artikelen/" class="block py-2">Alle artikelen</a>
+        </div>
+        <a href="/over/" class="block py-2">Over ons</a>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-screen-lg mx-auto px-6 sm:px-8 py-16">
+    <nav class="text-sm text-gray-500 mb-6 inline-flex flex-wrap items-center gap-2 bg-white/90 rounded-xl px-4 py-2 shadow-sm ring-1 ring-gray-100" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-green-700">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/artikelen/" class="hover:text-green-700">Kennis</a>
+      <span class="mx-2">/</span>
+      <span aria-current="page">LCA in aanbestedingen GWW</span>
+    </nav>
+
+    <header class="space-y-4">
+      <p class="text-green-600 font-semibold uppercase tracking-wide">Pillar</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gradient">LCA in aanbestedingen GWW</h1>
+      <p class="text-lg text-gray-700">Zo gebruik je LCA en MKI in aanbestedingen om varianten te sturen, keuzes te onderbouwen en duurzaamheidsambities tastbaar te maken.</p>
+    </header>
+
+    <section class="mt-10 content-card p-6 md:p-10 space-y-8">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Waarom LCA een aanbesteding sterker maakt</h2>
+        <p>
+          In GWW-aanbestedingen draait het om onderbouwde keuzes. LCA maakt zichtbaar waar de milieu-impact ontstaat en
+          wat het effect is van alternatieven. Dat helpt opdrachtgevers om eisen scherp te formuleren, en aannemers om
+          hun voorstel overtuigend te onderbouwen.
+        </p>
+        <p>
+          Een LCA is daarbij geen extra toets, maar een stuurinstrument. Wie het vroeg inzet, kan varianten ontwikkelen
+          die zowel technisch als milieukundig scoren. Meer achtergrond vind je op <a href="/lca-gww/" class="text-green-700 font-semibold hover:text-green-600">LCA in de GWW</a>.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">MKI als beoordelingscriterium</h2>
+        <p>
+          MKI wordt vaak gebruikt in EMVI/BPKV. Het geeft een eenduidig criterium, maar alleen als de onderliggende LCA
+          consistent is. Daarom is het belangrijk om de spelregels expliciet te maken: systeemgrenzen, levensduur en
+          databronnen. Dat voorkomt dat je appels met peren vergelijkt.
+        </p>
+        <p>
+          In de praktijk word je beloond door een lagere MKI te laten zien dan waar de opdrachtgever mee rekent. Dat is
+          deels het spel van zo duurzaam mogelijke producten toepassen, maar óók van zoveel mogelijk milieuwinst boeken
+          binnen de spelregels (Bepalingsmethode, PCR en aanbestedingsleidraad). Zijn die spelregels onduidelijk, te breed
+          of verkeerd, dan ontstaat papieren verduurzaming. Juist dat maakt het onderscheid in aanbestedingen en tenders:
+          begrijpen welke speelruimte je krijgt of geeft, die benutten waar het kan en tegelijk signaleren waar het
+          wringt zodat de verduurzaming ook in de praktijk landt.
+        </p>
+        <div class="info-grid mt-6">
+          <div class="info-card">
+            <h3 class="text-lg font-semibold text-gray-800">Wat opdrachtgevers moeten borgen</h3>
+            <ul class="mt-3 space-y-2 text-gray-700 list-disc list-inside">
+              <li>Heldere scope en functionele eenheid.</li>
+              <li>Afspraken over NMD/EPD gebruik.</li>
+              <li>Bepalingsmethode en rekenregels vastleggen.</li>
+              <li>Transparante beoordeling van varianten.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h3 class="text-lg font-semibold text-gray-800">Wat inschrijvers scherp moeten hebben</h3>
+            <ul class="mt-3 space-y-2 text-gray-700 list-disc list-inside">
+              <li>Consistente data en herleidbare aannames.</li>
+              <li>Verificatie van EPD’s en productdata.</li>
+              <li>Uitleg van impactverschuivingen in de keten.</li>
+              <li>Een verhaal dat aansluit op de ambities van de opdrachtgever.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Timing: vroeg sturen of laat optimaliseren</h2>
+        <p>
+          De meeste impactwinst zit in de vroege ontwerpkeuzes. Daarom hoort LCA al in de tenderfase aan tafel. Wie pas
+          na gunning start, kan vaak alleen nog binnen bestaande kaders optimaliseren.
+        </p>
+        <p>
+          Een korte claimvariant: InfraImpact ondersteunt GWW-teams bij het vertalen van LCA en MKI naar aanbestedingsstrategie,
+          zodat duurzaamheid geen bijlage is maar een onderbouwd onderdeel van de aanbieding.
+        </p>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismaking%20LCA%20aanbestedingen%20GWW" class="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 font-medium">Plan een kennismaking</a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Variantenstudies en scenario’s</h2>
+        <p>
+          In aanbestedingen gaat het zelden om één ontwerp. Variantenstudies helpen om keuzes te onderbouwen: materialen,
+          onderhoudsstrategieën en hergebruikscenario’s. Een variantenstudie is het moment om te sturen op zowel MKI als
+          uitvoerbaarheid.
+        </p>
+        <p>
+          Met goede EPD-data en NMD-verwijzingen wordt de vergelijking betrouwbaar. Lees meer over productdata op
+          <a href="/epd-en-15804/" class="text-green-700 font-semibold hover:text-green-600">EPD &amp; normen</a>.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Checklist: LCA in de tenderfase</h2>
+        <p>
+          Een praktische checklist voor teams die LCA inzetten in tenders:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+          <li>Definieer de functionele eenheid en systeemgrenzen in de uitvraag.</li>
+          <li>Kies één bepalingsmethode en communiceer die expliciet.</li>
+          <li>Leg vast wanneer NMD-data en wanneer EPD-data worden gebruikt.</li>
+          <li>Maak afspraken over levensduur en onderhoudsintervallen.</li>
+          <li>Gebruik LCA-resultaten in de toelichting, niet alleen in tabellen.</li>
+        </ul>
+        <p>
+          Voor verdieping kun je ook het artikel <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="text-green-700 font-semibold hover:text-green-600">Wat zegt milieu-impact echt?</a> lezen.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Veelgestelde vragen</h2>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">1. Waarom wordt MKI gebruikt in EMVI/BPKV?</h3>
+          <p class="mt-2 text-gray-700">Omdat het een meetbare, eenduidige waarde geeft. Het werkt alleen goed als de LCA-onderbouwing helder is.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">2. Hoe voorkom je appels-met-peren vergelijkingen?</h3>
+          <p class="mt-2 text-gray-700">Door systeemgrenzen, levensduur en data vast te leggen in de uitvraag. Consistente uitgangspunten zijn cruciaal.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">3. Is LCA verplicht in aanbestedingen?</h3>
+          <p class="mt-2 text-gray-700">Dat verschilt per opdrachtgever. Wel neemt het belang snel toe, vooral bij duurzaamheidsdoelstellingen.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">4. Wanneer start je met een LCA in tenderfase?</h3>
+          <p class="mt-2 text-gray-700">Zo vroeg mogelijk, idealiter bij schets- of voorontwerp. Dan is er nog echte sturingsruimte.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">5. Welke rol spelen EPD’s?</h3>
+          <p class="mt-2 text-gray-700">EPD’s leveren gevalideerde productdata en maken de MKI onderbouwd. Ze zijn vaak een must voor sterke aanbestedingen.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">6. Hoe werkt de Bepalingsmethode?</h3>
+          <p class="mt-2 text-gray-700">De Bepalingsmethode beschrijft hoe je MKI berekent en welke data je mag gebruiken. Dat zorgt voor uniformiteit.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">7. Kun je MKI gebruiken als gunningscriterium?</h3>
+          <p class="mt-2 text-gray-700">Ja, mits het goed is ingebed in de beoordeling. Zonder duidelijke spelregels wordt het kwetsbaar.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">8. Wat is de relatie met CO₂-prestatieladder?</h3>
+          <p class="mt-2 text-gray-700">De ladder gaat over organisatie-emissies, LCA gaat over projectimpact. Ze vullen elkaar aan.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">9. Hoe groot moet een variantenstudie zijn?</h3>
+          <p class="mt-2 text-gray-700">Dat hangt af van de tender en de tijd. Zelfs twee varianten kunnen al waardevolle sturing geven.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">10. Hoe ga je om met onzekerheden in data?</h3>
+          <p class="mt-2 text-gray-700">Maak aannames expliciet en kies conservatieve waarden. Transparantie is belangrijker dan perfectie.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">11. Wat betekent dit voor leveranciers?</h3>
+          <p class="mt-2 text-gray-700">Leveranciers met goede EPD’s leveren bewijsbare impactreductie. Dat helpt aannemers bij hun inschrijving.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="font-semibold text-gray-800">12. Waar vind ik meer achtergrond?</h3>
+          <p class="mt-2 text-gray-700">Bekijk <a href="/mki-berekening-gww/" class="text-green-700 font-semibold hover:text-green-600">MKI-berekeningen</a> en <a href="/methodiek/" class="text-green-700 font-semibold hover:text-green-600">Methodiek</a> voor verdere verdieping.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-12 content-card p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gradient">Meer grip op LCA in aanbestedingen?</h2>
+        <p class="text-gray-600 mt-2">We helpen je met scope, varianten en een verhaal dat aansluit op de uitvraag.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="mailto:info@infraimpact.nl?subject=Kennismaking%20LCA%20aanbestedingen%20GWW" class="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 font-medium">Plan kennismaking</a>
+        <a href="mailto:info@infraimpact.nl?subject=Vraag%20over%20LCA%20aanbestedingen%20GWW" class="inline-flex items-center px-6 py-3 rounded-xl border border-green-600 text-green-700 hover:bg-green-50 font-medium">Stel je vraag per mail</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact" class="bg-gray-900 text-gray-100 rounded-t-3xl shadow-inner pt-16 pb-12 relative overflow-hidden">
+    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-blue-600 to-green-500 opacity-60" aria-hidden="true"></div>
+    <div class="max-w-screen-md mx-auto px-6 sm:px-8 text-center space-y-6" data-animate>
+      <div class="space-y-3">
+        <p class="text-sm uppercase tracking-[0.2em] text-green-200 font-semibold">Kennis</p>
+        <div class="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 text-green-100">
+          <a href="/lca-gww/" class="underline">LCA in de GWW</a>
+          <a href="/mki-berekening-gww/" class="underline">MKI-berekeningen</a>
+          <a href="/epd-en-15804/" class="underline">EPD &amp; normen</a>
+          <a href="/lca-aanbestedingen-gww/" class="underline">LCA in aanbestedingen</a>
+          <a href="/artikelen/" class="underline">Alle artikelen</a>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <p class="text-sm uppercase tracking-[0.2em] text-green-200 font-semibold">Contact</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Samen bouwen aan aantoonbare duurzaamheid</h2>
+        <p class="text-gray-200">Benieuwd hoe jouw organisatie voordeel haalt uit MKI &amp; LCA? We denken graag mee en reageren dezelfde werkdag.</p>
+      </div>
+      <div class="space-y-2 text-gray-200">
+        <p class="text-lg font-semibold">InfraImpact B.V.</p>
+        <p>Westzeedijk 639, 3024 PJ Rotterdam</p>
+        <p>E: <a href="mailto:info@infraimpact.nl" class="text-green-200 underline">info@infraimpact.nl</a></p>
+        <p>T: <a href="tel:+31621350805" class="text-green-200 underline">+31 (0)6 2135 0805</a></p>
+      </div>
+      <div>
+        <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen&amp;body=Beste%20InfraImpact,%0A%0AIk%20zou%20graag%20een%20kennismakingsafspraak%20met%20jullie%20inplannen%20om%20te%20kijken%20wat%20we%20voor%20elkaar%20kunnen%20betekenen.%20Laat%20vooral%20weten%20welke%20dagen%20en%20tijden%20voor%20jullie%20goed%20uitkomen.%0A%0AOm%20het%20makkelijker%20te%20maken%20stel%20ik%20alvast%20een%20paar%20opties%20voor%3A%0A%5BHier%20je%20eigen%20voorgestelde%20dagen%2Ftijden%20invullen%5D%0A%0AOok%20heb%20ik%20nog%20een%20vraag%20die%20ik%20graag%20tijdens%20het%20gesprek%20wil%20meenemen%3A%0A%5BHier%20je%20specifieke%20vraag%20invullen%5D%0A%0AIk%20hoor%20graag%20van%20jullie!%0A%0AGroeten,%0A" class="px-8 py-3 rounded-xl bg-green-600 hover:bg-green-500 transition text-white font-semibold shadow-md inline-flex cta">
+          Plan een kennismaking
+        </a>
+      </div>
+      <p class="text-gray-300 text-sm space-x-2">
+        <a href="/privacy/" class="underline">Privacy</a>
+        <span>·</span>
+        <a href="/cookies/" class="underline">Cookiebeleid</a>
+        <span>·</span>
+        <a href="/algemene-voorwaarden/" class="underline">Algemene voorwaarden</a>
+        <span>·</span>
+        <a id="cookieSettingsLink" href="#cookie-instellingen" class="underline">Cookie-instellingen</a>
+      </p>
+      <p class="text-gray-400 text-sm">
+        © <span id="year"></span> InfraImpact - Making sustainability count.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.contains('hidden') === false;
+        mobileMenu.classList.toggle('hidden');
+        menuBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+  </script>
+</body>
+</html>
