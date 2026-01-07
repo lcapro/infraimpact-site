@@ -153,12 +153,18 @@
           {
             "@type":"ListItem",
             "position":2,
-            "name":"Artikelen",
+            "name":"Kennis",
             "item":"https://infraimpact.nl/artikelen/"
           },
           {
             "@type":"ListItem",
             "position":3,
+            "name":"Alle artikelen",
+            "item":"https://infraimpact.nl/artikelen/"
+          },
+          {
+            "@type":"ListItem",
+            "position":4,
             "name":"Wat zegt milieu-impact echt?",
             "item":"https://infraimpact.nl/artikelen/wat-zegt-milieu-impact-echt/"
           }
@@ -206,14 +212,17 @@
         </div>
         <div class="nav-dropdown">
           <button type="button" class="hover:text-green-700 font-medium" aria-haspopup="true">
-            Artikelen
+            Kennis
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
             </svg>
           </button>
           <div class="nav-dropdown-menu">
-            <a href="/artikelen/">Artikelen overzicht</a>
-            <a href="/artikelen/wat-zegt-milieu-impact-echt/">Wat zegt milieu-impact echt?</a>
+            <a href="/lca-gww/">LCA in de GWW</a>
+            <a href="/mki-berekening-gww/">MKI-berekeningen</a>
+            <a href="/epd-en-15804/">EPD &amp; normen</a>
+            <a href="/lca-aanbestedingen-gww/">LCA in aanbestedingen</a>
+            <a href="/artikelen/">Alle artikelen</a>
           </div>
         </div>
         <a href="/over/" class="hover:text-green-700">Over ons</a>
@@ -233,9 +242,12 @@
           <a href="/epd-checker/" class="block py-2">MKI-toetsing asfalt</a>
         </div>
         <div class="pt-2">
-          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Artikelen</p>
-          <a href="/artikelen/" class="block py-2">Artikelen overzicht</a>
-          <a href="/artikelen/wat-zegt-milieu-impact-echt/" class="block py-2">Wat zegt milieu-impact echt?</a>
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-400">Kennis</p>
+          <a href="/lca-gww/" class="block py-2">LCA in de GWW</a>
+          <a href="/mki-berekening-gww/" class="block py-2">MKI-berekeningen</a>
+          <a href="/epd-en-15804/" class="block py-2">EPD &amp; normen</a>
+          <a href="/lca-aanbestedingen-gww/" class="block py-2">LCA in aanbestedingen</a>
+          <a href="/artikelen/" class="block py-2">Alle artikelen</a>
         </div>
         <a href="/over/" class="block py-2">Over ons</a>
         <a href="mailto:info@infraimpact.nl?subject=Kennismakingsafspraak%20plannen" class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta">Plan kennismaking</a>
@@ -247,7 +259,9 @@
     <nav class="text-sm text-gray-500 mb-6 inline-flex flex-wrap items-center gap-2 bg-white/90 rounded-xl px-4 py-2 shadow-sm ring-1 ring-gray-100" aria-label="Breadcrumb">
       <a href="/" class="hover:text-green-700">Home</a>
       <span class="mx-2">/</span>
-      <a href="/artikelen/" class="hover:text-green-700">Artikelen</a>
+      <a href="/artikelen/" class="hover:text-green-700">Kennis</a>
+      <span class="mx-2">/</span>
+      <a href="/artikelen/" class="hover:text-green-700">Alle artikelen</a>
       <span class="mx-2">/</span>
       <span aria-current="page">Wat zegt milieu-impact echt?</span>
     </nav>
@@ -270,19 +284,19 @@
         <div>
           <p class="text-sm uppercase tracking-[0.2em] text-gray-400 font-semibold">Introductie</p>
           <p class="text-xl text-gray-700 font-medium mt-3">
-            Wie al langer in de GWW-sector werkt, herkent het comfort van cijfers. Tonnen asfalt, kubieke meters,
-            transportkilometers en kosten per strekkende meter vormen de dagelijkse realiteit. Het zijn grootheden die
-            houvast geven en waar besluitvorming vaak op rust.
+            In de GWW zijn cijfers de basis van elk gesprek. Tonnen asfalt, kubieke meters, transportkilometers en kosten
+            per strekkende meter bepalen de dagelijkse praktijk. Steeds vaker komen daar LCA-, MKI- en EPD-data bij, omdat
+            duurzaamheid meetbaar en vergelijkbaar moet zijn in ontwerp en aanbesteding.
           </p>
           <p>
-            Zodra het gesprek verschuift naar milieu-impact, verandert dat. MKI-waarden, CO₂-emissies en EPD-data zijn
-            inhoudelijk correct, maar voelen voor veel professionals abstracter. In de praktijk zie ik regelmatig dat één
-            milieucijfer wordt gebruikt als eindconclusie, terwijl het juist een startpunt zou moeten zijn.
+            Die data zijn inhoudelijk juist, maar ze worden vaak samengevat in één waarde. Daarmee ontstaat het risico
+            dat milieu-impact als eindscore wordt gezien in plaats van als sturingsinformatie. Juist in de GWW, waar
+            keuzes rond materiaal, onderhoud en levensduur elkaar beïnvloeden, vraagt dat om context.
           </p>
           <p>
-            Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes. Pas wanneer je
-            milieu-impact combineert met andere projectinformatie, zoals gewicht, samenstelling en levensduur, ontstaat
-            echte sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
+            Milieu-impact is geen losstaand getal. Het is het resultaat van samenhangende keuzes, vastgelegd in een LCA
+            en samengevat in een MKI. Pas wanneer je die cijfers koppelt aan ontwerpkeuzes en EPD-data, ontstaat echte
+            sturingsinformatie. Asfalt is daarvoor een herkenbaar en leerzaam voorbeeld.
           </p>
         </div>
 
@@ -293,9 +307,10 @@
               <a href="#asfalt-complex"><span>1. Asfalt: ogenschijnlijk eenvoudig</span><span>↓</span></a>
               <a href="#milieudruk-keten"><span>2. Waar de milieudruk ontstaat</span><span>↓</span></a>
               <a href="#mki-epd"><span>3. MKI &amp; EPD’s in context</span><span>↓</span></a>
-              <a href="#sturing"><span>4. Van inzicht naar sturing</span><span>↓</span></a>
-              <a href="#aanbestedingen"><span>5. MKI in aanbestedingen</span><span>↓</span></a>
-              <a href="#conclusie"><span>6. Conclusie</span><span>↓</span></a>
+              <a href="#gww-context"><span>4. Wat betekent dit voor MKI en LCA?</span><span>↓</span></a>
+              <a href="#sturing"><span>5. Van inzicht naar sturing</span><span>↓</span></a>
+              <a href="#aanbestedingen"><span>6. MKI in aanbestedingen</span><span>↓</span></a>
+              <a href="#conclusie"><span>7. Conclusie</span><span>↓</span></a>
             </nav>
           </div>
         </aside>
@@ -377,6 +392,21 @@
       <p>
         Zonder goede EPD’s verwordt sturen op MKI tot schijnzekerheid. Met goede EPD’s wordt het een inhoudelijk gesprek
         over ontwerpkeuzes.
+      </p>
+
+      <div class="article-divider"></div>
+
+      <h2 id="gww-context" class="text-2xl font-bold text-gradient">Wat betekent dit voor MKI en LCA in de GWW?</h2>
+      <p>
+        In de GWW is MKI geen doel op zich, maar een manier om ontwerpkeuzes te vergelijken. Het cijfer is alleen
+        betrouwbaar als de onderliggende LCA transparant is: wat zijn de systeemgrenzen, welke levensduur is gehanteerd
+        en welke databronnen zijn gebruikt? Dat gesprek voorkomt dat een lage score vooral het gevolg is van aannames.
+      </p>
+      <p>
+        Daarom is het verstandig om MKI altijd te koppelen aan de bredere LCA-context. De pagina
+        <a href="/lca-gww/" class="text-green-700 font-semibold hover:text-green-600">LCA in de GWW</a> laat zien hoe je
+        dat structureel toepast, terwijl <a href="/mki-berekening-gww/" class="text-green-700 font-semibold hover:text-green-600">MKI-berekeningen</a>
+        ingaat op het rekenwerk en de vertaling naar aanbestedingen en ontwerpkeuzes.
       </p>
 
       <div class="article-divider"></div>
