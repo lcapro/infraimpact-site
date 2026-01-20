@@ -64,6 +64,13 @@
     .info-card{background:#f9fafb;border-radius:1rem;padding:1.25rem;border:1px solid rgba(15,23,42,0.06)}
     .faq-item{border-bottom:1px solid rgba(15,23,42,0.08);padding:1.2rem 0}
     .faq-item:last-child{border-bottom:none}
+    .lca-yes-no ul{list-style:none;padding-left:0;margin:0}
+    .lca-yes-no li{position:relative;padding-left:1.6rem;line-height:1.5}
+    .lca-yes-no .lca-yes h3,.lca-yes-no .lca-yes li{color:#1f7a3f}
+    .lca-yes-no .lca-no h3,.lca-yes-no .lca-no li{color:#b42318}
+    .lca-yes-no .lca-yes li::before,.lca-yes-no .lca-no li::before{position:absolute;left:0;top:0.1em;font-weight:700;line-height:1}
+    .lca-yes-no .lca-yes li::before{content:"✓";color:#1f7a3f}
+    .lca-yes-no .lca-no li::before{content:"✕";color:#b42318}
     @media (min-width:768px){
       .info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
