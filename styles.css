@@ -169,3 +169,39 @@ footer a{color: var(--muted)}
   background: transparent;
   border-color: rgba(0,0,0,.15);
 }
+
+/* LCA yes/no list styling (scoped) */
+.lca-yes-no ul{
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.lca-yes-no li{
+  position: relative;
+  padding-left: 1.6rem;
+  line-height: 1.5;
+}
+.lca-yes-no .lca-yes h3,
+.lca-yes-no .lca-yes li{
+  color: #1f7a3f;
+}
+.lca-yes-no .lca-no h3,
+.lca-yes-no .lca-no li{
+  color: #b42318;
+}
+.lca-yes-no .lca-yes li::before,
+.lca-yes-no .lca-no li::before{
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-weight: 700;
+  line-height: 1;
+}
+.lca-yes-no .lca-yes li::before{
+  content: "✓";
+  color: #1f7a3f;
+}
+.lca-yes-no .lca-no li::before{
+  content: "✕";
+  color: #b42318;
+}
