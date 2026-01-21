@@ -28,4 +28,26 @@
       toggle.setAttribute("aria-label", "Schakel naar " + (next === "dark" ? "licht" : "donker") + " thema");
     });
   }
+
+  const epdForm = document.querySelector("#epd-database-form");
+  if (epdForm){
+    epdForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(epdForm);
+      const voornaam = formData.get("voornaam");
+      const achternaam = formData.get("achternaam");
+      const bedrijf = formData.get("bedrijf");
+      const email = formData.get("email");
+      const subject = "Aanmelding EPD database";
+      const body = [
+        "Voornaam: " + voornaam,
+        "Achternaam: " + achternaam,
+        "Bedrijf: " + bedrijf,
+        "E-mailadres: " + email
+      ].join("\n");
+      const mailto = "mailto:info@infraimpact.nl?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+      window.location.href = mailto;
+      epdForm.reset();
+    });
+  }
 })();
