@@ -82,6 +82,16 @@
     a.button:hover, a.px-6:hover, a.px-8:hover{transform:translateY(-1px)}
     .glass-card{background:linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,251,247,0.8));border:1px solid rgba(47,111,101,0.08);box-shadow:0 20px 60px rgba(17,24,39,0.08)}
     .cta-balanced{padding-left:1cm;padding-right:1cm}
+    .epd-signup-btn{
+      align-self:flex-start;
+      display:inline-flex;
+      width:auto;
+      min-height:44px;
+      padding:12px 18px;
+      font-size:16px;
+      line-height:1.2;
+      border-radius:12px;
+    }
     .accent-ring{position:relative}
     .accent-ring::after{content:'';position:absolute;inset:-10px;z-index:-1;border-radius:9999px;background:radial-gradient(circle at 30% 30%,rgba(122,218,211,0.35),transparent 55%)}
     .flow-grid{position:relative}
@@ -626,7 +636,7 @@
                 <p class="text-gray-700 mt-3">Interesse? Meld je alvast aan en krijg als eerste toegang.</p>
               </div>
             </div>
-            <button type="button" data-epd-open class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta cta-balanced">
+            <button type="button" data-epd-open class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500 cta cta-balanced epd-signup-btn">
               Meld me aan
             </button>
           </div>
