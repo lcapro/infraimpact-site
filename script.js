@@ -30,6 +30,39 @@
   }
 
   const epdForm = document.querySelector("#epd-database-form");
+  const epdModal = document.querySelector("#epd-modal");
+  const epdOpenButtons = document.querySelectorAll("[data-epd-open]");
+  const epdCloseButtons = document.querySelectorAll("[data-epd-close]");
+
+  const toggleEpdModal = (isOpen) => {
+    if (!epdModal) return;
+    epdModal.classList.toggle("hidden", !isOpen);
+    epdModal.classList.toggle("flex", isOpen);
+    document.body.style.overflow = isOpen ? "hidden" : "";
+  };
+
+  epdOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => toggleEpdModal(true));
+  });
+
+  epdCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => toggleEpdModal(false));
+  });
+
+  if (epdModal){
+    epdModal.addEventListener("click", (event) => {
+      if (event.target === epdModal){
+        toggleEpdModal(false);
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape"){
+      toggleEpdModal(false);
+    }
+  });
+
   if (epdForm){
     epdForm.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -48,6 +81,7 @@
       const mailto = "mailto:info@infraimpact.nl?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
       window.location.href = mailto;
       epdForm.reset();
+      toggleEpdModal(false);
     });
   }
 })();
