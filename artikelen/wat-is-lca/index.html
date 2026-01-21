@@ -77,6 +77,15 @@
     .faq-chevron::after{content:'›';transform:rotate(90deg);transition:transform .3s ease,color .3s ease;font-weight:700;color:#64748b}
     .faq-item[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
     .article-divider{height:1px;background:linear-gradient(90deg,rgba(47,111,101,0.1),rgba(43,83,109,0.4),rgba(47,111,101,0.1));margin:2.5rem 0}
+    .lca-example{background:rgba(255,255,255,0.9);border:1px solid rgba(15,23,42,0.08);border-radius:1rem;padding:1.5rem;box-shadow:0 12px 30px rgba(15,23,42,0.06)}
+    .lca-example__embed{width:100%;height:800px;border:1px solid rgba(15,23,42,0.1);border-radius:0.75rem}
+    .lca-example__actions{margin-top:1rem}
+    .lca-example__actions a{display:inline-flex;align-items:center;gap:0.4rem}
+    .lca-example__note{font-size:0.875rem;color:#6b7280;margin-top:0.5rem}
+    @media (max-width:640px){
+      .lca-example{padding:1.25rem}
+      .lca-example__embed{height:560px}
+    }
   </style>
 
   <script type="application/ld+json">
@@ -286,6 +295,34 @@
         <li>Transparantie voorkomt discussie achteraf in aanbestedingen.</li>
         <li>Een LCA helpt om duurzaamheidseisen concreet te maken.</li>
       </ul>
+
+      <div class="article-divider"></div>
+
+      <h2 class="text-2xl font-bold text-gradient">Voorbeeld: LCA (NMD categorie 3 data)</h2>
+      <p>
+        Onderstaande rapportage is een voorbeeld van hoe een LCA wordt opgebouwd en verantwoord. Het gaat om NMD categorie 3 data.
+        Deze data is redelijk verouderd; een update volgt snel.
+      </p>
+      <p>
+        Zie dit vooral als inkijk in de aannames, systeemgrenzen en manier van rapporteren — niet als ‘de waarheid’ voor jouw specifieke project.
+      </p>
+      <div class="lca-example mt-6">
+        <iframe
+          class="lca-example__embed"
+          src="/assets/docs/voorbeeld-lca-nmd-cat3-funderingslagen.pdf"
+          title="Voorbeeld LCA rapport (PDF)"
+          loading="lazy"
+        ></iframe>
+        <div class="lca-example__actions">
+          <a
+            href="/assets/docs/voorbeeld-lca-nmd-cat3-funderingslagen.pdf"
+            class="inline-flex items-center px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-500 transition"
+          >
+            Download het voorbeeldrapport (PDF)
+          </a>
+          <p class="lca-example__note">Werkt de insluiter niet? Download dan het bestand.</p>
+        </div>
+      </div>
 
       <div class="article-divider"></div>
 
