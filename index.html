@@ -85,12 +85,17 @@
     .flow-grid{position:relative}
     .flow-grid::before{content:'';position:absolute;top:28px;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(47,111,101,0.15),rgba(47,111,101,0.05));z-index:0;display:none}
     @media(min-width:768px){.flow-grid::before{display:block}}
-    details[open]{border-color:rgba(47,111,101,0.35);box-shadow:0 10px 30px rgba(17,24,39,0.08)}
-    details[open] summary{color:var(--brand-green)}
-    details summary{cursor:pointer;list-style:none}
-    details summary::-webkit-details-marker{display:none}
-    .faq-chevron::after{content:'›';transform:rotate(90deg);transition:transform .3s ease;color:#4B5563;font-weight:700}
-    details[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
+    .faq-item{position:relative;background:#f9fafb;border:1px solid rgba(15,23,42,0.06);border-radius:1.25rem;box-shadow:0 12px 28px rgba(15,23,42,0.06);transition:border-color .3s ease,box-shadow .3s ease,transform .3s ease;background-clip:padding-box}
+    .faq-item:hover{border-color:rgba(47,111,101,0.35);box-shadow:0 20px 40px rgba(15,23,42,0.08);transform:translateY(-1px)}
+    .faq-item[open]{border-color:rgba(47,111,101,0.45);box-shadow:0 22px 44px rgba(15,23,42,0.1);background:linear-gradient(180deg,#f9fafb 0%,#f2f7f5 100%)}
+    .faq-item[open] summary{color:var(--brand-green)}
+    .faq-summary{cursor:pointer;list-style:none}
+    .faq-summary::-webkit-details-marker{display:none}
+    .faq-summary:focus-visible{outline:none}
+    .faq-item:focus-within{outline:2px solid rgba(47,111,101,0.35);outline-offset:3px}
+    .faq-item p{color:#4b5563}
+    .faq-chevron::after{content:'›';transform:rotate(90deg);transition:transform .3s ease,color .3s ease;font-weight:700;color:#64748b}
+    .faq-item[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
     @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}}
     h1, h2 { line-height:1.25; overflow:visible }
     .nav-dropdown{position:relative}
@@ -699,48 +704,48 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-6" data-animate>
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Wanneer heb ik een MKI-berekening nodig?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
             <p class="mt-3 text-gray-700">Een MKI-berekening is relevant zodra je de milieuprestatie van een ontwerp, product of project inzichtelijk wilt maken. In de bouw en GWW wordt MKI vaak gevraagd bij aanbestedingen, EMVI/MKI-uitvragen en bij het onderbouwen van duurzaamheidsambities. Maar ook intern kun je MKI gebruiken om varianten te vergelijken en keuzes te onderbouwen richting management of opdrachtgever.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Wat is het verschil tussen een LCA en een MKI-score?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
             <p class="mt-3 text-gray-700">Een LCA (Life Cycle Assessment) beschrijft de milieu-impact van een product, materiaal of project over de volledige levenscyclus. De MKI-score zet al die effecten om naar één getal in euro’s milieukosten. In Nederland wordt die MKI-score veel gebruikt in de bouw en GWW om oplossingen te vergelijken, aanbestedingen te beoordelen en beleid vorm te geven.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Welke gegevens hebben jullie nodig voor een LCA- of MKI-berekening?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
             <p class="mt-3 text-gray-700">Meestal starten we met beschikbare ontwerpen, hoeveelheden, materiaal- en mengselinformatie, transportafstanden en de geplande uitvoeringswijze. We denken mee welke informatie echt nodig is en wat nog mag worden aangevuld. Op basis daarvan koppelen we de juiste milieudata, bouwen we het LCA-model op en rekenen we de MKI uit, inclusief een duidelijke onderbouwing.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Hoe helpt MKI bij duurzaam aanbesteden en strategische keuzes?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
             <p class="mt-3 text-gray-700">Met MKI kun je varianten objectief vergelijken op milieu-impact. In aanbestedingen en EMVI/MKI-trajecten gebruiken we MKI om inschrijvingen te optimaliseren en de onderbouwing scherp te formuleren. Maar MKI helpt ook bij interne strategie: bijvoorbeeld bij het kiezen van materialen, het opstellen van duurzaamheidsdoelen of het onderbouwen van investeringen in meer duurzame oplossingen.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Kunnen jullie ook helpen met EPD’s, tools en kennisopbouw?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
             <p class="mt-3 text-gray-700">Ja. We ondersteunen leveranciers en producenten bij het interpreteren en inzetten van EPD’s, en we helpen organisaties bij het slim gebruiken van productdata in LCA- en MKI-berekeningen. Daarnaast ontwikkelen we tooling en bieden we trainingen en kennissessies, zodat teams zelf beter met milieu-impactdata aan de slag kunnen.</p>
           </details>
 
-          <details class="p-6 bg-gray-50 rounded-2xl shadow-sm border border-transparent transition-colors">
-            <summary class="flex items-center justify-between text-lg font-semibold cursor-pointer gap-3">
+          <details class="faq-item p-6">
+            <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
               <span>Voor wie is InfraImpact de juiste partner?</span>
               <span class="faq-chevron text-sm"></span>
             </summary>
