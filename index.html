@@ -635,15 +635,15 @@
     </section>
 
     <div id="epd-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-6" role="dialog" aria-modal="true" aria-labelledby="epd-modal-title">
-      <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-xl">
+      <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-xl">
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="text-sm uppercase tracking-[0.25em] text-green-600 font-semibold">Aanmelden</p>
             <h3 id="epd-modal-title" class="text-2xl font-semibold text-gray-900">EPD database (coming soon)</h3>
             <p class="text-gray-700 mt-2">Laat je gegevens achter om als eerste toegang te krijgen.</p>
           </div>
-          <button type="button" data-epd-close class="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-600 hover:text-gray-900">
-            Sluiten
+          <button type="button" data-epd-close aria-label="Sluit popup" class="rounded-full border border-gray-200 px-3 py-1 text-lg leading-none text-gray-600 hover:text-gray-900">
+            ×
           </button>
         </div>
         <form id="epd-database-form" class="mt-6 grid gap-4 md:grid-cols-2">
@@ -663,13 +663,28 @@
             E-mailadres
             <input type="email" name="email" required class="mt-1 rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
           </label>
-          <div class="md:col-span-2 flex items-center justify-between gap-3">
-            <p class="text-xs text-gray-500">Door te verzenden mailen we je aanmelding naar info@infraimpact.nl.</p>
-            <button type="submit" class="inline-flex items-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta cta-balanced">
-              Meld me aan
+          <label class="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden" aria-hidden="true">
+            Website
+            <input type="text" name="website" tabindex="-1" autocomplete="off">
+          </label>
+          <div class="md:col-span-2">
+            <p id="epd-form-error" class="hidden text-sm text-red-600" role="alert">
+              Er ging iets mis. Probeer het opnieuw.
+            </p>
+          </div>
+          <div class="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button type="submit" class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta cta-balanced">
+              Indienen
             </button>
+            <p class="text-xs text-gray-500">Door je aan te melden gebruiken we je gegevens om je te informeren over de EPD database.</p>
           </div>
         </form>
+        <div id="epd-success" class="mt-6 hidden space-y-4">
+          <p class="text-lg font-semibold text-gray-900">Aangemeld! Dankjewel, we houden je op de hoogte.</p>
+          <button type="button" data-epd-close class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-green-600 text-white hover:bg-green-500 cta cta-balanced">
+            Sluiten
+          </button>
+        </div>
       </div>
     </div>
 
