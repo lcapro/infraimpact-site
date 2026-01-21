@@ -65,6 +65,17 @@
     .article-content ul{margin-top:0.75rem}
     .article-content li{margin-top:0.25rem}
     .article-card{background:rgba(255,255,255,0.9);border-radius:1rem;box-shadow:0 12px 30px rgba(15,23,42,0.08);border:1px solid rgba(15,23,42,0.06)}
+    .faq-item{position:relative;background:#f9fafb;border:1px solid rgba(15,23,42,0.06);border-radius:1.25rem;box-shadow:0 12px 28px rgba(15,23,42,0.06);transition:border-color .3s ease,box-shadow .3s ease,transform .3s ease;background-clip:padding-box}
+    .faq-item:hover{border-color:rgba(47,111,101,0.35);box-shadow:0 20px 40px rgba(15,23,42,0.08);transform:translateY(-1px)}
+    .faq-item[open]{border-color:rgba(47,111,101,0.45);box-shadow:0 22px 44px rgba(15,23,42,0.1);background:linear-gradient(180deg,#f9fafb 0%,#f2f7f5 100%)}
+    .faq-item[open] summary{color:var(--brand-green)}
+    .faq-summary{cursor:pointer;list-style:none}
+    .faq-summary::-webkit-details-marker{display:none}
+    .faq-summary:focus-visible{outline:none}
+    .faq-item:focus-within{outline:2px solid rgba(47,111,101,0.35);outline-offset:3px}
+    .faq-item p{color:#4b5563}
+    .faq-chevron::after{content:'›';transform:rotate(90deg);transition:transform .3s ease,color .3s ease;font-weight:700;color:#64748b}
+    .faq-item[open] .faq-chevron::after{transform:rotate(-90deg);color:var(--brand-green)}
     .article-divider{height:1px;background:linear-gradient(90deg,rgba(47,111,101,0.1),rgba(43,83,109,0.4),rgba(47,111,101,0.1));margin:2.5rem 0}
   </style>
 
@@ -273,30 +284,48 @@
 
       <h2 class="text-2xl font-bold text-gradient">Veelgestelde vragen</h2>
       <div class="space-y-4">
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">1. Is MKI altijd gebaseerd op dezelfde rekenregels?</h3>
-          <p class="text-gray-700 mt-2">De basis is vastgelegd in normen en bepalingsmethoden, maar de toepassing kan per project verschillen door aannames en scope.</p>
-        </div>
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">2. Wat is het verschil tussen MKI en CO₂?</h3>
-          <p class="text-gray-700 mt-2">MKI bevat meerdere milieucategorieën, CO₂ is er daar maar één van. MKI is dus breder dan alleen uitstoot.</p>
-        </div>
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">3. Hoe betrouwbaar is een MKI-waarde?</h3>
-          <p class="text-gray-700 mt-2">Dat hangt af van de kwaliteit van de LCA-data en de transparantie van aannames. Zonder die context is vergelijken riskant.</p>
-        </div>
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">4. Is MKI bruikbaar buiten aanbestedingen?</h3>
-          <p class="text-gray-700 mt-2">Ja. In de ontwerpfase helpt MKI om keuzes te toetsen en te sturen op impact, voordat het project vastligt.</p>
-        </div>
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">5. Hoe verhouden MKI en EPD zich?</h3>
-          <p class="text-gray-700 mt-2">EPD’s leveren productdata die je nodig hebt voor een betrouwbare MKI. Zonder EPD’s blijft de onderbouwing zwakker.</p>
-        </div>
-        <div class="article-card p-4">
-          <h3 class="font-semibold text-gray-800">6. Waar kan ik meer leren over MKI-berekeningen?</h3>
-          <p class="text-gray-700 mt-2">Bekijk de pillar <a href="/mki-berekening-gww/" class="text-green-700 font-semibold hover:text-green-600">MKI-berekeningen</a> voor een verdieping in methode en toepassing.</p>
-        </div>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>1. Is MKI altijd gebaseerd op dezelfde rekenregels?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">De basis is vastgelegd in normen en bepalingsmethoden, maar de toepassing kan per project verschillen door aannames en scope.</p>
+        </details>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>2. Wat is het verschil tussen MKI en CO₂?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">MKI bevat meerdere milieucategorieën, CO₂ is er daar maar één van. MKI is dus breder dan alleen uitstoot.</p>
+        </details>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>3. Hoe betrouwbaar is een MKI-waarde?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">Dat hangt af van de kwaliteit van de LCA-data en de transparantie van aannames. Zonder die context is vergelijken riskant.</p>
+        </details>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>4. Is MKI bruikbaar buiten aanbestedingen?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">Ja. In de ontwerpfase helpt MKI om keuzes te toetsen en te sturen op impact, voordat het project vastligt.</p>
+        </details>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>5. Hoe verhouden MKI en EPD zich?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">EPD’s leveren productdata die je nodig hebt voor een betrouwbare MKI. Zonder EPD’s blijft de onderbouwing zwakker.</p>
+        </details>
+        <details class="faq-item p-6">
+          <summary class="faq-summary flex items-center justify-between text-lg font-semibold gap-3">
+            <span>6. Waar kan ik meer leren over MKI-berekeningen?</span>
+            <span class="faq-chevron text-sm"></span>
+          </summary>
+          <p class="text-gray-700 mt-3">Bekijk de pillar <a href="/mki-berekening-gww/" class="text-green-700 font-semibold hover:text-green-600">MKI-berekeningen</a> voor een verdieping in methode en toepassing.</p>
+        </details>
       </div>
     </section>
   </main>
