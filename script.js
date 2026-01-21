@@ -28,4 +28,60 @@
       toggle.setAttribute("aria-label", "Schakel naar " + (next === "dark" ? "licht" : "donker") + " thema");
     });
   }
+
+  const epdForm = document.querySelector("#epd-database-form");
+  const epdModal = document.querySelector("#epd-modal");
+  const epdOpenButtons = document.querySelectorAll("[data-epd-open]");
+  const epdCloseButtons = document.querySelectorAll("[data-epd-close]");
+
+  const toggleEpdModal = (isOpen) => {
+    if (!epdModal) return;
+    epdModal.classList.toggle("hidden", !isOpen);
+    epdModal.classList.toggle("flex", isOpen);
+    document.body.style.overflow = isOpen ? "hidden" : "";
+  };
+
+  epdOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => toggleEpdModal(true));
+  });
+
+  epdCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => toggleEpdModal(false));
+  });
+
+  if (epdModal){
+    epdModal.addEventListener("click", (event) => {
+      if (event.target === epdModal){
+        toggleEpdModal(false);
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape"){
+      toggleEpdModal(false);
+    }
+  });
+
+  if (epdForm){
+    epdForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(epdForm);
+      const voornaam = formData.get("voornaam");
+      const achternaam = formData.get("achternaam");
+      const bedrijf = formData.get("bedrijf");
+      const email = formData.get("email");
+      const subject = "Aanmelding EPD database";
+      const body = [
+        "Voornaam: " + voornaam,
+        "Achternaam: " + achternaam,
+        "Bedrijf: " + bedrijf,
+        "E-mailadres: " + email
+      ].join("\n");
+      const mailto = "mailto:info@infraimpact.nl?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+      window.location.href = mailto;
+      epdForm.reset();
+      toggleEpdModal(false);
+    });
+  }
 })();
