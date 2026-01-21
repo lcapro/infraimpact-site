@@ -23,7 +23,8 @@
     :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
     body { color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background: linear-gradient(120deg,#ffffff,#f7fbfb,#e8f3f0); }
     .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    nav{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.06);z-index:50}
+    nav{position:sticky;top:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .3s ease, box-shadow .3s ease;z-index:50}
+    .scroll-down{transform:translateY(-100%)} .scroll-up{transform:translateY(0)}
     :focus-visible{outline:3px solid var(--brand-green);outline-offset:3px}
     .glass{background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(240,251,247,.82));border:1px solid rgba(47,111,101,.10);box-shadow:0 20px 60px rgba(17,24,39,.08)}
     .prose p{line-height:1.8}
@@ -46,7 +47,7 @@
 </head>
 
 <body>
-  <nav>
+  <nav id="nav">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="/" class="flex items-center" aria-label="Ga naar de homepage">
         <img src="/assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto">
@@ -226,6 +227,25 @@
     </div>
   </footer>
 
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const nav = document.getElementById('nav');
+    if (nav) {
+      let lastY = window.scrollY;
+      nav.classList.add('scroll-up');
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y > lastY && y > 80) {
+          nav.classList.add('scroll-down');
+          nav.classList.remove('scroll-up');
+        } else {
+          nav.classList.add('scroll-up');
+          nav.classList.remove('scroll-down');
+        }
+        lastY = y;
+      }, { passive: true });
+    }
+  </script>
 </body>
 </html>
