@@ -33,12 +33,36 @@
   const epdModal = document.querySelector("#epd-modal");
   const epdOpenButtons = document.querySelectorAll("[data-epd-open]");
   const epdCloseButtons = document.querySelectorAll("[data-epd-close]");
+  const epdSuccess = document.querySelector("#epd-success");
+  const epdError = document.querySelector("#epd-form-error");
+  const epdSubmitButton = epdForm?.querySelector("button[type='submit']");
+  const epdFirstInput = epdForm?.querySelector("input[name='voornaam']");
+  let lastFocusedElement = null;
+  let isSubmitting = false;
+
+  const resetEpdState = () => {
+    if (epdError) epdError.classList.add("hidden");
+    if (epdSuccess) epdSuccess.classList.add("hidden");
+    if (epdForm) epdForm.classList.remove("hidden");
+    if (epdSubmitButton) epdSubmitButton.disabled = false;
+    isSubmitting = false;
+  };
 
   const toggleEpdModal = (isOpen) => {
     if (!epdModal) return;
+    if (isOpen) {
+      lastFocusedElement = document.activeElement;
+      resetEpdState();
+    }
     epdModal.classList.toggle("hidden", !isOpen);
     epdModal.classList.toggle("flex", isOpen);
     document.body.style.overflow = isOpen ? "hidden" : "";
+    if (isOpen && epdFirstInput) {
+      epdFirstInput.focus();
+    }
+    if (!isOpen && lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+      lastFocusedElement.focus();
+    }
   };
 
   epdOpenButtons.forEach((button) => {
@@ -58,30 +82,47 @@
   }
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape"){
+    if (event.key === "Escape" && epdModal && !epdModal.classList.contains("hidden")){
       toggleEpdModal(false);
     }
   });
 
   if (epdForm){
-    epdForm.addEventListener("submit", (event) => {
+    epdForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (isSubmitting) return;
+      if (epdError) epdError.classList.add("hidden");
       const formData = new FormData(epdForm);
-      const voornaam = formData.get("voornaam");
-      const achternaam = formData.get("achternaam");
-      const bedrijf = formData.get("bedrijf");
-      const email = formData.get("email");
-      const subject = "Aanmelding EPD database";
-      const body = [
-        "Voornaam: " + voornaam,
-        "Achternaam: " + achternaam,
-        "Bedrijf: " + bedrijf,
-        "E-mailadres: " + email
-      ].join("\n");
-      const mailto = "mailto:info@infraimpact.nl?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-      window.location.href = mailto;
-      epdForm.reset();
-      toggleEpdModal(false);
+      const honeypot = formData.get("website");
+      if (honeypot) {
+        epdForm.reset();
+        if (epdForm) epdForm.classList.add("hidden");
+        if (epdSuccess) epdSuccess.classList.remove("hidden");
+        return;
+      }
+      formData.append("sourcePage", window.location.href);
+      isSubmitting = true;
+      if (epdSubmitButton) epdSubmitButton.disabled = true;
+      try {
+        const response = await fetch("https://formspree.io/f/xdaayblp", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json"
+          },
+          body: formData
+        });
+        if (!response.ok) {
+          throw new Error("Formspree error");
+        }
+        epdForm.reset();
+        if (epdForm) epdForm.classList.add("hidden");
+        if (epdSuccess) epdSuccess.classList.remove("hidden");
+      } catch (error) {
+        if (epdError) epdError.classList.remove("hidden");
+      } finally {
+        isSubmitting = false;
+        if (epdSubmitButton) epdSubmitButton.disabled = false;
+      }
     });
   }
 })();
