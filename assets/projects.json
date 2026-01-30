@@ -1,5 +1,17 @@
 [
   {
+    "slug": "infraimpact-ecomonitor-mki-stuurinstrument",
+    "title": "InfraImpact × EcoMonitor – MKI als stuurinstrument voor beleid, aanbesteding en projecten",
+    "client": "EcoMonitor × InfraImpact",
+    "type": "Samenwerking",
+    "tags": ["Samenwerking", "MKI", "LCA", "Sturingsinstrument", "Beleid", "Aanbesteding", "GWW", "EcoMonitor"],
+    "summary": "Strategische partnersamenwerking waarin InfraImpact en EcoMonitor de LCA-systematiek inzetten als stuurinstrument, met focus op uitvoering, duiding, kennisdeling en consistente toepassing binnen beleid, aanbestedingen en projecten.",
+    "collaboration": "In samenwerking",
+    "hero": "/assets/og-infraimpact.webp",
+    "date": "2026-01",
+    "url": "/projecten/infraimpact-ecomonitor-mki-stuurinstrument/"
+  },
+  {
     "slug": "nmd-gww-perceel-6-h80-h81",
     "title": "NMD – GWW Perceel 6 (H80/H81): actualisatie categorie 3 data & LCA-berekening",
     "client": "Nationale Milieudatabase (NMD)",
