@@ -22,7 +22,6 @@
   <style>
     :root { --brand-green:#2F6F65; --brand-blue:#2B536D; --ink:#374151; }
     body { color: var(--ink); font-family: ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background: linear-gradient(120deg,#ffffff,#f7fbfb,#e8f3f0); }
-    header { background: linear-gradient(120deg,rgba(255,255,255,.92),rgba(247,251,251,.9),rgba(232,243,240,.9)), url('/assets/Eco_Monitor_achtergrond.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
     .text-gradient{background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     nav{position:sticky;top:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .3s ease, box-shadow .3s ease;z-index:50}
     .scroll-down{transform:translateY(-100%)} .scroll-up{transform:translateY(0)}
@@ -30,6 +29,7 @@
     .glass{background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(240,251,247,.82));border:1px solid rgba(47,111,101,.10);box-shadow:0 20px 60px rgba(17,24,39,.08)}
     .prose p{line-height:1.8}
     .chip{font-size:12px;padding:.2rem .55rem;border-radius:9999px}
+    .header-hero{background:linear-gradient(120deg,rgba(255,255,255,.92),rgba(255,255,255,.7)),url('/assets/Eco_Monitor_achtergrond.jpg') center/cover no-repeat}
   </style>
 
   <script type="application/ld+json">
@@ -68,7 +68,7 @@
     </div>
   </nav>
 
-  <header class="border-b">
+  <header class="border-b header-hero">
     <section class="max-w-screen-xl mx-auto px-6 sm:px-8 py-12 md:py-16">
       <a href="/projecten/" class="text-sm text-green-700 font-semibold hover:underline">← Terug naar projecten</a>
 
@@ -107,6 +107,13 @@
 
         <div class="lg:col-span-4">
           <div class="glass rounded-3xl p-6 sm:p-7 space-y-4">
+            <div class="flex items-center gap-4">
+              <img src="/assets/Logo_ecomonitor.png" alt="Eco Monitor logo" class="h-10 w-auto" loading="lazy" decoding="async">
+              <div>
+                <p class="text-sm text-gray-500">Partner</p>
+                <p class="font-semibold text-gray-800">Eco Monitor</p>
+              </div>
+            </div>
             <div>
               <p class="text-sm text-gray-500">Type</p>
               <p class="font-semibold text-gray-800">Samenwerking</p>
