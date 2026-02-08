@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Privacyverklaring | InfraImpact</title>
-  <meta name="description" content="Privacyverklaring InfraImpact: welke gegevens we verwerken, waarom en hoe je je rechten uitoefent.">
+  <title>Privacy | InfraImpact</title>
+  <meta name="description" content="Privacyverklaring van InfraImpact over gegevensverwerking bij MKI, LCA en EPD dienstverlening.">
 
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon.png">
@@ -15,6 +15,7 @@
 
   <link rel="canonical" href="https://infraimpact.nl/privacy/"/>
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/privacy/">
+  <link rel="me" href="https://mkiexpertisecentrum.nl/">
 
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
@@ -44,10 +45,59 @@
     .nav-dropdown-menu a:hover{background:#ecfdf3;color:#2f6f65}
     .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
   </style>
+  <!-- Structured data: professional service + sameAs -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "sameAs":[
+          "https://mkiexpertisecentrum.nl/"
+        ]
+      },
+      {
+        "@type":"ProfessionalService",
+        "@id":"https://infraimpact.nl/#professionalservice",
+        "name":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "areaServed":{"@type":"Country","name":"Netherlands"},
+        "serviceType":[
+          "MKI calculation",
+          "LCA consultancy",
+          "EPD support",
+          "Infrastructure sustainability",
+          "Environmental impact assessment",
+          "Lifecycle assessment"
+        ],
+        "knowsAbout":[
+          "MKI",
+          "LCA",
+          "EPD",
+          "infrastructure sustainability",
+          "environmental impact",
+          "lifecycle assessment"
+        ],
+        "telephone":"+31 6 2135 0805",
+        "email":"info@infraimpact.nl",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        }
+      }
+    ]
+  }
+  </script>
+
 </head>
 
 <body class="bg-transparent text-gray-700">
-  <nav id="nav" class="transition-transform duration-300">
+  <nav aria-label="Hoofdmenu" id="nav" class="transition-transform duration-300">
     <div class="max-w-screen-xl mx-auto flex justify-between items-center py-4 px-6 sm:px-8">
       <a href="/" class="flex items-center">
         <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-10 w-auto hover:opacity-90 transition">

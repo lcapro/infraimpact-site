@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LCA-project-tool | InfraImpact</title>
+  <title>LCA project tool | lifecycle assessment support | InfraImpact</title>
   <meta name="description" content="Maak accounts aan, lees EPD's in en volg per levenscyclusfase de MKI- en CO2-waarden van materialen per project." />
   <!-- SEO: maximale indexatie + rijke snippets zonder zichtbare tekstwijziging -->
   <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
@@ -14,6 +14,7 @@
   <link rel="canonical" href="https://infraimpact.nl/lca-project-tool/">
   <link rel="alternate" hreflang="nl" href="https://infraimpact.nl/lca-project-tool/">
   <link rel="alternate" hreflang="x-default" href="https://infraimpact.nl/lca-project-tool/">
+  <link rel="me" href="https://mkiexpertisecentrum.nl/">
 
   <!-- Performance hints -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
@@ -106,9 +107,58 @@
     ]
   }
   </script>
+  <!-- Structured data: professional service + sameAs -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"Organization",
+        "@id":"https://infraimpact.nl/#organization",
+        "sameAs":[
+          "https://mkiexpertisecentrum.nl/"
+        ]
+      },
+      {
+        "@type":"ProfessionalService",
+        "@id":"https://infraimpact.nl/#professionalservice",
+        "name":"InfraImpact B.V.",
+        "url":"https://infraimpact.nl/",
+        "provider":{"@id":"https://infraimpact.nl/#organization"},
+        "areaServed":{"@type":"Country","name":"Netherlands"},
+        "serviceType":[
+          "MKI calculation",
+          "LCA consultancy",
+          "EPD support",
+          "Infrastructure sustainability",
+          "Environmental impact assessment",
+          "Lifecycle assessment"
+        ],
+        "knowsAbout":[
+          "MKI",
+          "LCA",
+          "EPD",
+          "infrastructure sustainability",
+          "environmental impact",
+          "lifecycle assessment"
+        ],
+        "telephone":"+31 6 2135 0805",
+        "email":"info@infraimpact.nl",
+        "address":{
+          "@type":"PostalAddress",
+          "streetAddress":"Westzeedijk 639",
+          "postalCode":"3024 PJ",
+          "addressLocality":"Rotterdam",
+          "addressCountry":"NL"
+        }
+      }
+    ]
+  }
+  </script>
+
 </head>
 <body class="text-gray-800">
-  <nav id="nav" class="site-nav border-b border-gray-100">
+  <nav aria-label="Hoofdmenu" id="nav" class="site-nav border-b border-gray-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
       <a href="/" class="flex items-center gap-2">
         <img src="../assets/logo_full.png" alt="InfraImpact logo" class="h-9 w-auto">

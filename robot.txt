@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://infraimpact.nl/sitemap.xml
+Host: https://infraimpact.nl
