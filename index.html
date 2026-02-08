@@ -123,6 +123,7 @@
   overflow: hidden;
   width: 100%;
   background: #fff;
+  --marquee-gap: 3rem;
 }
 
 /* zachte fades links/rechts */
@@ -149,21 +150,21 @@
 .logo-marquee-track{
   display:flex;
   width:max-content;
-  gap:3rem;
-  animation: marquee-ltr 35s linear infinite;
+  gap:var(--marquee-gap);
+  animation: marquee-ltr 28s linear infinite;
   will-change: transform;
 }
 
 .logo-marquee-group{
   display:flex;
   align-items:center;
-  gap:3rem;
+  gap:var(--marquee-gap);
   padding: 1.5rem 0;
 }
 
 /* Links → rechts: naadloos herhalen door dubbele set */
 @keyframes marquee-ltr {
-  0%   { transform: translateX(-50%); }
+  0%   { transform: translateX(calc(-50% - (var(--marquee-gap) / 2))); }
   100% { transform: translateX(0); }
 }
 
