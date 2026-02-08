@@ -150,21 +150,22 @@
 .logo-marquee-track{
   display:flex;
   width:max-content;
-  gap:var(--marquee-gap);
-  animation: marquee-ltr 28s linear infinite;
+  gap:0;
+  animation: marquee-ltr 26s linear infinite;
   will-change: transform;
 }
 
 .logo-marquee-group{
   display:flex;
+  flex:0 0 auto;
   align-items:center;
   gap:var(--marquee-gap);
-  padding: 1.5rem 0;
+  padding: 1.5rem var(--marquee-gap) 1.5rem 0;
 }
 
 /* Links → rechts: naadloos herhalen door dubbele set */
 @keyframes marquee-ltr {
-  0%   { transform: translateX(calc(-50% - (var(--marquee-gap) / 2))); }
+  0%   { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
 
