@@ -156,10 +156,10 @@
   will-change: transform;
 }
 
-/* Links → rechts, volledig buiten beeld */
+/* Links → rechts: start links, uit beeld rechts, en herhaal vanaf links */
 @keyframes marquee-ltr {
-  0%   { transform: translateX(-70%); }
-  100% { transform: translateX(70vw); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 100%)); }
 }
 
 /* Logo styling */
