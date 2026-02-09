@@ -124,6 +124,7 @@
   width: 100%;
   background: #fff;
   --marquee-gap: 3rem;
+  --marquee-tail: 50vw;
 }
 
 /* zachte fades links/rechts */
@@ -160,7 +161,7 @@
   flex:0 0 auto;
   align-items:center;
   gap:var(--marquee-gap);
-  padding: 1.5rem var(--marquee-gap) 1.5rem 0;
+  padding: 1.5rem calc(var(--marquee-gap) + var(--marquee-tail)) 1.5rem 0;
 }
 
 /* Links → rechts: naadloos herhalen door dubbele set */
