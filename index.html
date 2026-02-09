@@ -123,6 +123,8 @@
   overflow: hidden;
   width: 100%;
   background: #fff;
+  --marquee-gap: 3rem;
+  --marquee-tail: 50vw;
 }
 
 /* zachte fades links/rechts */
@@ -148,18 +150,24 @@
 /* De track zelf */
 .logo-marquee-track{
   display:flex;
-  align-items:center;
-  gap:3rem;
   width:max-content;
-  padding: 1.5rem 0;
-  animation: marquee-ltr 35s linear infinite;
+  gap:0;
+  animation: marquee-ltr 46s linear infinite;
   will-change: transform;
 }
 
-/* Links → rechts: start links, uit beeld rechts, en herhaal vanaf links */
+.logo-marquee-group{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  gap:var(--marquee-gap);
+  padding: 1.5rem calc(var(--marquee-gap) + var(--marquee-tail)) 1.5rem 0;
+}
+
+/* Links → rechts: naadloos herhalen door dubbele set */
 @keyframes marquee-ltr {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(calc(100vw + 100%)); }
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
 /* Logo styling */
@@ -805,35 +813,60 @@
       <div class="border-t logo-marquee" aria-label="Organisaties waar InfraImpact voor werkt">
         <div class="logo-marquee-track">
 
-          <!-- Logo’s (uitbreidbaar) -->
-          <a href="/projecten/nmd-gww-perceel-6/" title="Nationale Milieudatabase (NMD)" class="flex items-center">
-            <img src="/assets/Logo_nmd.png"
-                 alt="Nationale Milieudatabase (NMD)"
-                 class="client-logo"
-                 loading="lazy"
-                 decoding="async">
-          </a>
-          <a href="/projecten/infraimpact-ecomonitor-mki-stuurinstrument/" title="Eco Monitor" class="flex items-center">
-            <img src="/assets/Logo_ecomonitor.png"
-                 alt="Eco Monitor"
-                 class="client-logo"
-                 loading="lazy"
-                 decoding="async">
-          </a>
-          <div class="flex items-center">
-            <img src="/assets/Logo_vanDijkAdvies.png"
-                 alt="Van Dijk Advies"
-                 class="client-logo"
-                 loading="lazy"
-                 decoding="async">
-          </div>
+          <div class="logo-marquee-group">
+            <!-- Logo’s (uitbreidbaar) -->
+            <a href="/projecten/nmd-gww-perceel-6/" title="Nationale Milieudatabase (NMD)" class="flex items-center">
+              <img src="/assets/Logo_nmd.png"
+                   alt="Nationale Milieudatabase (NMD)"
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </a>
+            <a href="/projecten/infraimpact-ecomonitor-mki-stuurinstrument/" title="Eco Monitor" class="flex items-center">
+              <img src="/assets/Logo_ecomonitor.png"
+                   alt="Eco Monitor"
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </a>
+            <div class="flex items-center">
+              <img src="/assets/Logo_vanDijkAdvies.png"
+                   alt="Van Dijk Advies"
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </div>
 
-          <!-- Voeg hier later extra logo’s toe -->
-          <!--
-          <a href="/projecten/..." class="flex items-center">
-            <img src="/assets/clients/voorbeeld.svg" alt="Voorbeeld organisatie" class="client-logo">
-          </a>
-          -->
+            <!-- Voeg hier later extra logo’s toe -->
+            <!--
+            <a href="/projecten/..." class="flex items-center">
+              <img src="/assets/clients/voorbeeld.svg" alt="Voorbeeld organisatie" class="client-logo">
+            </a>
+            -->
+          </div>
+          <div class="logo-marquee-group" aria-hidden="true">
+            <a href="/projecten/nmd-gww-perceel-6/" title="Nationale Milieudatabase (NMD)" class="flex items-center">
+              <img src="/assets/Logo_nmd.png"
+                   alt=""
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </a>
+            <a href="/projecten/infraimpact-ecomonitor-mki-stuurinstrument/" title="Eco Monitor" class="flex items-center">
+              <img src="/assets/Logo_ecomonitor.png"
+                   alt=""
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </a>
+            <div class="flex items-center">
+              <img src="/assets/Logo_vanDijkAdvies.png"
+                   alt=""
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </div>
+          </div>
 
         </div>
       </div>
