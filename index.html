@@ -124,7 +124,6 @@
   width: 100%;
   background: #fff;
   --marquee-gap: 3rem;
-  --marquee-tail: 50vw;
 }
 
 /* zachte fades links/rechts */
@@ -152,7 +151,7 @@
   display:flex;
   width:max-content;
   gap:0;
-  animation: marquee-ltr 46s linear infinite;
+  animation: marquee-ltr 32s linear infinite;
   will-change: transform;
 }
 
@@ -161,13 +160,13 @@
   flex:0 0 auto;
   align-items:center;
   gap:var(--marquee-gap);
-  padding: 1.5rem calc(var(--marquee-gap) + var(--marquee-tail)) 1.5rem 0;
+  padding: 1.5rem 0;
 }
 
 /* Links → rechts: naadloos herhalen door dubbele set */
 @keyframes marquee-ltr {
-  0%   { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Logo styling */
@@ -836,6 +835,13 @@
                    loading="lazy"
                    decoding="async">
             </div>
+            <div class="flex items-center">
+              <img src="/assets/Logo_Donkergroep.webp"
+                   alt="Donkergroep"
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </div>
 
             <!-- Voeg hier later extra logo’s toe -->
             <!--
@@ -861,6 +867,13 @@
             </a>
             <div class="flex items-center">
               <img src="/assets/Logo_vanDijkAdvies.png"
+                   alt=""
+                   class="client-logo"
+                   loading="lazy"
+                   decoding="async">
+            </div>
+            <div class="flex items-center">
+              <img src="/assets/Logo_Donkergroep.webp"
                    alt=""
                    class="client-logo"
                    loading="lazy"
